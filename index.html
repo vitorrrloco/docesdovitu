@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#5b321f">
+<title>DOCES DO VITU</title>
+<style>
+:root{
+ --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
+ --cream:#fbf3e8;--cream2:#f3e3d1;--white:#fffdf9;--line:#ead7c4;
+ --text:#392419;--muted:#8a7566;--green:#2d805b;--red:#b5483f;--orange:#b66b22;
+ --shadow:0 8px 25px rgba(74,40,25,.08);--r:20px
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:var(--cream);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Arial,sans-serif}
+body{overflow:hidden}
+button,input,select{font:inherit}button{border:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.hidden{display:none!important}
+#login{height:100dvh;display:grid;place-items:center;padding:20px;background:linear-gradient(160deg,#f8ead9,#fffaf3)}
+.login-card{width:min(100%,420px);background:var(--white);border:1px solid var(--line);border-radius:30px;padding:25px;box-shadow:0 20px 60px #4a28191c}
+.logo{height:145px;border-radius:24px;background:var(--cream);display:grid;place-items:center;margin-bottom:22px;border:1px solid var(--line)}
+.logo .candy{font-size:65px}.logo b{display:block;font-size:25px;letter-spacing:2px;text-align:center;color:var(--dark)}
+.logo small{display:block;text-align:center;color:var(--brown);font-weight:700;margin-top:5px}
+.login-card h1{font-size:27px;margin:0 0 6px}.login-card p{color:var(--muted);margin:0 0 20px}
+.field{margin-bottom:13px}.field label{display:block;font-size:13px;font-weight:800;margin:0 0 6px;color:var(--dark2)}
+.field input,.field select{width:100%;height:54px;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 14px;outline:none;color:var(--text)}
+.field input:focus,.field select:focus{border-color:var(--brown);box-shadow:0 0 0 4px #8a56381a}
+.primary{width:100%;min-height:54px;border-radius:15px;background:var(--dark);color:#fff;font-weight:800}
+.secondary{background:var(--cream2);color:var(--dark);font-weight:800;border-radius:14px;padding:13px 16px}
+#loginMsg{min-height:22px;text-align:center;color:var(--red);font-size:13px;margin-top:10px}
+.app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.top{height:74px;flex:0 0 74px;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:8px 15px}
+.brand{display:flex;align-items:center;gap:10px}.brand-mark{width:48px;height:48px;border-radius:15px;background:var(--dark);display:grid;place-items:center;color:#fff;font-size:25px}
+.brand b{font-size:17px;display:block;letter-spacing:.4px}.brand small{font-size:10px;color:var(--muted);display:block;margin-top:2px}
+.top-action{width:46px;height:46px;border-radius:15px;background:var(--cream2);color:var(--dark);font-size:25px}
+.view{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 14px calc(100px + env(safe-area-inset-bottom))}
+.page{width:100%;max-width:720px;margin:auto}.head{display:flex;align-items:end;justify-content:space-between;margin:2px 2px 15px}.head h1{margin:0;font-size:28px;letter-spacing:-.5px}.head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.hero{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff;border-radius:25px;padding:19px;margin-bottom:13px;box-shadow:var(--shadow);display:flex;justify-content:space-between;gap:10px}.hero small{opacity:.72}.hero h2{font-size:28px;margin:5px 0}.hero p{margin:0;opacity:.78;font-size:12px}.hero .emoji{font-size:42px;align-self:center}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.stat{background:var(--white);border:1px solid var(--line);border-radius:19px;padding:15px;min-height:105px;box-shadow:var(--shadow)}.stat small{display:block;color:var(--muted);font-size:11px}.stat strong{display:block;font-size:22px;margin-top:7px}.stat .green{color:var(--green)}.stat .red{color:var(--red)}
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:19px}.quick button{background:var(--white);border:1px solid var(--line);border-radius:17px;min-height:68px;text-align:left;padding:12px;box-shadow:0 4px 14px #4a281908}.quick b{display:block;font-size:13px}.quick span{font-size:22px;float:left;margin-right:9px}
+.section{margin-top:15px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:0 2px 9px}.section-title b{font-size:17px}.link{background:none;color:var(--brown);font-size:12px;font-weight:800}
+.list{display:grid;gap:9px}.item{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;align-items:center;gap:10px}.avatar{width:43px;height:43px;flex:0 0 43px;border-radius:14px;background:var(--cream2);display:grid;place-items:center;font-size:19px}.item-main{min-width:0;flex:1}.item-main b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item-main small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.item-right{text-align:right}.item-right b{display:block;font-size:13px}.status{font-size:9px;font-weight:800;margin-top:4px}.paid{color:var(--green)}.pending{color:var(--red)}.partial{color:var(--orange)}
+.search{height:50px;width:100%;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 14px;outline:none;margin-bottom:10px}
+.toolbar{display:flex;gap:8px;margin-bottom:10px}.toolbar .search{margin:0;flex:1}.toolbar button{width:50px;border-radius:15px;background:var(--dark);color:#fff;font-size:24px}
+.form{background:var(--white);border:1px solid var(--line);border-radius:21px;padding:16px;margin-bottom:11px;box-shadow:var(--shadow)}.form h3{margin:0 0 13px;font-size:17px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions{display:flex;gap:8px;margin-top:11px}.actions button{flex:1;min-height:50px;border-radius:14px;font-weight:800}
+.table-wrap{overflow:auto;background:var(--white);border:1px solid var(--line);border-radius:19px;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;min-width:590px}th,td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:11px;text-align:left;white-space:nowrap}th{background:var(--cream2);color:var(--dark);font-size:10px;text-transform:uppercase}tr:last-child td{border-bottom:0}
+.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tabs button{flex:0 0 auto;background:var(--white);border:1px solid var(--line);color:var(--muted);padding:9px 13px;border-radius:13px;font-size:11px;font-weight:800}.tabs button.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+.analysis-card{background:var(--white);border:1px solid var(--line);border-radius:21px;padding:15px;margin-bottom:12px;box-shadow:var(--shadow)}.analysis-head{display:flex;justify-content:space-between;align-items:end}.analysis-head b{font-size:17px}.analysis-head strong{font-size:21px;color:var(--dark)}.chart{height:220px;margin-top:12px;position:relative}.chart svg{width:100%;height:100%;overflow:visible}.chart text{font-size:9px;fill:var(--muted)}.line{fill:none;stroke:var(--dark);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.dot{fill:var(--caramel);stroke:var(--white);stroke-width:2}
+.more{display:grid;grid-template-columns:1fr 1fr;gap:10px}.more button{min-height:118px;background:var(--white);border:1px solid var(--line);border-radius:19px;padding:14px;text-align:left}.more .mi{font-size:28px;display:block;margin-bottom:9px}.more b{display:block;font-size:14px}.more small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.modal-bg{position:fixed;inset:0;background:#2b170f73;z-index:5000;display:flex;align-items:flex-end}.modal{width:100%;max-width:620px;margin:auto auto 0;max-height:92dvh;overflow:auto;background:var(--white);border-radius:25px 25px 0 0;padding:17px 15px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px #0003}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.modal-head h2{margin:0;font-size:20px}.close{width:40px;height:40px;border-radius:13px;background:var(--cream2);font-size:22px;color:var(--dark)}
+.nav{height:82px;flex:0 0 calc(82px + env(safe-area-inset-bottom));padding:6px 5px env(safe-area-inset-bottom);background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:1000}.nav button{background:none;color:var(--muted);border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.nav .ni{font-size:24px;line-height:27px}.nav small{font-size:10px;font-weight:800}.nav .active{background:var(--cream2);color:var(--dark)}
+.toast{position:fixed;left:14px;right:14px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:9000;background:var(--dark);color:#fff;padding:13px;border-radius:15px;text-align:center;font-size:13px;box-shadow:0 10px 30px #0003}
+.empty{text-align:center;color:var(--muted);padding:30px 15px;background:var(--white);border:1px dashed var(--line);border-radius:18px;font-size:13px}
+@media(min-width:700px){.view{padding-left:24px;padding-right:24px}.nav{max-width:720px;width:100%;margin:0 auto;border-radius:22px 22px 0 0}}
+@media(max-width:370px){.view{padding-left:10px;padding-right:10px}.head h1{font-size:25px}.stats{gap:7px}.stat{padding:12px}.more{gap:8px}.more button{padding:12px}}
+</style>
+</head>
+<body>
+<div id="login">
+ <div class="login-card">
+  <div class="logo"><div><div class="candy">🍫</div><b>DOCES DO VITU</b><small>vendas • estoque • recebimentos</small></div></div>
+  <h1>Entrar</h1><p>Acesse seu controle de vendas.</p>
+  <div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="username" placeholder="seu@email.com"></div>
+  <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Sua senha"></div>
+  <button class="primary" id="loginBtn">Entrar</button>
+  <button class="secondary" id="createBtn" style="width:100%;margin-top:8px">Criar minha conta</button>
+  <div id="loginMsg"></div>
+ </div>
+</div>
+
+<div id="app" class="app hidden">
+ <header class="top">
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas</small></div></div>
+  <button class="top-action" id="quickSale" aria-label="Nova venda">＋</button>
+ </header>
+ <main class="view" id="view"></main>
+ <nav class="nav">
+  <button data-page="home" class="active"><span class="ni">⌂</span><small>Início</small></button>
+  <button data-page="sales"><span class="ni">🛒</span><small>Vendas</small></button>
+  <button data-page="clients"><span class="ni">👥</span><small>Clientes</small></button>
+  <button data-page="stock"><span class="ni">📦</span><small>Estoque</small></button>
+  <button data-page="more"><span class="ni">☰</span><small>Mais</small></button>
+ </nav>
+</div>
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
+ authDomain:"doces-do-vitu.firebaseapp.com",
+ projectId:"doces-do-vitu",
+ storageBucket:"doces-do-vitu.firebasestorage.app",
+ messagingSenderId:"681586131940",
+ appId:"1:681586131940:web:e8c213d9865621467e7df1",
+ measurementId:"G-9QDNX23V8Z"
+};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const $=id=>document.getElementById(id);
+let uid=null,unsubs=[],data={products:[],clients:[],sales:[],payments:[]},page="home";
+
+const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const dt=v=>{let d=v?.toDate?v.toDate():new Date(v);return isNaN(d)?null:d};
+const dateTime=v=>{let d=dt(v);return d?d.toLocaleDateString("pt-BR")+" • "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"};
+const dateOnly=v=>{let d=dt(v);return d?d.toLocaleDateString("pt-BR"):"-"};
+const now=()=>new Date();
+const status=(total,paid)=>paid>=total?"Pago":paid>0?"Parcial":"Pendente";
+const statusClass=s=>s==="Pago"?"paid":s==="Parcial"?"partial":"pending";
+const toast=m=>{$("toastRoot").innerHTML='<div class="toast">'+esc(m)+'</div>';setTimeout(()=>$("toastRoot").innerHTML="",2400)};
+const msg=(m,ok=false)=>{$("loginMsg").textContent=m;$("loginMsg").style.color=ok?"#2d805b":"#b5483f"};
+
+$("loginBtn").onclick=async()=>{try{msg("Entrando...",true);await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){msg(firebaseError(e))}};
+$("createBtn").onclick=async()=>{try{msg("Criando conta...",true);await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);msg("Conta criada!",true)}catch(e){msg(firebaseError(e))}};
+$("password").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginBtn").click()});
+function firebaseError(e){return ({ "auth/invalid-credential":"E-mail ou senha incorretos.","auth/invalid-email":"Digite um e-mail válido.","auth/email-already-in-use":"Esse e-mail já possui uma conta.","auth/weak-password":"A senha precisa ter pelo menos 6 caracteres."}[e.code]||"Não foi possível entrar. Verifique sua conexão e os dados.")}
+
+onAuthStateChanged(auth,user=>{
+ unsubs.forEach(u=>u());unsubs=[];
+ if(!user){uid=null;$("app").classList.add("hidden");$("login").classList.remove("hidden");return}
+ uid=user.uid;$("login").classList.add("hidden");$("app").classList.remove("hidden");subscribe();go("home");
+});
+
+function col(name){return collection(db,"users",uid,name)}
+function subscribe(){
+ ["products","clients","sales","payments"].forEach(name=>{
+  const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render()},()=>toast("Não foi possível sincronizar "+name+"."));
+  unsubs.push(u);
+ });
+}
+function go(p){page=p;document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));render();$("view").scrollTo(0,0)}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
+$("quickSale").onclick=()=>openSale();
+
+function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="more")v.innerHTML=more();bindPage()}
+function totals(){
+ const today=now();let sold=0,received=0,pending=0;
+ data.sales.forEach(s=>{sold+=Number(s.total||0);pending+=Math.max(0,Number(s.total||0)-Number(s.paid||0))});
+ data.payments.forEach(p=>received+=Number(p.amount||0));
+ const todaySales=data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===today.toDateString()}).reduce((a,s)=>a+Number(s.total||0),0);
+ return {sold,received,pending,todaySales}
+}
+function home(){
+ const t=totals(),low=data.products.filter(p=>Number(p.stock||0)<=Number(p.minStock||2));
+ return `<div class="page">
+ <div class="head"><div><h1>Olá! 🍫</h1><p>Seu resumo de hoje</p></div></div>
+ <div class="hero"><div><small>VENDAS HOJE</small><h2>${money(t.todaySales)}</h2><p>${data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===now().toDateString()}).length} vendas registradas hoje</p></div><div class="emoji">🍬</div></div>
+ <div class="stats">
+  <div class="stat"><small>TOTAL VENDIDO</small><strong>${money(t.sold)}</strong></div>
+  <div class="stat"><small>A RECEBER</small><strong class="red">${money(t.pending)}</strong></div>
+  <div class="stat"><small>RECEBIDO</small><strong class="green">${money(t.received)}</strong></div>
+  <div class="stat"><small>PRODUTOS</small><strong>${data.products.length}</strong></div>
+ </div>
+ <div class="quick">
+  <button id="qSale"><span>🛒</span><b>Nova venda</b></button>
+  <button id="qClient"><span>👤</span><b>Novo cliente</b></button>
+  <button id="qProduct"><span>📦</span><b>Novo produto</b></button>
+  <button id="qAnalysis"><span>📈</span><b>Analisar vendas</b></button>
+ </div>
+ <div class="section"><div class="section-title"><b>Últimas vendas</b><button class="link" id="seeSales">Ver todas</button></div>
+ <div class="list">${data.sales.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0)).slice(0,5).map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma venda registrada ainda.</div>'}</div></div>
+ ${low.length?`<div class="section"><div class="section-title"><b>⚠️ Estoque baixo</b></div><div class="list">${low.slice(0,4).map(p=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque mínimo: ${p.minStock||2}</small></div><div class="item-right"><b>${p.stock||0} un.</b></div></div>`).join("")}</div></div>`:""}
+ </div>`
+}
+function saleItem(s){let st=status(s.total,s.paid);return `<div class="item" data-sale="${s.id}"><div class="avatar">🍬</div><div class="item-main"><b>${esc(s.clientName||"Venda balcão")}</b><small>${dateTime(s.createdAt)} • ${esc(s.items?.map(i=>i.name).join(", ")||"Venda")}</small></div><div class="item-right"><b>${money(s.total)}</b><div class="status ${statusClass(st)}">${st}</div></div></div>`}
+
+function sales(){
+ const rows=data.sales.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
+ return `<div class="page"><div class="head"><div><h1>Vendas</h1><p>Cada venda com dia e horário</p></div><button class="top-action" id="newSale">＋</button></div>
+ <div class="tabs"><button class="active" data-sales-filter="all">Todas</button><button data-sales-filter="paid">Pagas</button><button data-sales-filter="partial">Parciais</button><button data-sales-filter="pending">Pendentes</button></div>
+ <div class="table-wrap"><table><thead><tr><th>Data</th><th>Horário</th><th>Cliente</th><th>Produto</th><th>Qtd.</th><th>Total</th><th>Status</th></tr></thead><tbody id="salesBody">${rows.map(s=>saleRow(s)).join("")||'<tr><td colspan="7">Nenhuma venda.</td></tr>'}</tbody></table></div></div>`
+}
+function saleRow(s){let st=status(s.total,s.paid),d=dt(s.createdAt);return `<tr data-status="${st.toLowerCase()}" data-sale="${s.id}"><td>${d?d.toLocaleDateString("pt-BR"):"-"}</td><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(s.clientName||"Balcão")}</td><td>${esc(s.items?.map(i=>i.name).join(", ")||"-")}</td><td>${s.items?.reduce((a,i)=>a+Number(i.qty||0),0)||0}</td><td>${money(s.total)}</td><td class="${statusClass(st)}">${st}</td></tr>`}
+
+function clients(){
+ return `<div class="page"><div class="head"><div><h1>Clientes</h1><p>Compras e valores de cada pessoa</p></div><button class="top-action" id="newClient">＋</button></div>
+ <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
+ <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
+}
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div></div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+
+function stock(){
+ return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><button class="top-action" id="newProduct">＋</button></div>
+ <input class="search" id="stockSearch" placeholder="🔎 Procurar produto">
+ <div class="list" id="stockList">${productRows(data.products)}</div></div>`
+}
+function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${Number(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
+
+function more(){
+ return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Relatórios e configurações</p></div></div>
+ <div class="more">
+  <button id="analysis"><span class="mi">📈</span><b>Análise de vendas</b><small>Horário, dia, semana e mês</small></button>
+  <button id="receivables"><span class="mi">💰</span><b>A receber</b><small>Quem ainda precisa pagar</small></button>
+  <button id="payments"><span class="mi">💵</span><b>Pagamentos</b><small>Registrar recebimentos</small></button>
+  <button id="account"><span class="mi">⚙️</span><b>Conta</b><small>${esc(auth.currentUser?.email||"")}</small></button>
+ </div>
+ <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button></div>`
+}
+
+function openSale(){
+ const products=data.products.filter(p=>Number(p.stock||0)>0);
+ if(!products.length){toast("Cadastre um produto com estoque primeiro.");return}
+ const clients=data.clients;
+ openModal("Nova venda",`<div class="form">
+ <div class="field"><label>Cliente</label><select id="mClient"><option value="">Venda balcão</option>${clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></div>
+ <div class="field"><label>Produto</label><select id="mProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join("")}</select></div>
+ <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Pago agora</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div></div>
+ <div class="field"><label>Pagamento</label><select id="mMethod"><option>Pagamento no salário</option><option>Dinheiro</option><option>Cartão</option></select></div>
+ <div id="mTotal" style="font-size:20px;font-weight:900;margin-top:8px"></div>
+ <div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
+ const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1);$("mTotal").textContent="Total: "+money((p?.price||0)*q)};
+ $("mProduct").onchange=update;$("mQty").oninput=update;update();
+ $("cancelModal").onclick=closeModal;$("confirmSale").onclick=async()=>{
+  try{
+   let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),total=p.price*q;
+   if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
+   let paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),c=data.clients.find(x=>x.id===$("mClient").value);
+   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:p.price}],total,paid,paymentMethod:$("mMethod").value,createdAt:serverTimestamp()});
+   await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q});
+   if(paid>0)await addDoc(col("payments"),{saleId:ref.id,clientId:c?.id||"",clientName:c?.name||"Venda balcão",amount:paid,createdAt:serverTimestamp(),method:$("mMethod").value});
+   closeModal();toast("Venda registrada!");go("sales");
+  }catch(e){toast(e.message||"Não foi possível registrar.")}
+ };
+}
+function openClient(c){
+ const ss=data.sales.filter(s=>s.clientId===c.id).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
+ const total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div><div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
+ $("registerFromClient").onclick=()=>openPaymentForClient(c);
+}
+function openPaymentForClient(c){
+ const pendingSales=data.sales.filter(s=>s.clientId===c.id&&Number(s.total||0)>Number(s.paid||0));
+ if(!pendingSales.length){toast("Esse cliente não possui valor pendente.");return}
+ openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${pendingSales.reduce((a,s)=>a+Math.max(0,s.total-s.paid),0).toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
+ $("savePay").onclick=async()=>{
+  let amount=Number($("payValue").value)||0;if(amount<=0)return toast("Digite um valor.");
+  try{
+   let remaining=amount;
+   for(const s of pendingSales){
+    if(remaining<=0)break;
+    const open=Math.max(0,Number(s.total)-Number(s.paid||0)),use=Math.min(open,remaining);
+    await updateDoc(doc(col("sales"),s.id),{paid:Number(s.paid||0)+use});
+    remaining-=use;
+   }
+   await addDoc(col("payments"),{clientId:c.id,clientName:c.name,amount,createdAt:serverTimestamp(),method:$("payMethod").value});
+   closeModal();toast("Pagamento registrado!");
+  }catch(e){toast("Não foi possível registrar o pagamento.")}
+ }
+}
+function openProduct(p=null){
+ openModal(p?"Editar produto":"Novo produto",`<div class="form"><div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}"></div><div class="row"><div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" value="${p?.price||""}"></div><div class="field"><label>Custo</label><input id="pCost" type="number" step="0.01" value="${p?.cost||""}"></div></div><div class="row"><div class="field"><label>Estoque</label><input id="pStock" type="number" min="0" value="${p?.stock||0}"></div><div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div></div>`);
+ $("cancelModal").onclick=closeModal;$("saveProduct").onclick=async()=>{let obj={name:$("pName").value.trim(),price:Number($("pPrice").value)||0,cost:Number($("pCost").value)||0,stock:Number($("pStock").value)||0,minStock:Number($("pMin").value)||0};if(!obj.name||obj.price<=0)return toast("Preencha nome e preço.");try{p?await updateDoc(doc(col("products"),p.id),obj):await addDoc(col("products"),obj);closeModal();toast("Produto salvo!")}catch(e){toast("Erro ao salvar produto.")}}
+}
+function openClientForm(){
+ openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do funcionário"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
+ $("cancelModal").onclick=closeModal;$("saveClient").onclick=async()=>{let name=$("cName").value.trim();if(!name)return toast("Digite o nome.");try{await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),createdAt:serverTimestamp()});closeModal();toast("Cliente cadastrado!")}catch(e){toast("Erro ao salvar cliente.")}}
+}
+
+function openAnalysis(){
+ const periods={hour:"Hoje por horário",day:"Últimos 7 dias",week:"Últimas semanas",month:"Este mês"};
+ openModal("Análise de vendas",`<div class="tabs" id="analysisTabs"><button class="active" data-a="hour">Horário</button><button data-a="day">Dia</button><button data-a="week">Semana</button><button data-a="month">Mês</button></div><div id="analysisContent"></div>`);
+ const renderA=kind=>{document.querySelectorAll("#analysisTabs button").forEach(b=>b.classList.toggle("active",b.dataset.a===kind));$("analysisContent").innerHTML=analysisHtml(kind)};
+ document.querySelectorAll("#analysisTabs button").forEach(b=>b.onclick=()=>renderA(b.dataset.a));renderA("hour");
+}
+function analysisHtml(kind){
+ const sales=data.sales, nowD=now(), points=[];
+ if(kind==="hour"){for(let h=0;h<24;h++)points.push({label:String(h).padStart(2,"0")+"h",value:sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===nowD.toDateString()&&d.getHours()===h}).reduce((a,s)=>a+Number(s.total||0),0)})}
+ if(kind==="day"){for(let i=6;i>=0;i--){let d=new Date(nowD);d.setHours(0,0,0,0);d.setDate(d.getDate()-i);points.push({label:d.toLocaleDateString("pt-BR",{weekday:"short"}).replace(".",""),value:sales.filter(s=>{let x=dt(s.createdAt);return x&&x.toDateString()===d.toDateString()}).reduce((a,s)=>a+Number(s.total||0),0)})}}
+ if(kind==="week"){for(let i=7;i>=0;i--){let end=new Date(nowD);end.setHours(23,59,59,999);end.setDate(end.getDate()-i*7);let start=new Date(end);start.setDate(start.getDate()-6);points.push({label:(start.getDate())+"/"+(start.getMonth()+1),value:sales.filter(s=>{let x=dt(s.createdAt);return x&&x>=start&&x<=end}).reduce((a,s)=>a+Number(s.total||0),0)})}}
+ if(kind==="month"){let days=new Date(nowD.getFullYear(),nowD.getMonth()+1,0).getDate();for(let d=1;d<=days;d++){let date=new Date(nowD.getFullYear(),nowD.getMonth(),d);points.push({label:String(d),value:sales.filter(s=>{let x=dt(s.createdAt);return x&&x.toDateString()===date.toDateString()}).reduce((a,s)=>a+Number(s.total||0),0)})}}
+ const total=points.reduce((a,p)=>a+p.value,0),max=Math.max(...points.map(p=>p.value),1),w=600,h=190,pad=18;
+ const pts=points.map((p,i)=>`${pad+i*(w-2*pad)/Math.max(points.length-1,1)},${h-pad-(p.value/max)*(h-2*pad)}`).join(" ");
+ const labels=points.map((p,i)=>i%Math.max(1,Math.ceil(points.length/8))===0?`<text x="${pad+i*(w-2*pad)/Math.max(points.length-1,1)}" y="${h-2}" text-anchor="middle">${esc(p.label)}</text>`:"").join("");
+ return `<div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">${periods[kind]}</small><div style="margin-top:3px">Total vendido</div></div><strong>${money(total)}</strong></div><div class="chart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline class="line" points="${pts}"/>${points.map((p,i)=>{let [x,y]=`${pad+i*(w-2*pad)/Math.max(points.length-1,1)},${h-pad-(p.value/max)*(h-2*pad)}`.split(",");return `<circle class="dot" cx="${x}" cy="${y}" r="3"/>`}).join("")}${labels}</svg></div></div>`;
+}
+function openModal(title,content){$("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><h2>${title}</h2><button class="close" id="modalClose">×</button></div>${content}</div></div>`;$("modalClose").onclick=closeModal}
+function closeModal(){$("modalRoot").innerHTML=""}
+
+function bindPage(){
+ $("newSale")?.addEventListener("click",openSale);$("qSale")?.addEventListener("click",openSale);
+ $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
+ $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());
+ $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
+ $("seeSales")?.addEventListener("click",()=>go("sales"));
+ $("logout")?.addEventListener("click",()=>signOut(auth));
+ $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
+ $("stockSearch")?.addEventListener("input",e=>{$("stockList").innerHTML=productRows(data.products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())))});
+ document.querySelectorAll("[data-client]").forEach(x=>x.onclick=()=>openClient(data.clients.find(c=>c.id===x.dataset.client)));
+ document.querySelectorAll("[data-product]").forEach(x=>x.onclick=()=>openProduct(data.products.find(p=>p.id===x.dataset.product)));
+ document.querySelectorAll("[data-sale]").forEach(x=>x.onclick=()=>openSaleDetail(data.sales.find(s=>s.id===x.dataset.sale)));
+ document.querySelectorAll("[data-sales-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-sales-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll("#salesBody tr").forEach(r=>{let f=b.dataset.salesFilter; r.style.display=f==="all"||r.dataset.status===f?"":"none"})});
+ $("payments")?.addEventListener("click",()=>openReceivables());
+ $("receivables")?.addEventListener("click",()=>openReceivables());
+ $("account")?.addEventListener("click",()=>toast(auth.currentUser?.email||""));
+}
+function openSaleDetail(s){
+ if(!s)return;let st=status(s.total,s.paid),pending=Math.max(0,s.total-s.paid);
+ openModal("Venda",`<div class="form"><div class="section-title"><b>${esc(s.clientName||"Venda balcão")}</b><span>${dateTime(s.createdAt)}</span></div>${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(i.qty*i.price)}</b></div></div>`).join("")}<div class="section-title" style="margin-top:13px"><b>Total</b><b>${money(s.total)}</b></div><div class="section-title"><span>Pago</span><b class="paid">${money(s.paid)}</b></div><div class="section-title"><span>Pendente</span><b class="${statusClass(st)}">${money(pending)}</b></div>${pending>0&&s.clientId?'<button class="primary" id="detailPay" style="margin-top:10px">💵 Registrar pagamento</button>':""}</div>`);
+ if($("detailPay"))$("detailPay").onclick=()=>{let c=data.clients.find(c=>c.id===s.clientId);closeModal();openPaymentForClient(c)}
+}
+function openReceivables(){
+ const rows=data.clients.map(c=>{let pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,s.total-s.paid),0);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);
+ openModal("A receber",`<div class="list">${rows.map(c=>`<div class="item" data-pay-client="${c.id}"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valores pendentes</small></div><div class="item-right"><b class="pending">${money(c.pending)}</b></div></div>`).join("")||'<div class="empty">Ninguém com valor pendente. 🎉</div>'}</div>`);
+ document.querySelectorAll("[data-pay-client]").forEach(x=>x.onclick=()=>{let c=data.clients.find(c=>c.id===x.dataset.payClient);closeModal();openPaymentForClient(c)})
+}
+</script>
+</body>
+</html>
