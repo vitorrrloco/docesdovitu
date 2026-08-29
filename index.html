@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.0.1</title>
+<title>DOCES DO VITU 1.1.0</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -54,6 +54,35 @@ button,input,select{font:inherit}button{border:0;-webkit-tap-highlight-color:tra
 .empty{text-align:center;color:var(--muted);padding:30px 15px;background:var(--white);border:1px dashed var(--line);border-radius:18px;font-size:13px}
 @media(min-width:700px){.view{padding-left:24px;padding-right:24px}.nav{max-width:720px;width:100%;margin:0 auto;border-radius:22px 22px 0 0}}
 @media(max-width:370px){.view{padding-left:10px;padding-right:10px}.head h1{font-size:25px}.stats{gap:7px}.stat{padding:12px}.more{gap:8px}.more button{padding:12px}}
+
+/* ===== V1.1.0 RESPONSIVE UI ===== */
+@media (min-width: 900px){
+  body{background:#f3e3d1}
+  .app{display:grid;grid-template-columns:250px minmax(0,1fr);grid-template-rows:78px minmax(0,1fr);height:100dvh}
+  .top{grid-column:2;grid-row:1;height:auto;padding:10px 28px}
+  .view{grid-column:2;grid-row:2;padding:26px 32px 34px;overflow:auto}
+  .page{max-width:1240px}
+  .nav{grid-column:1;grid-row:1 / span 2;width:auto;height:auto;margin:0;border:0;border-right:1px solid var(--line);border-radius:0;padding:22px 12px;display:flex;flex-direction:column;gap:8px;background:var(--white)}
+  .nav:before{content:"🍫  DOCES DO VITU";font-size:16px;font-weight:900;color:var(--dark);padding:8px 12px 22px}
+  .nav button{width:100%;min-height:56px;flex:none;display:flex;flex-direction:row;justify-content:flex-start;gap:12px;padding:0 15px;border-radius:15px}
+  .nav .ni{font-size:23px;width:27px;text-align:center}.nav small{font-size:13px}
+  .nav .active{background:var(--cream2);color:var(--dark)}
+  .hero{padding:25px 28px}.hero h2{font-size:34px}
+  .stats{grid-template-columns:repeat(4,1fr);gap:14px}.stat{min-height:120px;padding:18px}.stat strong{font-size:25px}
+  .quick{grid-template-columns:repeat(4,1fr);gap:12px}.quick button{min-height:86px}
+  .more{grid-template-columns:repeat(4,1fr)}
+  .table-wrap{max-height:calc(100dvh - 225px)}
+  .modal-bg{align-items:center;padding:20px}.modal{width:min(680px,100%);margin:auto;border-radius:25px;max-height:88dvh}
+  .head h1{font-size:31px}
+}
+@media (min-width:1200px){
+  .view{padding-left:42px;padding-right:42px}
+  .page{max-width:1320px}
+}
+@media (max-width:899px){
+  .nav{display:grid;grid-template-columns:repeat(5,1fr)}
+  .nav:before{display:none}
+}
 </style>
 </head>
 <body>
@@ -71,7 +100,7 @@ button,input,select{font:inherit}button{border:0;-webkit-tap-highlight-color:tra
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.0.1</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.1.0</small></div></div>
   <button class="top-action" id="quickSale" aria-label="Nova venda">＋</button>
  </header>
  <main class="view" id="view"></main>
@@ -295,6 +324,12 @@ function analysisHtml(kind){
 
 function openModal(title,content){$("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><h2>${title}</h2><button class="close" id="modalClose">×</button></div>${content}</div></div>`;$("modalClose").onclick=closeModal}
 function closeModal(){$("modalRoot").innerHTML=""}
+
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && $("modalRoot").innerHTML) closeModal();
+  if((e.key==="n"||e.key==="N") && uid && !["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName)) openSale();
+});
 
 function bindPage(){
  $("newSale")?.addEventListener("click",openSale);$("qSale")?.addEventListener("click",openSale);
