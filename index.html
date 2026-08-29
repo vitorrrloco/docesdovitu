@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.1.0</title>
+<title>DOCES DO VITU 1.1.1</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -84,8 +84,26 @@ button,input,select{font:inherit}button{border:0;-webkit-tap-highlight-color:tra
   .nav:before{display:none}
 }
 </style>
+
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="DOCES DO VITU">
+
+<style>
+#brandSplash{position:fixed;inset:0;z-index:99999;background:#faf4ee;display:flex;align-items:center;justify-content:center;transition:opacity .28s ease}
+#brandSplash img{width:min(72vw,360px);max-height:55vh;object-fit:contain;border-radius:24px}
+#brandSplash.hide{opacity:0;pointer-events:none}
+@media(min-width:900px){#brandSplash img{width:300px}}
+</style>
 </head>
 <body>
+<div id="brandSplash" aria-label="DOCES DO VITU">
+  <img src="logo.png" alt="Logo Doces do Vitu">
+</div>
+
 <div id="login">
  <div class="login-card">
   <div class="logo"><div><div class="candy">🍫</div><b>DOCES DO VITU</b><small>vendas • estoque • recebimentos</small></div></div>
@@ -100,7 +118,7 @@ button,input,select{font:inherit}button{border:0;-webkit-tap-highlight-color:tra
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.1.0</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.1.1</small></div></div>
   <button class="top-action" id="quickSale" aria-label="Nova venda">＋</button>
  </header>
  <main class="view" id="view"></main>
@@ -360,6 +378,15 @@ function openReceivables(){
  openModal("A receber",`<div class="list">${rows.map(c=>`<div class="item" data-pay-client="${c.id}"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valores pendentes</small></div><div class="item-right"><b class="pending">${money(c.pending)}</b></div></div>`).join("")||'<div class="empty">Ninguém com valor pendente. 🎉</div>'}</div>`);
  document.querySelectorAll("[data-pay-client]").forEach(x=>x.onclick=()=>{let c=data.clients.find(c=>c.id===x.dataset.payClient);closeModal();openPaymentForClient(c)})
 }
+</script>
+
+<script>
+window.addEventListener("load",()=>{
+  const s=document.getElementById("brandSplash");
+  if(!s)return;
+  setTimeout(()=>s.classList.add("hide"),350);
+  setTimeout(()=>s.remove(),700);
+});
 </script>
 </body>
 </html>
