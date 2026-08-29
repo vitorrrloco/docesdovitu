@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU</title>
+<title>DOCES DO VITU 1.0.1</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -24,8 +24,8 @@ button,input,select{font:inherit}button{border:0;-webkit-tap-highlight-color:tra
 .logo small{display:block;text-align:center;color:var(--brown);font-weight:700;margin-top:5px}
 .login-card h1{font-size:27px;margin:0 0 6px}.login-card p{color:var(--muted);margin:0 0 20px}
 .field{margin-bottom:13px}.field label{display:block;font-size:13px;font-weight:800;margin:0 0 6px;color:var(--dark2)}
-.field input,.field select{width:100%;height:54px;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 14px;outline:none;color:var(--text)}
-.field input:focus,.field select:focus{border-color:var(--brown);box-shadow:0 0 0 4px #8a56381a}
+.field input,.field select,.field textarea{width:100%;height:54px;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 14px;outline:none;color:var(--text)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brown);box-shadow:0 0 0 4px #8a56381a}
 .primary{width:100%;min-height:54px;border-radius:15px;background:var(--dark);color:#fff;font-weight:800}
 .secondary{background:var(--cream2);color:var(--dark);font-weight:800;border-radius:14px;padding:13px 16px}
 #loginMsg{min-height:22px;text-align:center;color:var(--red);font-size:13px;margin-top:10px}
@@ -71,7 +71,7 @@ button,input,select{font:inherit}button{border:0;-webkit-tap-highlight-color:tra
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.0.1</small></div></div>
   <button class="top-action" id="quickSale" aria-label="Nova venda">＋</button>
  </header>
  <main class="view" id="view"></main>
@@ -175,14 +175,14 @@ function sales(){
  <div class="tabs"><button class="active" data-sales-filter="all">Todas</button><button data-sales-filter="paid">Pagas</button><button data-sales-filter="partial">Parciais</button><button data-sales-filter="pending">Pendentes</button></div>
  <div class="table-wrap"><table><thead><tr><th>Data</th><th>Horário</th><th>Cliente</th><th>Produto</th><th>Qtd.</th><th>Total</th><th>Status</th></tr></thead><tbody id="salesBody">${rows.map(s=>saleRow(s)).join("")||'<tr><td colspan="7">Nenhuma venda.</td></tr>'}</tbody></table></div></div>`
 }
-function saleRow(s){let st=status(s.total,s.paid),d=dt(s.createdAt);return `<tr data-status="${st.toLowerCase()}" data-sale="${s.id}"><td>${d?d.toLocaleDateString("pt-BR"):"-"}</td><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(s.clientName||"Balcão")}</td><td>${esc(s.items?.map(i=>i.name).join(", ")||"-")}</td><td>${s.items?.reduce((a,i)=>a+Number(i.qty||0),0)||0}</td><td>${money(s.total)}</td><td class="${statusClass(st)}">${st}</td></tr>`}
+function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==="Parcial"?"partial":"pending",d=dt(s.createdAt);return `<tr data-status="${filter}" data-sale="${s.id}"><td>${d?d.toLocaleDateString("pt-BR"):"-"}</td><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(s.clientName||"Balcão")}</td><td>${esc(s.items?.map(i=>i.name).join(", ")||"-")}</td><td>${s.items?.reduce((a,i)=>a+Number(i.qty||0),0)||0}</td><td>${money(s.total)}</td><td class="${statusClass(st)}">${st}</td></tr>`}
 
 function clients(){
  return `<div class="page"><div class="head"><div><h1>Clientes</h1><p>Compras e valores de cada pessoa</p></div><button class="top-action" id="newClient">＋</button></div>
  <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
-function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div></div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><button class="top-action" id="newProduct">＋</button></div>
@@ -230,8 +230,17 @@ function openSale(){
 function openClient(c){
  const ss=data.sales.filter(s=>s.clientId===c.id).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
  const total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div><div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
+ openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div>${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:12px">💸 Cobrar ${money(pending)}</button>`:""}<div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
  $("registerFromClient").onclick=()=>openPaymentForClient(c);
+ if($("chargeClientModal"))$("chargeClientModal").onclick=()=>chargeClient(c);
+}
+function openCharge(c){
+ const pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ if(pending<=0){toast("Esse cliente não possui valor pendente.");return}
+ const text=`Opa, ${c.name}, os doces ficaram ${money(pending)}, Pix: vitorbernardo015@gmail.com`;
+ openModal("Cobrar",`<div class="form"><div class="item"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valor pendente</small></div><div class="item-right"><b class="pending">${money(pending)}</b></div></div><div class="field" style="margin-top:12px"><label>Mensagem</label><textarea id="chargeText" style="width:100%;min-height:105px;border:1px solid var(--line);border-radius:15px;padding:12px;resize:none;background:#fff;color:var(--text)">${esc(text)}</textarea></div><div class="actions"><button class="secondary" id="copyCharge">Copiar</button><button class="primary" id="sendCharge">Abrir WhatsApp</button></div></div>`);
+ $("copyCharge").onclick=async()=>{try{await navigator.clipboard.writeText($("chargeText").value);toast("Mensagem copiada!")}catch(e){$("chargeText").select();document.execCommand("copy");toast("Mensagem copiada!")}};
+ $("sendCharge").onclick=()=>window.open("https://wa.me/?text="+encodeURIComponent($("chargeText").value),"_blank");
 }
 function openPaymentForClient(c){
  const pendingSales=data.sales.filter(s=>s.clientId===c.id&&Number(s.total||0)>Number(s.paid||0));
@@ -264,20 +273,26 @@ function openClientForm(){
 function openAnalysis(){
  const periods={hour:"Hoje por horário",day:"Últimos 7 dias",week:"Últimas semanas",month:"Este mês"};
  openModal("Análise de vendas",`<div class="tabs" id="analysisTabs"><button class="active" data-a="hour">Horário</button><button data-a="day">Dia</button><button data-a="week">Semana</button><button data-a="month">Mês</button></div><div id="analysisContent"></div>`);
- const renderA=kind=>{document.querySelectorAll("#analysisTabs button").forEach(b=>b.classList.toggle("active",b.dataset.a===kind));$("analysisContent").innerHTML=analysisHtml(kind)};
+ const renderA=kind=>{document.querySelectorAll("#analysisTabs button").forEach(b=>b.classList.toggle("active",b.dataset.a===kind));$("analysisContent").innerHTML=analysisHtml(kind,periods[kind])};
  document.querySelectorAll("#analysisTabs button").forEach(b=>b.onclick=()=>renderA(b.dataset.a));renderA("hour");
 }
+function saleValueInRange(start,end){return data.sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=start&&d<end}).reduce((a,s)=>a+Number(s.total||0),0)}
 function analysisHtml(kind){
- const sales=data.sales, nowD=now(), points=[];
- if(kind==="hour"){for(let h=0;h<24;h++)points.push({label:String(h).padStart(2,"0")+"h",value:sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===nowD.toDateString()&&d.getHours()===h}).reduce((a,s)=>a+Number(s.total||0),0)})}
- if(kind==="day"){for(let i=6;i>=0;i--){let d=new Date(nowD);d.setHours(0,0,0,0);d.setDate(d.getDate()-i);points.push({label:d.toLocaleDateString("pt-BR",{weekday:"short"}).replace(".",""),value:sales.filter(s=>{let x=dt(s.createdAt);return x&&x.toDateString()===d.toDateString()}).reduce((a,s)=>a+Number(s.total||0),0)})}}
- if(kind==="week"){for(let i=7;i>=0;i--){let end=new Date(nowD);end.setHours(23,59,59,999);end.setDate(end.getDate()-i*7);let start=new Date(end);start.setDate(start.getDate()-6);points.push({label:(start.getDate())+"/"+(start.getMonth()+1),value:sales.filter(s=>{let x=dt(s.createdAt);return x&&x>=start&&x<=end}).reduce((a,s)=>a+Number(s.total||0),0)})}}
- if(kind==="month"){let days=new Date(nowD.getFullYear(),nowD.getMonth()+1,0).getDate();for(let d=1;d<=days;d++){let date=new Date(nowD.getFullYear(),nowD.getMonth(),d);points.push({label:String(d),value:sales.filter(s=>{let x=dt(s.createdAt);return x&&x.toDateString()===date.toDateString()}).reduce((a,s)=>a+Number(s.total||0),0)})}}
- const total=points.reduce((a,p)=>a+p.value,0),max=Math.max(...points.map(p=>p.value),1),w=600,h=190,pad=18;
- const pts=points.map((p,i)=>`${pad+i*(w-2*pad)/Math.max(points.length-1,1)},${h-pad-(p.value/max)*(h-2*pad)}`).join(" ");
- const labels=points.map((p,i)=>i%Math.max(1,Math.ceil(points.length/8))===0?`<text x="${pad+i*(w-2*pad)/Math.max(points.length-1,1)}" y="${h-2}" text-anchor="middle">${esc(p.label)}</text>`:"").join("");
- return `<div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">${periods[kind]}</small><div style="margin-top:3px">Total vendido</div></div><strong>${money(total)}</strong></div><div class="chart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline class="line" points="${pts}"/>${points.map((p,i)=>{let [x,y]=`${pad+i*(w-2*pad)/Math.max(points.length-1,1)},${h-pad-(p.value/max)*(h-2*pad)}`.split(",");return `<circle class="dot" cx="${x}" cy="${y}" r="3"/>`}).join("")}${labels}</svg></div></div>`;
+ const periods={hour:"Hoje por horário",day:"Últimos 7 dias",week:"Últimas 8 semanas",month:"Este mês"};
+ const sales=data.sales||[], nowD=now(), points=[];
+ const sumBetween=(s,e)=>sales.filter(v=>{const x=dt(v.createdAt);return x&&x>=s&&x<=e}).reduce((a,v)=>a+Number(v.total||0),0);
+ if(kind==="hour")for(let h=0;h<24;h++){let s=new Date(nowD);s.setHours(h,0,0,0);let e=new Date(s);e.setHours(h,59,59,999);points.push({label:String(h).padStart(2,"0")+"h",value:sumBetween(s,e)})}
+ if(kind==="day")for(let i=6;i>=0;i--){let s=new Date(nowD);s.setHours(0,0,0,0);s.setDate(s.getDate()-i);let e=new Date(s);e.setHours(23,59,59,999);points.push({label:s.toLocaleDateString("pt-BR",{weekday:"short"}).replace(".",""),value:sumBetween(s,e)})}
+ if(kind==="week"){let base=new Date(nowD);base.setHours(0,0,0,0);base.setDate(base.getDate()-((base.getDay()+6)%7));for(let i=7;i>=0;i--){let s=new Date(base);s.setDate(s.getDate()-i*7);let e=new Date(s);e.setDate(e.getDate()+6);e.setHours(23,59,59,999);points.push({label:s.getDate()+"/"+(s.getMonth()+1),value:sumBetween(s,e)})}}
+ if(kind==="month"){let days=new Date(nowD.getFullYear(),nowD.getMonth()+1,0).getDate();for(let d=1;d<=days;d++){let s=new Date(nowD.getFullYear(),nowD.getMonth(),d);s.setHours(0,0,0,0);let e=new Date(s);e.setHours(23,59,59,999);points.push({label:String(d),value:sumBetween(s,e)})}}
+ const total=points.reduce((a,p)=>a+p.value,0),max=Math.max(...points.map(p=>p.value),1),w=600,h=190,pad=18,den=Math.max(points.length-1,1);
+ const coords=points.map((p,i)=>({x:pad+i*(w-2*pad)/den,y:h-pad-(p.value/max)*(h-2*pad)}));
+ const pts=coords.map(p=>`${p.x},${p.y}`).join(" "),step=Math.max(1,Math.ceil(points.length/8));
+ const labels=points.map((p,i)=>i%step===0?`<text x="${coords[i].x}" y="${h-2}" text-anchor="middle">${esc(p.label)}</text>`:"").join("");
+ const dots=coords.map((p,i)=>`<circle class="dot" cx="${p.x}" cy="${p.y}" r="3"><title>${esc(points[i].label)}: ${money(points[i].value)}</title></circle>`).join("");
+ return `<div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">${periods[kind]}</small><div style="margin-top:3px">Total vendido</div></div><strong>${money(total)}</strong></div><div class="chart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline class="line" points="${pts}"/>${dots}${labels}</svg></div></div>`;
 }
+
 function openModal(title,content){$("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><h2>${title}</h2><button class="close" id="modalClose">×</button></div>${content}</div></div>`;$("modalClose").onclick=closeModal}
 function closeModal(){$("modalRoot").innerHTML=""}
 
@@ -290,7 +305,9 @@ function bindPage(){
  $("logout")?.addEventListener("click",()=>signOut(auth));
  $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
  $("stockSearch")?.addEventListener("input",e=>{$("stockList").innerHTML=productRows(data.products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())))});
- document.querySelectorAll("[data-client]").forEach(x=>x.onclick=()=>openClient(data.clients.find(c=>c.id===x.dataset.client)));
+ document.querySelectorAll("[data-client]").forEach(x=>x.onclick=e=>{if(e.target.closest(".charge-btn"))return;openClient(data.clients.find(c=>c.id===x.dataset.client))});
+ document.querySelectorAll("[data-charge]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.charge);if(c)openCharge(c)});
+ document.querySelectorAll("[data-charge-client]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.chargeClient);if(c)chargeClient(c)});
  document.querySelectorAll("[data-product]").forEach(x=>x.onclick=()=>openProduct(data.products.find(p=>p.id===x.dataset.product)));
  document.querySelectorAll("[data-sale]").forEach(x=>x.onclick=()=>openSaleDetail(data.sales.find(s=>s.id===x.dataset.sale)));
  document.querySelectorAll("[data-sales-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-sales-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll("#salesBody tr").forEach(r=>{let f=b.dataset.salesFilter; r.style.display=f==="all"||r.dataset.status===f?"":"none"})});
