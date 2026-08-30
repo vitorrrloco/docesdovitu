@@ -270,7 +270,7 @@ function stock(){
  <input class="search" id="stockSearch" placeholder="🔎 Procurar produto">
  <div class="list" id="stockList">${productRows(data.products)}</div></div>`
 }
-function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}${p.supplier?` • ${esc(p.supplier)}`:""}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${Number(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
+function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}${p.supplier?` • ${esc(p.supplier)}`:""}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${Number(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small><div style="display:flex;gap:5px;margin-top:7px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="secondary stock-remove-btn" data-remove-stock="${p.id}" style="padding:7px 8px;font-size:10px">➖ Remover</button><button type="button" class="secondary stock-delete-btn" data-delete-product="${p.id}" style="padding:7px 8px;font-size:10px;color:#a43f37">🗑️</button></div></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
 
 function finance(){
  const sales=data.sales||[], payments=data.payments||[], products=data.products||[], purchases=data.purchases||[], nowD=now();
@@ -451,6 +451,25 @@ function openPaymentForClient(c){
   }catch(e){toast("Não foi possível registrar o pagamento.")}
  }
 }
+function openRemoveStock(p){
+ if(!p)return;
+ const current=Number(p.stock||0);
+ openModal("Remover do estoque",`<div class="form"><div class="section-title"><b>📦 ${esc(p.name)}</b><span>${current} un.</span></div><div class="field"><label>Quantidade a remover</label><input id="removeQty" type="number" min="1" max="${current}" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="field"><label>Motivo (opcional)</label><input id="removeReason" placeholder="Ex.: produto danificado"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmRemoveStock">Remover</button></div></div>`);
+ $("cancelModal").onclick=closeModal;
+ $("confirmRemoveStock").onclick=async()=>{
+  const qty=Math.floor(Number($("removeQty").value)||0),reason=$("removeReason").value.trim();
+  if(qty<1)return toast("Informe uma quantidade válida.");
+  if(qty>current)return toast("A quantidade não pode ser maior que o estoque atual.");
+  try{await updateDoc(doc(col("products"),p.id),{stock:current-qty});await logAction("Ajuste de estoque",`-${qty} ${p.name} • estoque ${current} → ${current-qty}${reason?` • ${reason}`:""}`);closeModal();toast("Estoque atualizado!");}catch(e){console.error(e);toast("Erro ao remover do estoque: "+(e.code||"verifique a conexão."));}
+ };
+}
+async function deleteProductConfirm(p){
+ if(!p)return;
+ openModal("Excluir produto",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Excluir ${esc(p.name)}?</b><br><small>O produto e o estoque atual serão removidos do cadastro. As vendas antigas e o histórico do Log não serão apagados.</small></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmDeleteProduct" style="background:#b5483f">Excluir produto</button></div></div>`);
+ $("cancelModal").onclick=closeModal;
+ $("confirmDeleteProduct").onclick=async()=>{try{await logAction("Produto excluído",`${p.name} • estoque anterior ${Number(p.stock||0)} un.`);await deleteDoc(doc(col("products"),p.id));closeModal();toast("Produto excluído!");}catch(e){console.error(e);toast("Erro ao excluir produto: "+(e.code||"verifique a conexão."));}};
+}
+
 function openProduct(p=null){
  const currentStock=Number(p?.stock||0);
  const currentCost=Number(p?.cost||0);
@@ -555,7 +574,9 @@ function bindPage(){
  document.querySelectorAll("[data-client]").forEach(x=>x.onclick=e=>{if(e.target.closest(".charge-btn"))return;openClient(data.clients.find(c=>c.id===x.dataset.client))});
  document.querySelectorAll("[data-charge]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.charge);if(c)openCharge(c)});
  document.querySelectorAll("[data-charge-client]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.chargeClient);if(c)chargeClient(c)});
- document.querySelectorAll("[data-product]").forEach(x=>x.onclick=()=>openProduct(data.products.find(p=>p.id===x.dataset.product)));
+ document.querySelectorAll("[data-product]").forEach(x=>x.onclick=e=>{if(e.target.closest("[data-remove-stock]")||e.target.closest("[data-delete-product]"))return;openProduct(data.products.find(p=>p.id===x.dataset.product))});
+ document.querySelectorAll("[data-remove-stock]").forEach(x=>x.onclick=e=>{e.stopPropagation();openRemoveStock(data.products.find(p=>p.id===x.dataset.removeStock))});
+ document.querySelectorAll("[data-delete-product]").forEach(x=>x.onclick=e=>{e.stopPropagation();deleteProductConfirm(data.products.find(p=>p.id===x.dataset.deleteProduct))});
  document.querySelectorAll("[data-sale]").forEach(x=>x.onclick=()=>openSaleDetail(data.sales.find(s=>s.id===x.dataset.sale)));
  document.querySelectorAll("[data-sales-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-sales-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll("#salesBody tr").forEach(r=>{let f=b.dataset.salesFilter; r.style.display=f==="all"||r.dataset.status===f?"":"none"})});
  $("payments")?.addEventListener("click",()=>openReceivables());
