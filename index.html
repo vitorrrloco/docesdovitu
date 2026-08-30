@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.1.1</title>
+<title>DOCES DO VITU 1.1.2</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -281,11 +281,24 @@ function openClient(c){
  $("registerFromClient").onclick=()=>openPaymentForClient(c);
  if($("chargeClientModal"))$("chargeClientModal").onclick=()=>chargeClient(c);
 }
+function pixPayload(amount){
+ const value=Number(amount||0).toFixed(2);
+ const payload=`00020126480014br.gov.bcb.pix0126vitorbernardo015@gmail.com5204000053039865404${value}5802BR5901N6001C62070503***6304`;
+ let crc=0xFFFF;
+ for(let i=0;i<payload.length;i++){
+   crc^=payload.charCodeAt(i)<<8;
+   for(let j=0;j<8;j++) crc=(crc&0x8000)?((crc<<1)^0x1021)&0xFFFF:(crc<<1)&0xFFFF;
+ }
+ return payload+crc.toString(16).toUpperCase().padStart(4,'0');
+}
+function chargeClient(c){openCharge(c)}
 function openCharge(c){
  const pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
  if(pending<=0){toast("Esse cliente não possui valor pendente.");return}
- const text=`Opa, ${c.name}, os doces ficaram ${money(pending)}, Pix: vitorbernardo015@gmail.com`;
- openModal("Cobrar",`<div class="form"><div class="item"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valor pendente</small></div><div class="item-right"><b class="pending">${money(pending)}</b></div></div><div class="field" style="margin-top:12px"><label>Mensagem</label><textarea id="chargeText" style="width:100%;min-height:105px;border:1px solid var(--line);border-radius:15px;padding:12px;resize:none;background:#fff;color:var(--text)">${esc(text)}</textarea></div><div class="actions"><button class="secondary" id="copyCharge">Copiar</button><button class="primary" id="sendCharge">Abrir WhatsApp</button></div></div>`);
+ const pix=pixPayload(pending);
+ const text=`Opa, ${c.name}, os doces ficaram ${money(pending)}. Pix: vitorbernardo015@gmail.com, ou pode copiar ${pix}`;
+ openModal("Cobrar",`<div class="form"><div class="item"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valor pendente</small></div><div class="item-right"><b class="pending">${money(pending)}</b></div></div><div class="field" style="margin-top:12px"><label>Mensagem de cobrança</label><textarea id="chargeText" style="width:100%;min-height:135px;border:1px solid var(--line);border-radius:15px;padding:12px;resize:none;background:#fff;color:var(--text)">${esc(text)}</textarea></div><div class="field"><label>PIX Copia e Cola</label><textarea id="pixCode" readonly style="width:100%;min-height:105px;border:1px solid var(--line);border-radius:15px;padding:12px;resize:none;background:#fff;color:var(--text);font-size:11px">${pix}</textarea></div><div class="actions"><button class="secondary" id="copyPix">Copiar PIX</button><button class="secondary" id="copyCharge">Copiar mensagem</button></div><button class="primary" id="sendCharge" style="margin-top:8px">Abrir WhatsApp</button></div>`);
+ $("copyPix").onclick=async()=>{try{await navigator.clipboard.writeText(pix);toast("PIX copiado!")}catch(e){$("pixCode").select();document.execCommand("copy");toast("PIX copiado!")}};
  $("copyCharge").onclick=async()=>{try{await navigator.clipboard.writeText($("chargeText").value);toast("Mensagem copiada!")}catch(e){$("chargeText").select();document.execCommand("copy");toast("Mensagem copiada!")}};
  $("sendCharge").onclick=()=>window.open("https://wa.me/?text="+encodeURIComponent($("chargeText").value),"_blank");
 }
