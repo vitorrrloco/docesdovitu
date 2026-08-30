@@ -1,0 +1,22 @@
+DOCES DO VITU - V1.2.0 FINAL
+
+Correções e melhorias:
+- Login continua com e-mail + senha pelo Firebase Authentication.
+- Usuário atual: Vitor.
+- Cadastro de cliente corrigido e independente do Log de atividades.
+- Erro do cadastro de cliente agora informa melhor a causa quando o Firebase recusar a operação.
+- Log de atividades acessível em Conta mesmo vazio.
+- Log opcional: falha de leitura/gravação do log não bloqueia clientes, vendas, estoque ou financeiro.
+- Registro de ações de vendas, estoque, clientes, pagamentos e produtos.
+- Pesquisa de cliente na Nova venda para PC e celular.
+- Correção do toque/seleção da pesquisa de cliente.
+- Campos ajustados para evitar zoom automático no celular.
+- Aba Financeiro com faturamento, lucro, margem, custos, recebimentos, pendências e indicadores.
+- Tela Financeiro sem rolagem horizontal desnecessária.
+- Cadastro de cliente usa “Nome do cliente”.
+- Reset dos dados do negócio protegido e separado do login/PIX.
+- PIX dinâmico usando vitorbernardo015@gmail.com.
+- Apenas uma implementação principal do sistema no index.html para evitar conflito entre versões de app.js e index.html.
+
+Observação:
+O histórico do Log usa a coleção logs no caminho do usuário no Firestore. Para gravar e ler o histórico, as regras do Firestore precisam permitir essa coleção. Mesmo sem essa permissão, as operações principais não devem ser bloqueadas pelo Log.
