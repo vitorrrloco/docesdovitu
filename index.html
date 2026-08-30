@@ -151,7 +151,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
@@ -164,7 +164,7 @@ const firebaseConfig={
 };
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
-let uid=null,currentUserName="Vitor",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[]},page="home";
+let uid=null,currentUserName="Vitor",currentUserEmail="",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[]},page="home";
 
 const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -182,13 +182,24 @@ $("createBtn").onclick=async()=>{try{msg("Criando conta...",true);await createUs
 $("password").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginBtn").click()});
 function firebaseError(e){return ({ "auth/invalid-credential":"E-mail ou senha incorretos.","auth/invalid-email":"Digite um e-mail válido.","auth/email-already-in-use":"Esse e-mail já possui uma conta.","auth/weak-password":"A senha precisa ter pelo menos 6 caracteres."}[e.code]||"Não foi possível entrar. Verifique sua conexão e os dados.")}
 
-onAuthStateChanged(auth,user=>{
+onAuthStateChanged(auth,async user=>{
  unsubs.forEach(u=>u());unsubs=[];
  if(!user){uid=null;$("app").classList.add("hidden");$("login").classList.remove("hidden");return}
- uid=user.uid;$("login").classList.add("hidden");$("app").classList.remove("hidden");subscribe();go("home");logAction("Login","Entrou no sistema");
+ uid=user.uid;currentUserEmail=(user.email||"").toLowerCase();currentUserName=currentUserEmail==="xlocox000@gmail.com"?"Eduardo":currentUserEmail==="viitorcontas@gmail.com"?"Vitor":"Vitor";$("currentUser").textContent="👤 "+currentUserName;$("login").classList.add("hidden");$("app").classList.remove("hidden");try{await migrateOwnDataToShared()}catch(e){console.warn("Migração para base compartilhada não concluída",e)}subscribe();go("home");logAction("Login","Entrou no sistema");
 });
 
-function col(name){return collection(db,"users",uid,name)}
+function col(name){return collection(db,"businesses","docesDoVitu",name)}
+function oldCol(name){return collection(db,"users",uid,name)}
+async function migrateOwnDataToShared(){
+ const names=["products","clients","sales","payments","purchases","logs"];
+ for(const name of names){
+  const shared=await getDocs(col(name));
+  if(!shared.empty) continue;
+  const old=await getDocs(oldCol(name));
+  if(old.empty) continue;
+  await Promise.all(old.docs.map(d=>setDoc(doc(col(name),d.id),d.data())));
+ }
+}
 async function logAction(action,details=""){
  try{await addDoc(col("logs"),{action,details,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});}
  catch(e){console.warn("Log não salvo",e)}
