@@ -191,6 +191,8 @@ onAuthStateChanged(auth,async user=>{
 function col(name){return collection(db,"businesses","docesDoVitu",name)}
 function oldCol(name){return collection(db,"users",uid,name)}
 async function migrateOwnDataToShared(){
+ const marker=`docesDoVituSharedMigration_${uid}`;
+ if(localStorage.getItem(marker)==="done") return;
  const names=["products","clients","sales","payments","purchases","logs"];
  for(const name of names){
   const shared=await getDocs(col(name));
@@ -199,13 +201,14 @@ async function migrateOwnDataToShared(){
   if(old.empty) continue;
   await Promise.all(old.docs.map(d=>setDoc(doc(col(name),d.id),d.data())));
  }
+ localStorage.setItem(marker,"done");
 }
 async function logAction(action,details=""){
  try{await addDoc(col("logs"),{action,details,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});}
  catch(e){console.warn("Log não salvo",e)}
 }
 function subscribe(){
- ["products","clients","sales","payments","purchases","logs"].forEach(name=>{
+ ["products","clients","sales","payments","purchases"].forEach(name=>{
   const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render()},()=>toast("Não foi possível sincronizar "+name+"."));
   unsubs.push(u);
  });
@@ -539,6 +542,19 @@ async function resetBusinessData(){
   closeModal();toast("Dados do negócio resetados!");
  }catch(e){toast("Não foi possível resetar os dados. Tente novamente.")}
 }
+async function resetActivityLog(){
+ try{
+  const snap=await getDocs(col("logs"));
+  if(!snap.empty) await Promise.all(snap.docs.map(d=>deleteDoc(doc(col("logs"),d.id))));
+  data.logs=[];
+  closeModal();
+  toast("Log de atividades resetado!");
+ }catch(e){
+  console.error(e);
+  toast("Não foi possível resetar o log. Verifique as permissões do Firebase.");
+ }
+}
+
 function openAccount(){
  openModal("Conta",`<div class="form">
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
@@ -549,6 +565,7 @@ function openAccount(){
     <b style="color:#a9463b">Zona de dados</b>
     <p style="margin:5px 0 12px;color:var(--muted);font-size:12px;line-height:1.45">Apaga produtos, estoque, clientes, vendas e pagamentos desta conta. O login e a configuração do PIX permanecem.</p>
     <button class="secondary" id="resetBusiness" style="width:100%;color:#a9463b;border-color:#e6bdb7">🗑️ Resetar dados do negócio</button>
+    <button class="secondary" id="resetLog" style="width:100%;margin-top:8px;color:#a9463b;border-color:#e6bdb7">📋 Resetar log de atividades</button>
    </div>
   </details>
  </div>`);
@@ -563,9 +580,28 @@ function openAccount(){
   $("resetConfirm").oninput=e=>$("confirmReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR";
   $("confirmReset").onclick=resetBusinessData;
  };
+ $("resetLog").onclick=()=>{
+  openModal("Resetar log?",`<div class="form">
+   <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga todo o histórico.</b><br><small>Vendas, estoque e clientes não serão apagados. Somente o Log de atividades será excluído.</small></div>
+   <div class="field"><label>Digite RESETAR LOG para confirmar</label><input id="resetLogConfirm" autocomplete="off" placeholder="RESETAR LOG"></div>
+   <div class="actions"><button class="secondary" id="cancelLogReset">Cancelar</button><button class="primary" id="confirmLogReset" disabled>Apagar log</button></div>
+  </div>`);
+  $("cancelLogReset").onclick=closeModal;
+  $("resetLogConfirm").oninput=e=>$("confirmLogReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR LOG";
+  $("confirmLogReset").onclick=resetActivityLog;
+ };
 }
-function openActivityLog(){
- const rows=(data.logs||[]).slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
+async function openActivityLog(){
+ let rows=[];
+ try{
+  const snap=await getDocs(col("logs"));
+  rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+  data.logs=rows;
+ }catch(e){
+  console.error(e);
+  toast("Não foi possível carregar o log. Verifique as permissões do Firebase.");
+ }
+ rows=rows.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
  const types=[...new Set(rows.map(x=>x.action).filter(Boolean))];
  openModal("Log de atividades",`<div class="form">
   <div class="row"><div class="field"><label>Usuário</label><select id="logUser"><option value="all">Todos</option>${[...new Set(rows.map(x=>x.createdByName||"Desconhecido"))].map(n=>`<option>${esc(n)}</option>`).join("")}</select></div><div class="field"><label>Ação</label><select id="logAction"><option value="all">Todas</option>${types.map(n=>`<option>${esc(n)}</option>`).join("")}</select></div></div>
