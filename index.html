@@ -151,7 +151,7 @@ const firebaseConfig={
 };
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
-let uid=null,unsubs=[],data={products:[],clients:[],sales:[],payments:[]},page="home";
+let uid=null,currentUserName="Vitor",unsubs=[],data={products:[],clients:[],sales:[],payments:[],logs:[]},page="home";
 
 const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
