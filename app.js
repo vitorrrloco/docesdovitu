@@ -1,141 +1,4 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.1.7</title>
-<style>
-:root{
- --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
- --cream:#fbf3e8;--cream2:#f3e3d1;--white:#fffdf9;--line:#ead7c4;
- --text:#392419;--muted:#8a7566;--green:#2d805b;--red:#b5483f;--orange:#b66b22;
- --shadow:0 8px 25px rgba(74,40,25,.08);--r:20px
-}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;background:var(--cream);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Arial,sans-serif}
-body{overflow:hidden}
-button,input,select,textarea{font:inherit}
-input,select,textarea{font-size:16px!important}
-input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.hidden{display:none!important}
-#login{height:100dvh;display:grid;place-items:center;padding:20px;background:linear-gradient(160deg,#f8ead9,#fffaf3)}
-.login-card{width:min(100%,420px);background:var(--white);border:1px solid var(--line);border-radius:30px;padding:25px;box-shadow:0 20px 60px #4a28191c}
-.logo{height:145px;border-radius:24px;background:var(--cream);display:grid;place-items:center;margin-bottom:22px;border:1px solid var(--line)}
-.logo .candy{font-size:65px}.logo b{display:block;font-size:25px;letter-spacing:2px;text-align:center;color:var(--dark)}
-.logo small{display:block;text-align:center;color:var(--brown);font-weight:700;margin-top:5px}
-.login-card h1{font-size:27px;margin:0 0 6px}.login-card p{color:var(--muted);margin:0 0 20px}
-.field{margin-bottom:13px}.field label{display:block;font-size:13px;font-weight:800;margin:0 0 6px;color:var(--dark2)}
-.field input,.field select,.field textarea{width:100%;height:54px;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 14px;outline:none;color:var(--text)}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brown);box-shadow:0 0 0 4px #8a56381a}
-.primary{width:100%;min-height:54px;border-radius:15px;background:var(--dark);color:#fff;font-weight:800}
-.secondary{background:var(--cream2);color:var(--dark);font-weight:800;border-radius:14px;padding:13px 16px}
-#loginMsg{min-height:22px;text-align:center;color:var(--red);font-size:13px;margin-top:10px}
-.app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
-.top{height:74px;flex:0 0 74px;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:8px 15px}
-.brand{display:flex;align-items:center;gap:10px}.brand-mark{width:48px;height:48px;border-radius:15px;background:var(--dark);display:grid;place-items:center;color:#fff;font-size:25px}
-.brand b{font-size:17px;display:block;letter-spacing:.4px}.brand small{font-size:10px;color:var(--muted);display:block;margin-top:2px}
-.top-action{width:46px;height:46px;border-radius:15px;background:var(--cream2);color:var(--dark);font-size:25px}
-.view{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 14px calc(100px + env(safe-area-inset-bottom))}
-.page{width:100%;max-width:720px;margin:auto}.head{display:flex;align-items:end;justify-content:space-between;margin:2px 2px 15px}.head h1{margin:0;font-size:28px;letter-spacing:-.5px}.head p{margin:4px 0 0;color:var(--muted);font-size:13px}
-.hero{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff;border-radius:25px;padding:19px;margin-bottom:13px;box-shadow:var(--shadow);display:flex;justify-content:space-between;gap:10px}.hero small{opacity:.72}.hero h2{font-size:28px;margin:5px 0}.hero p{margin:0;opacity:.78;font-size:12px}.hero .emoji{font-size:42px;align-self:center}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.stat{background:var(--white);border:1px solid var(--line);border-radius:19px;padding:15px;min-height:105px;box-shadow:var(--shadow)}.stat small{display:block;color:var(--muted);font-size:11px}.stat strong{display:block;font-size:22px;margin-top:7px}.stat .green{color:var(--green)}.stat .red{color:var(--red)}
-.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:19px}.quick button{background:var(--white);border:1px solid var(--line);border-radius:17px;min-height:68px;text-align:left;padding:12px;box-shadow:0 4px 14px #4a281908}.quick b{display:block;font-size:13px}.quick span{font-size:22px;float:left;margin-right:9px}
-.section{margin-top:15px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:0 2px 9px}.section-title b{font-size:17px}.link{background:none;color:var(--brown);font-size:12px;font-weight:800}
-.list{display:grid;gap:9px}.item{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;align-items:center;gap:10px}.avatar{width:43px;height:43px;flex:0 0 43px;border-radius:14px;background:var(--cream2);display:grid;place-items:center;font-size:19px}.item-main{min-width:0;flex:1}.item-main b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item-main small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.item-right{text-align:right}.item-right b{display:block;font-size:13px}.status{font-size:9px;font-weight:800;margin-top:4px}.paid{color:var(--green)}.pending{color:var(--red)}.partial{color:var(--orange)}
-.client-results{position:relative;left:auto;right:auto;top:auto;z-index:10000;background:var(--white);border:1px solid var(--line);border-radius:15px;box-shadow:0 12px 30px #0002;max-height:240px;overflow:auto;padding:6px}.client-result{display:flex;flex-direction:column;align-items:flex-start;width:100%;background:transparent;color:var(--text);padding:11px 12px;border-radius:11px;text-align:left}.client-result:hover,.client-result:focus,.client-result.active{background:var(--cream2);outline:none}.client-result small{color:var(--muted);font-size:11px;margin-top:2px}.client-no-results{padding:12px;color:var(--muted);font-size:13px}.search{height:50px;width:100%;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 14px;outline:none;margin-bottom:10px}
-.toolbar{display:flex;gap:8px;margin-bottom:10px}.toolbar .search{margin:0;flex:1}.toolbar button{width:50px;border-radius:15px;background:var(--dark);color:#fff;font-size:24px}
-.form{background:var(--white);border:1px solid var(--line);border-radius:21px;padding:16px;margin-bottom:11px;box-shadow:var(--shadow)}.form h3{margin:0 0 13px;font-size:17px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions{display:flex;gap:8px;margin-top:11px}.actions button{flex:1;min-height:50px;border-radius:14px;font-weight:800}
-.table-wrap{overflow:auto;background:var(--white);border:1px solid var(--line);border-radius:19px;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;min-width:590px}th,td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:11px;text-align:left;white-space:nowrap}th{background:var(--cream2);color:var(--dark);font-size:10px;text-transform:uppercase}tr:last-child td{border-bottom:0}
-.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tabs button{flex:0 0 auto;background:var(--white);border:1px solid var(--line);color:var(--muted);padding:9px 13px;border-radius:13px;font-size:11px;font-weight:800}.tabs button.active{background:var(--dark);color:#fff;border-color:var(--dark)}
-.analysis-card{background:var(--white);border:1px solid var(--line);border-radius:21px;padding:15px;margin-bottom:12px;box-shadow:var(--shadow)}.analysis-head{display:flex;justify-content:space-between;align-items:end}.analysis-head b{font-size:17px}.analysis-head strong{font-size:21px;color:var(--dark)}.chart{height:220px;margin-top:12px;position:relative}.chart svg{width:100%;height:100%;overflow:visible}.chart text{font-size:9px;fill:var(--muted)}.line{fill:none;stroke:var(--dark);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.dot{fill:var(--caramel);stroke:var(--white);stroke-width:2}
-.finance-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}.finance-card{background:var(--white);border:1px solid var(--line);border-radius:19px;padding:15px;box-shadow:var(--shadow)}.finance-card small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}.finance-card strong{display:block;font-size:22px;margin-top:6px}.finance-card p{margin:5px 0 0;color:var(--muted);font-size:10px}.finance-positive{color:var(--green)}.finance-negative{color:var(--red)}.finance-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}.finance-actions button{min-height:58px}.more{display:grid;grid-template-columns:1fr 1fr;gap:10px}.more button{min-height:118px;background:var(--white);border:1px solid var(--line);border-radius:19px;padding:14px;text-align:left}.more .mi{font-size:28px;display:block;margin-bottom:9px}.more b{display:block;font-size:14px}.more small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
-.modal-bg{position:fixed;inset:0;background:#2b170f73;z-index:5000;display:flex;align-items:flex-end;pointer-events:auto}.modal{position:relative;z-index:1;pointer-events:auto;width:100%;max-width:620px;margin:auto auto 0;max-height:92dvh;overflow:auto;background:var(--white);border-radius:25px 25px 0 0;padding:17px 15px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px #0003}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.modal-head h2{margin:0;font-size:20px}.close{width:40px;height:40px;border-radius:13px;background:var(--cream2);font-size:22px;color:var(--dark)}
-.nav{height:82px;flex:0 0 calc(82px + env(safe-area-inset-bottom));padding:6px 5px env(safe-area-inset-bottom);background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:1000}.nav button{background:none;color:var(--muted);border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.nav .ni{font-size:24px;line-height:27px}.nav small{font-size:10px;font-weight:800}.nav .active{background:var(--cream2);color:var(--dark)}
-.toast{position:fixed;left:14px;right:14px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:9000;background:var(--dark);color:#fff;padding:13px;border-radius:15px;text-align:center;font-size:13px;box-shadow:0 10px 30px #0003}
-.empty{text-align:center;color:var(--muted);padding:30px 15px;background:var(--white);border:1px dashed var(--line);border-radius:18px;font-size:13px}
-@media(min-width:700px){.view{padding-left:24px;padding-right:24px}.nav{max-width:720px;width:100%;margin:0 auto;border-radius:22px 22px 0 0}.finance-grid{grid-template-columns:repeat(4,1fr)}}
-@media(max-width:370px){.view{padding-left:10px;padding-right:10px}.head h1{font-size:25px}.stats{gap:7px}.stat{padding:12px}.more{gap:8px}.more button{padding:12px}}
 
-/* ===== V1.1.0 RESPONSIVE UI ===== */
-@media (min-width: 900px){
-  body{background:#f3e3d1}
-  .app{display:grid;grid-template-columns:250px minmax(0,1fr);grid-template-rows:78px minmax(0,1fr);height:100dvh}
-  .top{grid-column:2;grid-row:1;height:auto;padding:10px 28px}
-  .view{grid-column:2;grid-row:2;padding:26px 32px 34px;overflow:auto}
-  .page{max-width:1240px}
-  .nav{grid-column:1;grid-row:1 / span 2;width:auto;height:auto;margin:0;border:0;border-right:1px solid var(--line);border-radius:0;padding:22px 12px;display:flex;flex-direction:column;gap:8px;background:var(--white)}
-  .nav:before{content:"🍫  DOCES DO VITU";font-size:16px;font-weight:900;color:var(--dark);padding:8px 12px 22px}
-  .nav button{width:100%;min-height:56px;flex:none;display:flex;flex-direction:row;justify-content:flex-start;gap:12px;padding:0 15px;border-radius:15px}
-  .nav .ni{font-size:23px;width:27px;text-align:center}.nav small{font-size:13px}
-  .nav .active{background:var(--cream2);color:var(--dark)}
-  .hero{padding:25px 28px}.hero h2{font-size:34px}
-  .stats{grid-template-columns:repeat(4,1fr);gap:14px}.stat{min-height:120px;padding:18px}.stat strong{font-size:25px}
-  .quick{grid-template-columns:repeat(4,1fr);gap:12px}.quick button{min-height:86px}
-  .more{grid-template-columns:repeat(4,1fr)}
-  .table-wrap{max-height:calc(100dvh - 225px)}
-  .modal-bg{align-items:center;padding:20px}.modal{width:min(680px,100%);margin:auto;border-radius:25px;max-height:88dvh}
-  .head h1{font-size:31px}
-}
-@media (min-width:1200px){
-  .view{padding-left:42px;padding-right:42px}
-  .page{max-width:1320px}
-}
-@media (max-width:899px){
-  .nav{display:grid;grid-template-columns:repeat(5,1fr)}
-  .nav:before{display:none}
-}
-</style>
-
-<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="DOCES DO VITU">
-
-<style>
-#brandSplash{position:fixed;inset:0;z-index:99999;background:#faf4ee;display:flex;align-items:center;justify-content:center;transition:opacity .28s ease}
-#brandSplash img{width:min(72vw,360px);max-height:55vh;object-fit:contain;border-radius:24px}
-#brandSplash.hide{opacity:0;pointer-events:none}
-@media(min-width:900px){#brandSplash img{width:300px}}
-</style>
-</head>
-<body>
-<div id="brandSplash" aria-label="DOCES DO VITU">
-  <img src="logo.png" alt="Logo Doces do Vitu">
-</div>
-
-<div id="login">
- <div class="login-card">
-  <div class="logo"><div><div class="candy">🍫</div><b>DOCES DO VITU</b><small>vendas • estoque • recebimentos</small></div></div>
-  <h1>Entrar</h1><p>Acesse seu controle de vendas.</p>
-  <div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="username" placeholder="seu@email.com"></div>
-  <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Sua senha"></div>
-  <button class="primary" id="loginBtn">Entrar</button>
-  <button class="secondary" id="createBtn" style="width:100%;margin-top:8px">Criar minha conta</button>
-  <div id="loginMsg"></div>
- </div>
-</div>
-
-<div id="app" class="app hidden">
- <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.1.7</small></div></div>
-  <button class="top-action" id="quickSale" aria-label="Nova venda">＋</button>
- </header>
- <main class="view" id="view"></main>
- <nav class="nav">
-  <button data-page="home" class="active"><span class="ni">⌂</span><small>Início</small></button>
-  <button data-page="sales"><span class="ni">🛒</span><small>Vendas</small></button>
-  <button data-page="clients"><span class="ni">👥</span><small>Clientes</small></button>
-  <button data-page="stock"><span class="ni">📦</span><small>Estoque</small></button>
-  <button data-page="finance"><span class="ni">📊</span><small>Financeiro</small></button>
- </nav>
-</div>
-<div id="modalRoot"></div>
-<div id="toastRoot"></div>
-
-<script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
@@ -249,7 +112,7 @@ function finance(){
  const revenue=monthSales.reduce((a,s)=>a+Number(s.total||0),0);
  const received=monthPayments.reduce((a,p)=>a+Number(p.amount||0),0);
  const pending=monthSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- const cost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0),0);
+ const cost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+Number(i.qty||0)*Number(i.cost||0),0),0);
  const profit=revenue-cost;
  const margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
@@ -449,15 +312,11 @@ function openReceivables(){
  openModal("A receber",`<div class="list">${rows.map(c=>`<div class="item" data-pay-client="${c.id}"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valores pendentes</small></div><div class="item-right"><b class="pending">${money(c.pending)}</b></div></div>`).join("")||'<div class="empty">Ninguém com valor pendente. 🎉</div>'}</div>`);
  document.querySelectorAll("[data-pay-client]").forEach(x=>x.onclick=()=>{let c=data.clients.find(c=>c.id===x.dataset.payClient);closeModal();openPaymentForClient(c)})
 }
-</script>
 
-<script>
+
 window.addEventListener("load",()=>{
   const s=document.getElementById("brandSplash");
   if(!s)return;
   setTimeout(()=>s.classList.add("hide"),350);
   setTimeout(()=>s.remove(),700);
 });
-</script>
-</body>
-</html>
