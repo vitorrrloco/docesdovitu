@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.5</title>
+<title>DOCES DO VITU 1.2.7</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -136,6 +136,25 @@ button:active{transform:scale(.97)}
 #brandSplash.hide{opacity:0;pointer-events:none}
 @media(min-width:900px){#brandSplash img{width:300px}}
 </style>
+
+<style id="professional-motion">
+/* V1.2.7: motion system for every interaction */
+.page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
+@keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.modal-bg{animation:modalFade .16s ease-out both}
+.modal-bg .modal{animation:modalEnter .20s cubic-bezier(.2,.8,.2,1) both;transform-origin:center bottom}
+@keyframes modalFade{from{opacity:0}to{opacity:1}}
+@keyframes modalEnter{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+button,.link,.client-result,.fast-product,.item[data-client],.item[data-product],.item[data-sale]{transition:transform .12s ease,box-shadow .12s ease,opacity .12s ease,background-color .12s ease,border-color .12s ease}
+button:active,.link:active,.client-result:active,.fast-product:active{transform:scale(.965);opacity:.9}
+button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-offset:2px}
+.press-feedback{animation:pressFlash .16s ease-out}
+@keyframes pressFlash{0%{transform:scale(.965)}100%{transform:scale(1)}}
+.view.page-swap{animation:pageSwap .22s ease-out both}
+@keyframes pageSwap{from{opacity:.15;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.page,.modal-bg,.modal-bg .modal,.view.page-swap,.press-feedback{animation:none!important}button,.link,.client-result,.fast-product{transition:none!important}}
+</style>
+
 </head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
@@ -156,7 +175,7 @@ button:active{transform:scale(.97)}
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.2.6</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.2.7</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -236,7 +255,14 @@ function subscribe(){
   unsubs.push(u);
  });
 }
-function go(p){page=p;document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));render();$("view").scrollTo(0,0)}
+function go(p){
+ page=p;
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));
+ const view=$("view");
+ view.classList.remove("page-swap");
+ render();
+ requestAnimationFrame(()=>{view.classList.add("page-swap");view.scrollTo({top:0,behavior:"auto"});});
+}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
 
@@ -586,9 +612,34 @@ function analysisHtml(kind){
  return `<div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">${periods[kind]}</small><div style="margin-top:3px">Total vendido</div></div><strong>${money(total)}</strong></div><div class="chart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline class="line" points="${pts}"/>${dots}${labels}</svg></div></div>`;
 }
 
-function openModal(title,content){$("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><h2>${title}</h2><button type="button" class="close" id="modalClose">×</button></div>${content}</div></div>`;$("modalClose").onclick=closeModal;$("modalRoot").querySelector(".modal-bg").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal()})}
+function openModal(title,content){
+ $("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><h2>${title}</h2><button type="button" class="close" id="modalClose">×</button></div>${content}</div></div>`;
+ const bg=$("modalRoot").querySelector(".modal-bg");
+ $("modalClose").onclick=closeModal;
+ bg.addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal()});
+ requestAnimationFrame(()=>bg.querySelector(".modal")?.focus?.());
+}
 function closeModal(){$("modalRoot").innerHTML=""}
 
+
+// Universal click/tap feedback, including dynamically-created modal controls.
+document.addEventListener("pointerdown",e=>{
+ const el=e.target.closest("button,.link,.client-result,.fast-product,[role=button]");
+ if(!el)return;
+ el.classList.remove("press-feedback");
+ void el.offsetWidth;
+ el.classList.add("press-feedback");
+ setTimeout(()=>el.classList.remove("press-feedback"),180);
+},{passive:true});
+document.addEventListener("keydown",e=>{
+ if(e.key!=="Enter" && e.key!==" ")return;
+ const el=document.activeElement;
+ if(!el || !el.matches("button,.link,.client-result,.fast-product,[role=button]"))return;
+ el.classList.remove("press-feedback");
+ void el.offsetWidth;
+ el.classList.add("press-feedback");
+ setTimeout(()=>el.classList.remove("press-feedback"),180);
+});
 
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape" && $("modalRoot").innerHTML) closeModal();
