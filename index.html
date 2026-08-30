@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.1.2</title>
+<title>DOCES DO VITU 1.1.5</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -15,7 +15,9 @@
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;background:var(--cream);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Arial,sans-serif}
 body{overflow:hidden}
-button,input,select{font:inherit}button{border:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button,input,select,textarea{font:inherit}
+input,select,textarea{font-size:16px!important}
+input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .hidden{display:none!important}
 #login{height:100dvh;display:grid;place-items:center;padding:20px;background:linear-gradient(160deg,#f8ead9,#fffaf3)}
 .login-card{width:min(100%,420px);background:var(--white);border:1px solid var(--line);border-radius:30px;padding:25px;box-shadow:0 20px 60px #4a28191c}
@@ -41,7 +43,7 @@ button,input,select{font:inherit}button{border:0;-webkit-tap-highlight-color:tra
 .quick{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:19px}.quick button{background:var(--white);border:1px solid var(--line);border-radius:17px;min-height:68px;text-align:left;padding:12px;box-shadow:0 4px 14px #4a281908}.quick b{display:block;font-size:13px}.quick span{font-size:22px;float:left;margin-right:9px}
 .section{margin-top:15px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:0 2px 9px}.section-title b{font-size:17px}.link{background:none;color:var(--brown);font-size:12px;font-weight:800}
 .list{display:grid;gap:9px}.item{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;align-items:center;gap:10px}.avatar{width:43px;height:43px;flex:0 0 43px;border-radius:14px;background:var(--cream2);display:grid;place-items:center;font-size:19px}.item-main{min-width:0;flex:1}.item-main b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item-main small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.item-right{text-align:right}.item-right b{display:block;font-size:13px}.status{font-size:9px;font-weight:800;margin-top:4px}.paid{color:var(--green)}.pending{color:var(--red)}.partial{color:var(--orange)}
-.search{height:50px;width:100%;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 14px;outline:none;margin-bottom:10px}
+.client-results{position:absolute;left:0;right:0;top:58px;z-index:20;background:var(--white);border:1px solid var(--line);border-radius:15px;box-shadow:0 12px 30px #0002;max-height:240px;overflow:auto;padding:6px}.client-result{display:flex;flex-direction:column;align-items:flex-start;width:100%;background:transparent;color:var(--text);padding:11px 12px;border-radius:11px;text-align:left}.client-result:hover,.client-result:focus{background:var(--cream2);outline:none}.client-result small{color:var(--muted);font-size:11px;margin-top:2px}.client-no-results{padding:12px;color:var(--muted);font-size:13px}.search{height:50px;width:100%;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 14px;outline:none;margin-bottom:10px}
 .toolbar{display:flex;gap:8px;margin-bottom:10px}.toolbar .search{margin:0;flex:1}.toolbar button{width:50px;border-radius:15px;background:var(--dark);color:#fff;font-size:24px}
 .form{background:var(--white);border:1px solid var(--line);border-radius:21px;padding:16px;margin-bottom:11px;box-shadow:var(--shadow)}.form h3{margin:0 0 13px;font-size:17px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions{display:flex;gap:8px;margin-top:11px}.actions button{flex:1;min-height:50px;border-radius:14px;font-weight:800}
 .table-wrap{overflow:auto;background:var(--white);border:1px solid var(--line);border-radius:19px;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;min-width:590px}th,td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:11px;text-align:left;white-space:nowrap}th{background:var(--cream2);color:var(--dark);font-size:10px;text-transform:uppercase}tr:last-child td{border-bottom:0}
@@ -254,13 +256,18 @@ function openSale(){
  if(!products.length){toast("Cadastre um produto com estoque primeiro.");return}
  const clients=data.clients;
  openModal("Nova venda",`<div class="form">
- <div class="field"><label>Cliente</label><select id="mClient"><option value="">Venda balcão</option>${clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></div>
+ <div class="field"><label>Cliente</label><div class="client-picker" style="position:relative"><input id="mClientSearch" autocomplete="off" placeholder="🔎 Digite o nome do cliente..." aria-label="Pesquisar cliente"><input id="mClient" type="hidden" value=""><div id="mClientResults" class="client-results hidden"></div></div></div>
  <div class="field"><label>Produto</label><select id="mProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join("")}</select></div>
  <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Pago agora</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div></div>
  <div class="field"><label>Pagamento</label><select id="mMethod"><option>Pagamento no salário</option><option>Dinheiro</option><option>Cartão</option></select></div>
  <div id="mTotal" style="font-size:20px;font-weight:900;margin-top:8px"></div>
  <div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
  const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1);$("mTotal").textContent="Total: "+money((p?.price||0)*q)};
+ const clientSearch=$("mClientSearch"),clientHidden=$("mClient"),clientResults=$("mClientResults");
+ const showClientResults=(term="")=>{const q=term.trim().toLowerCase();const matches=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,12);clientResults.innerHTML=matches.map(c=>`<button type="button" class="client-result" data-pick-client="${c.id}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';clientResults.classList.remove("hidden")};
+ clientSearch.onfocus=()=>showClientResults(clientSearch.value);clientSearch.oninput=()=>{clientHidden.value="";showClientResults(clientSearch.value)};
+ clientResults.onclick=e=>{const b=e.target.closest("[data-pick-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.pickClient);if(c){clientHidden.value=c.id;clientSearch.value=c.name;clientResults.classList.add("hidden")}};
+ clientSearch.onkeydown=e=>{if(e.key==="Escape")clientResults.classList.add("hidden")};
  $("mProduct").onchange=update;$("mQty").oninput=update;update();
  $("cancelModal").onclick=closeModal;$("confirmSale").onclick=async()=>{
   try{
