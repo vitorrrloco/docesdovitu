@@ -164,7 +164,7 @@ const firebaseConfig={
 };
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
-let uid=null,currentUserName="Vitor",unsubs=[],data={products:[],clients:[],sales:[],payments:[],logs:[]},page="home";
+let uid=null,currentUserName="Vitor",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[]},page="home";
 
 const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -194,7 +194,7 @@ async function logAction(action,details=""){
  catch(e){console.warn("Log não salvo",e)}
 }
 function subscribe(){
- ["products","clients","sales","payments","logs"].forEach(name=>{
+ ["products","clients","sales","payments","purchases","logs"].forEach(name=>{
   const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render()},()=>toast("Não foi possível sincronizar "+name+"."));
   unsubs.push(u);
  });
@@ -255,10 +255,10 @@ function stock(){
  <input class="search" id="stockSearch" placeholder="🔎 Procurar produto">
  <div class="list" id="stockList">${productRows(data.products)}</div></div>`
 }
-function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${Number(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
+function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}${p.supplier?` • ${esc(p.supplier)}`:""}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${Number(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
 
 function finance(){
- const sales=data.sales||[], payments=data.payments||[], products=data.products||[], nowD=now();
+ const sales=data.sales||[], payments=data.payments||[], products=data.products||[], purchases=data.purchases||[], nowD=now();
  const monthStart=new Date(nowD.getFullYear(),nowD.getMonth(),1);monthStart.setHours(0,0,0,0);
  const nextMonth=new Date(nowD.getFullYear(),nowD.getMonth()+1,1);nextMonth.setHours(0,0,0,0);
  const monthSales=sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=monthStart&&d<nextMonth});
@@ -271,6 +271,9 @@ function finance(){
  const margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
  const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+Number(i.qty||0),0),0);
+ const allReceived=payments.reduce((a,p)=>a+Number(p.amount||0),0);
+ const allPurchases=purchases.reduce((a,p)=>a+Number(p.total||0),0);
+ const cash=allReceived-allPurchases;
  const byMethod={};monthPayments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+Number(p.amount||0)});
  const top={};monthSales.forEach(s=>(s.items||[]).forEach(i=>{top[i.name]=(top[i.name]||0)+Number(i.qty||0)}));
  const topRows=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name,q])=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(name)}</b><small>${q} unidade(s) vendida(s)</small></div></div>`).join("")||'<div class="empty">Ainda não há vendas neste mês.</div>';
@@ -282,6 +285,7 @@ function finance(){
   <div class="finance-card"><small>Margem de lucro</small><strong>${margin.toFixed(1)}%</strong><p>sobre o faturamento</p></div>
   <div class="finance-card"><small>Ticket médio</small><strong>${money(ticket)}</strong><p>por venda</p></div>
   <div class="finance-card"><small>Recebido no mês</small><strong class="finance-positive">${money(received)}</strong><p>pagamentos registrados</p></div>
+  <div class="finance-card"><small>Caixa atual</small><strong class="finance-positive">${money(cash)}</strong><p>recebimentos menos compras registradas</p></div>
   <div class="finance-card"><small>A receber</small><strong class="finance-negative">${money(pending)}</strong><p>das vendas deste mês</p></div>
   <div class="finance-card"><small>Custo dos produtos</small><strong>${money(cost)}</strong><p>custo informado no estoque</p></div>
   <div class="finance-card"><small>Itens vendidos</small><strong>${totalItems}</strong><p>unidades neste mês</p></div>
@@ -399,8 +403,58 @@ function openPaymentForClient(c){
  }
 }
 function openProduct(p=null){
- openModal(p?"Editar produto":"Novo produto",`<div class="form"><div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}"></div><div class="row"><div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" value="${p?.price||""}"></div><div class="field"><label>Custo</label><input id="pCost" type="number" step="0.01" value="${p?.cost||""}"></div></div><div class="row"><div class="field"><label>Estoque</label><input id="pStock" type="number" min="0" value="${p?.stock||0}"></div><div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div></div>`);
- $("cancelModal").onclick=closeModal;$("saveProduct").onclick=async()=>{let obj={name:$("pName").value.trim(),price:Number($("pPrice").value)||0,cost:Number($("pCost").value)||0,stock:Number($("pStock").value)||0,minStock:Number($("pMin").value)||0};if(!obj.name||obj.price<=0)return toast("Preencha nome e preço.");try{if(p){await updateDoc(doc(col("products"),p.id),obj);await logAction("Produto alterado",`${obj.name} • preço ${money(obj.price)} • estoque ${obj.stock}`)}else{await addDoc(col("products"),{...obj,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction("Produto adicionado",`${obj.name} • estoque ${obj.stock}`)}closeModal();toast("Produto salvo!")}catch(e){toast("Erro ao salvar produto.")}}
+ const currentStock=Number(p?.stock||0);
+ const currentCost=Number(p?.cost||0);
+ openModal(p?"Editar produto":"Novo produto",`<div class="form">
+  <div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}" placeholder="Nome do doce"></div>
+  <div class="field"><label>Fornecedor (opcional)</label><input id="pSupplier" value="${esc(p?.supplier||"")}" placeholder="Nome do fornecedor"></div>
+  <div class="row"><div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" min="0" inputmode="decimal" value="${p?.price||""}"></div><div class="field"><label>Custo unitário</label><input id="pCost" type="number" step="0.01" min="0" inputmode="decimal" value="${currentCost.toFixed(2)||""}"></div></div>
+  <div style="margin-top:4px;padding:13px;border-radius:15px;background:#fff8ef;border:1px solid #ecd9c3">
+   <b style="display:block;margin-bottom:8px">📦 Registrar compra / entrada de estoque</b>
+   <div class="row"><div class="field"><label>Quantidade comprada</label><input id="pPurchaseQty" type="number" min="0" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total da compra</label><input id="pPurchaseTotal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 17,99"></div></div>
+   <div id="pUnitPreview" style="font-size:13px;color:var(--muted);margin-top:3px">Informe quantidade e valor total para calcular o custo unitário automaticamente.</div>
+  </div>
+  <div class="row"><div class="field"><label>Estoque atual</label><input id="pStock" type="number" min="0" value="${currentStock}"></div><div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div></div>
+  <div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div>
+ </div>`);
+ $("cancelModal").onclick=closeModal;
+ const updatePurchasePreview=()=>{
+  const qty=Number($("pPurchaseQty")?.value)||0, total=Number($("pPurchaseTotal")?.value)||0;
+  const preview=$("pUnitPreview");
+  if(qty>0&&total>0){preview.textContent=`Custo unitário calculado: ${money(Math.round((total/qty)*100)/100)} por doce.`;preview.style.color="var(--green,#2f8f68)";}
+  else {preview.textContent="Informe quantidade e valor total para calcular o custo unitário automaticamente.";preview.style.color="var(--muted)";}
+ };
+ $("pPurchaseQty").oninput=updatePurchasePreview;$("pPurchaseTotal").oninput=updatePurchasePreview;
+ $("saveProduct").onclick=async()=>{
+  const name=$("pName").value.trim();
+  const price=Number($("pPrice").value)||0;
+  const purchaseQty=Number($("pPurchaseQty").value)||0;
+  const purchaseTotal=Number($("pPurchaseTotal").value)||0;
+  let stock=Number($("pStock").value)||0;
+  let cost=Number($("pCost").value)||0;
+  const minStock=Number($("pMin").value)||0;
+  if(!name||price<=0)return toast("Preencha nome e preço.");
+  if(purchaseQty<0||purchaseTotal<0)return toast("Os valores da compra não podem ser negativos.");
+  if((purchaseQty>0&&purchaseTotal<=0)||(purchaseTotal>0&&purchaseQty<=0))return toast("Informe a quantidade e o valor total da compra.");
+  if(purchaseQty>0){
+    cost=Math.round((purchaseTotal/purchaseQty)*100)/100;
+    stock=currentStock+purchaseQty;
+  }
+  const obj={name,price,cost,stock,minStock,supplier};
+  try{
+   if(p){
+    await updateDoc(doc(col("products"),p.id),obj);
+    if(purchaseQty>0) await addDoc(col("purchases"),{productId:p.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    await logAction(purchaseQty>0?"Entrada de estoque":"Produto alterado",purchaseQty>0?`${name} • +${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • preço ${money(price)} • estoque ${stock}`);
+   }else{
+    const productRef=await addDoc(col("products"),{...obj,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    if(purchaseQty>0) await addDoc(col("purchases"),{productId:productRef.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    await logAction(purchaseQty>0?"Entrada de estoque":"Produto adicionado",purchaseQty>0?`${name} • ${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • estoque ${stock}`);
+   }
+   closeModal();toast("Produto salvo!");
+  }catch(e){console.error(e);toast("Erro ao salvar produto.")}
+ };
+ updatePurchasePreview();
 }
 function openClientForm(){
  openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
@@ -465,7 +519,7 @@ function openSaleDetail(s){
  if($("detailPay"))$("detailPay").onclick=()=>{let c=data.clients.find(c=>c.id===s.clientId);closeModal();openPaymentForClient(c)}
 }
 async function resetBusinessData(){
- const names=["products","clients","sales","payments"];
+ const names=["products","clients","sales","payments","purchases"];
  try{
   const refs=[];
   names.forEach(name=>data[name].forEach(item=>refs.push(doc(col(name),item.id))));
