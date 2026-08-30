@@ -246,7 +246,7 @@ function openProduct(p=null){
  $("cancelModal").onclick=closeModal;$("saveProduct").onclick=async()=>{let obj={name:$("pName").value.trim(),price:Number($("pPrice").value)||0,cost:Number($("pCost").value)||0,stock:Number($("pStock").value)||0,minStock:Number($("pMin").value)||0};if(!obj.name||obj.price<=0)return toast("Preencha nome e preço.");try{p?await updateDoc(doc(col("products"),p.id),obj):await addDoc(col("products"),obj);closeModal();toast("Produto salvo!")}catch(e){toast("Erro ao salvar produto.")}}
 }
 function openClientForm(){
- openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do funcionário"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
+ openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
  $("cancelModal").onclick=closeModal;$("saveClient").onclick=async()=>{let name=$("cName").value.trim();if(!name)return toast("Digite o nome.");try{await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),createdAt:serverTimestamp()});closeModal();toast("Cliente cadastrado!")}catch(e){toast("Erro ao salvar cliente.")}}
 }
 
