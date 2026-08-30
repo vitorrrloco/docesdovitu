@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.1</title>
+<title>DOCES DO VITU 1.2.5</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -98,6 +98,20 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .finance-duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;width:calc(100% - 8px);margin-left:auto;margin-right:auto}
   .finance-duo .analysis-card{padding:12px;border-radius:18px}
 }
+
+/* V1.2.5: microinterações e transições */
+@keyframes pageEnter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tapPulse{0%{transform:scale(1)}50%{transform:scale(.97)}100%{transform:scale(1)}}
+.page{animation:pageEnter .19s ease-out both;will-change:opacity,transform}
+button{transition:transform .12s ease,opacity .12s ease,background-color .12s ease,box-shadow .12s ease}
+button:active{transform:scale(.97)}
+.nav button:active{transform:scale(.94)}
+.fast-product:active,.quick button:active,.secondary:active,.primary:active,.top-action:active{box-shadow:0 2px 8px #4a281922}
+@media(prefers-reduced-motion:reduce){.page,button{animation:none!important;transition:none!important}}
+.finance-duo{justify-content:center}
+.finance-duo .top-sellers-list{max-height:126px;overflow-y:auto;overflow-x:hidden;padding-right:2px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.finance-duo .top-sellers-list .item{width:100%}
+@media(max-width:699px){.finance-duo{width:100%;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}.finance-duo .analysis-card{min-width:0}.finance-duo .top-sellers-list{max-height:124px}}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -306,7 +320,7 @@ function finance(){
   <div class="finance-card"><small>Itens vendidos</small><strong>${totalItems}</strong><p>unidades neste mês</p></div>
  </div>
  <div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">RESUMO</small><div style="margin-top:3px">Resultado financeiro do mês</div></div><strong>${money(profit)}</strong></div><div class="section" style="margin-top:15px"><div class="section-title"><span>Faturamento</span><b>${money(revenue)}</b></div><div class="section-title"><span>Custos</span><b>${money(cost)}</b></div><div class="section-title"><span>Recebido</span><b class="finance-positive">${money(received)}</b></div><div class="section-title"><span>Pendente</span><b class="finance-negative">${money(pending)}</b></div></div></div>
- <div class="row finance-duo"><div class="analysis-card"><div class="section-title"><b>Recebimentos por forma</b></div>${methods}</div><div class="analysis-card"><div class="section-title"><b>Mais vendidos</b></div><div class="list">${topRows}</div></div></div>
+ <div class="row finance-duo"><div class="analysis-card"><div class="section-title"><b>Recebimentos por forma</b></div>${methods}</div><div class="analysis-card"><div class="section-title"><b>Mais vendidos</b></div><div class="list top-sellers-list">${topRows}</div></div></div>
  <div class="finance-actions"><button class="secondary" id="financeAnalysis">📈 Análise de vendas</button><button class="secondary" id="financeReceivables">💰 A receber</button><button class="secondary" id="financePayments">💵 Registrar pagamento</button><button class="secondary" id="financeAccount">⚙️ Conta</button></div>
  <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button></div>`;
 }
