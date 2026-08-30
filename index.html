@@ -85,6 +85,19 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .nav{display:grid;grid-template-columns:repeat(5,1fr)}
   .nav:before{display:none}
 }
+
+/* V1.2.0 FINAL - Financeiro compacto e centralizado no celular */
+.finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
+.finance-duo .analysis-card{min-width:0;padding:13px}
+.finance-duo .section-title b{font-size:15px}
+.finance-duo .item{padding:10px;border-radius:15px;gap:8px}
+.finance-duo .avatar{width:38px;height:38px;flex-basis:38px;border-radius:12px;font-size:17px}
+.finance-duo .item-main b{font-size:13px}
+.finance-duo .item-main small{font-size:9px}
+@media(max-width:899px){
+  .finance-duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;width:calc(100% - 8px);margin-left:auto;margin-right:auto}
+  .finance-duo .analysis-card{padding:12px;border-radius:18px}
+}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -274,7 +287,7 @@ function finance(){
   <div class="finance-card"><small>Itens vendidos</small><strong>${totalItems}</strong><p>unidades neste mês</p></div>
  </div>
  <div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">RESUMO</small><div style="margin-top:3px">Resultado financeiro do mês</div></div><strong>${money(profit)}</strong></div><div class="section" style="margin-top:15px"><div class="section-title"><span>Faturamento</span><b>${money(revenue)}</b></div><div class="section-title"><span>Custos</span><b>${money(cost)}</b></div><div class="section-title"><span>Recebido</span><b class="finance-positive">${money(received)}</b></div><div class="section-title"><span>Pendente</span><b class="finance-negative">${money(pending)}</b></div></div></div>
- <div class="row"><div class="analysis-card"><div class="section-title"><b>Recebimentos por forma</b></div>${methods}</div><div class="analysis-card"><div class="section-title"><b>Mais vendidos</b></div><div class="list">${topRows}</div></div></div>
+ <div class="row finance-duo"><div class="analysis-card"><div class="section-title"><b>Recebimentos por forma</b></div>${methods}</div><div class="analysis-card"><div class="section-title"><b>Mais vendidos</b></div><div class="list">${topRows}</div></div></div>
  <div class="finance-actions"><button class="secondary" id="financeAnalysis">📈 Análise de vendas</button><button class="secondary" id="financeReceivables">💰 A receber</button><button class="secondary" id="financePayments">💵 Registrar pagamento</button><button class="secondary" id="financeAccount">⚙️ Conta</button></div>
  <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button></div>`;
 }
