@@ -14,7 +14,7 @@ const firebaseConfig={
 };
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
-let uid=null,unsubs=[],data={products:[],clients:[],sales:[],payments:[]},page="home";
+let uid=null,currentUserName="Vitor",unsubs=[],data={products:[],clients:[],sales:[],payments:[]},page="home";
 
 const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -35,7 +35,7 @@ function firebaseError(e){return ({ "auth/invalid-credential":"E-mail ou senha i
 onAuthStateChanged(auth,user=>{
  unsubs.forEach(u=>u());unsubs=[];
  if(!user){uid=null;$("app").classList.add("hidden");$("login").classList.remove("hidden");return}
- uid=user.uid;$("login").classList.add("hidden");$("app").classList.remove("hidden");subscribe();go("home");
+ uid=user.uid;currentUserName="Vitor";if($("currentUser"))$("currentUser").textContent="👤 "+currentUserName;$("login").classList.add("hidden");$("app").classList.remove("hidden");subscribe();go("home");
 });
 
 function col(name){return collection(db,"users",uid,name)}
@@ -144,7 +144,7 @@ function more(){
   <button id="analysis"><span class="mi">📈</span><b>Análise de vendas</b><small>Horário, dia, semana e mês</small></button>
   <button id="receivables"><span class="mi">💰</span><b>A receber</b><small>Quem ainda precisa pagar</small></button>
   <button id="payments"><span class="mi">💵</span><b>Pagamentos</b><small>Registrar recebimentos</small></button>
-  <button id="account"><span class="mi">⚙️</span><b>Conta</b><small>${esc(auth.currentUser?.email||"")}</small></button>
+  <button id="account"><span class="mi">⚙️</span><b>Conta</b><small>👤 ${esc(currentUserName)}<br>${esc(auth.currentUser?.email||"")}</small></button>
  </div>
  <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button></div>`
 }
@@ -185,9 +185,9 @@ function openSale(){
    let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),total=p.price*q;
    if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
    let paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),c=data.clients.find(x=>x.id===$("mClient").value);
-   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:p.price,cost:Number(p.cost||0)}],total,paid,paymentMethod:$("mMethod").value,createdAt:serverTimestamp()});
+   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:p.price,cost:Number(p.cost||0)}],total,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
    await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q});
-   if(paid>0)await addDoc(col("payments"),{saleId:ref.id,clientId:c?.id||"",clientName:c?.name||"Venda balcão",amount:paid,createdAt:serverTimestamp(),method:$("mMethod").value});
+   if(paid>0)await addDoc(col("payments"),{saleId:ref.id,clientId:c?.id||"",clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
    closeModal();toast("Venda registrada!");go("sales");
   }catch(e){toast(e.message||"Não foi possível registrar.")}
  };
@@ -236,7 +236,7 @@ function openPaymentForClient(c){
     await updateDoc(doc(col("sales"),s.id),{paid:Number(s.paid||0)+use});
     remaining-=use;
    }
-   await addDoc(col("payments"),{clientId:c.id,clientName:c.name,amount,createdAt:serverTimestamp(),method:$("payMethod").value});
+   await addDoc(col("payments"),{clientId:c.id,clientName:c.name,amount,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("payMethod").value});
    closeModal();toast("Pagamento registrado!");
   }catch(e){toast("Não foi possível registrar o pagamento.")}
  }
