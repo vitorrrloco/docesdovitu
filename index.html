@@ -133,7 +133,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.2.1</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.2.2</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -248,7 +248,7 @@ function home(){
  ${low.length?`<div class="section"><div class="section-title"><b>⚠️ Estoque baixo</b></div><div class="list">${low.slice(0,4).map(p=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque mínimo: ${p.minStock||2}</small></div><div class="item-right"><b>${p.stock||0} un.</b></div></div>`).join("")}</div></div>`:""}
  </div>`
 }
-function saleItem(s){let st=status(s.total,s.paid);return `<div class="item" data-sale="${s.id}"><div class="avatar">🍬</div><div class="item-main"><b>${esc(s.clientName||"Venda balcão")}</b><small>${dateTime(s.createdAt)} • ${esc(s.items?.map(i=>i.name).join(", ")||"Venda")}</small></div><div class="item-right"><b>${money(s.total)}</b><div class="status ${statusClass(st)}">${st}</div></div></div>`}
+function saleItem(s){let st=status(s.total,s.paid),disc=Number(s.discountPct||0);return `<div class="item" data-sale="${s.id}"><div class="avatar">🍬</div><div class="item-main"><b>${esc(s.clientName||"Venda balcão")}</b><small>${dateTime(s.createdAt)} • ${esc(s.items?.map(i=>i.name).join(", ")||"Venda")}${disc>0?` • <span style="color:var(--green,#2f8f68);font-weight:800">${disc.toFixed(2).replace('.',',')}% OFF</span>`:""}</small></div><div class="item-right"><b>${money(s.total)}</b><div class="status ${statusClass(st)}">${st}</div></div></div>`}
 
 function sales(){
  const rows=data.sales.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
@@ -329,26 +329,27 @@ function openQuickSale(){
  openModal("⚡️ Lançamento rápido",`<div class="form">
   <div class="field"><label>Cliente</label><div style="position:relative"><input id="fqClientSearch" autocomplete="off" placeholder="🔎 Digite o nome ou deixe vazio para balcão"><input id="fqClient" type="hidden"><div id="fqClientResults" class="quick-client-results hidden"></div></div></div>
   <div class="field"><label>Produto</label><div class="fast-products" id="fqProducts">${products.map(p=>`<button type="button" class="fast-product" data-fq-product="${p.id}"><b>${esc(p.name)}</b><small>${money(p.price)} • ${p.stock} un.</small></button>`).join("")}</div></div>
-  <div class="row"><div class="field"><label>Quantidade</label><input id="fqQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div><div class="field"><label>Total</label><input id="fqTotal" value="R$ 0,00" disabled></div></div>
+  <div class="row"><div class="field"><label>Quantidade</label><input id="fqQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div><div class="field"><label>Valor líquido</label><input id="fqTotal" type="number" min="0" step="0.01" inputmode="decimal" value="0.00"></div></div><div id="fqDiscount" style="font-size:12px;min-height:18px;margin-top:-5px"></div>
   <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="fqConfirm">Confirmar venda</button></div>
  </div>`);
  let selectedId=products[0].id;
  const selected=()=>data.products.find(p=>p.id===selectedId);
- const update=()=>{const p=selected(),q=Math.max(1,Number($("fqQty").value)||1);$("fqTotal").value=money((p?.price||0)*q)};
+ const update=()=>{const p=selected(),q=Math.max(1,Number($("fqQty").value)||1);const original=(p?.price||0)*q;const field=$("fqTotal");if(document.activeElement!==field)field.value=original.toFixed(2);updateDiscount(original,Number(field.value)||0)};const updateDiscount=(original,finalValue)=>{const el=$("fqDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
  document.querySelectorAll("[data-fq-product]").forEach(b=>b.onclick=()=>{selectedId=b.dataset.fqProduct;document.querySelectorAll("[data-fq-product]").forEach(x=>x.style.outline=x===b?"3px solid var(--brown)":"none");update()});
  const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");
  const drawClients=()=>{const q=search.value.trim().toLowerCase();const m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result" data-fq-client="${c.id}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';results.classList.remove("hidden")};
  search.addEventListener("focus",drawClients);search.addEventListener("input",()=>{hidden.value="";drawClients()});
  results.addEventListener("click",e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}});
- $("fqQty").oninput=update;$("cancelModal").onclick=closeModal;update();
+ $("fqQty").oninput=update;$("fqTotal").oninput=()=>{const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("fqTotal").value)||0);updateDiscount(original,val)};$("cancelModal").onclick=closeModal;update();
  document.querySelector(`[data-fq-product="${selectedId}"]`)?.style.setProperty("outline","3px solid var(--brown)");
  $("fqConfirm").onclick=async()=>{
   try{
-   const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),total=p.price*q,c=data.clients.find(x=>x.id===$("fqClient").value);
+   const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),originalTotal=p.price*q,total=Math.max(0,Number($("fqTotal").value)||0),discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0,c=data.clients.find(x=>x.id===$("fqClient").value);
+   if(total<=0)throw Error("Informe um valor válido para a venda.");
    if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
-   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:p.price,cost:Number(p.cost||0)}],total,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
    await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q});
-   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`);
+   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)}${discountPct>0?` • desconto ${discountPct.toFixed(2)}%`:""} • ${p.name} x${q}`);
    await logAction("Estoque",`-${q} ${p.name} após venda`);
    closeModal();toast("Venda registrada!");go("sales");
   }catch(e){console.error(e);toast(e.message||"Não foi possível registrar a venda.")}
@@ -361,11 +362,11 @@ function openSale(){
  openModal("Nova venda",`<div class="form">
  <div class="field"><label>Cliente</label><div class="client-picker" style="position:relative"><input id="mClientSearch" autocomplete="off" placeholder="🔎 Digite o nome do cliente..." aria-label="Pesquisar cliente"><input id="mClient" type="hidden" value=""><div id="mClientResults" class="client-results hidden"></div></div></div>
  <div class="field"><label>Produto</label><select id="mProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join("")}</select></div>
- <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Pago agora</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div></div>
+ <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Valor líquido</label><input id="mTotalValue" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div></div><div id="mDiscount" style="font-size:12px;min-height:18px;margin-top:-5px"></div><div class="field"><label>Pago agora</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div>
  <div class="field"><label>Pagamento</label><select id="mMethod"><option>Pagamento no salário</option><option>Dinheiro</option><option>Cartão</option><option>PIX</option></select></div>
  <div id="mTotal" style="font-size:20px;font-weight:900;margin-top:8px"></div>
  <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
- const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1);$("mTotal").textContent="Total: "+money((p?.price||0)*q)};
+ const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q;const field=$("mTotalValue");if(document.activeElement!==field)field.value=original.toFixed(2);$("mTotal").textContent="Total líquido: "+money(Number(field.value)||0);updateSaleDiscount(original,Number(field.value)||0)};const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
  const clientSearch=$("mClientSearch"),clientHidden=$("mClient"),clientResults=$("mClientResults");
  let activeIndex=-1;
  const showClientResults=(term="")=>{const q=term.trim().toLowerCase();const matches=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,12);clientResults.innerHTML=matches.map((c,i)=>`<button type="button" class="client-result" data-pick-client="${c.id}" data-index="${i}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';activeIndex=-1;clientResults.classList.remove("hidden")};
@@ -384,16 +385,17 @@ function openSale(){
  clientResults.addEventListener("mousedown",e=>e.preventDefault());
  clientResults.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const b=e.target.closest("[data-pick-client]");if(b)pickClient(b.dataset.pickClient)});
  document.addEventListener("mousedown",function closeClientDropdown(e){if(!clientSearch.contains(e.target)&&!clientResults.contains(e.target)){clientResults.classList.add("hidden")}}, {once:true});
- $("mProduct").onchange=update;$("mQty").oninput=update;update();
+ $("mProduct").onchange=update;$("mQty").oninput=update;$("mTotalValue").oninput=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("mTotalValue").value)||0);$("mTotal").textContent="Total líquido: "+money(val);updateSaleDiscount(original,val)};update();
  $("cancelModal").onclick=closeModal;$("confirmSale").onclick=async()=>{
   try{
-   let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),total=p.price*q;
+   let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),originalTotal=p.price*q,total=Math.max(0,Number($("mTotalValue").value)||0),discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
+   if(total<=0)throw Error("Informe um valor válido para a venda.");
    if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
    let paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),c=data.clients.find(x=>x.id===$("mClient").value);
-   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:p.price,cost:Number(p.cost||0)}],total,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
    await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q});
    if(paid>0)await addDoc(col("payments"),{saleId:ref.id,clientId:c?.id||"",clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
-   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`);
+   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)}${discountPct>0?` • desconto ${discountPct.toFixed(2)}%`:""} • ${p.name} x${q}`);
    await logAction("Estoque",`-${q} ${p.name} após venda`);
    closeModal();toast("Venda registrada!");go("sales");
   }catch(e){toast(e.message||"Não foi possível registrar.")}
