@@ -297,6 +297,7 @@ function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=
 function totals(){
  const today=now();let sold=0,received=0,pending=0;
  data.sales.forEach(s=>{sold+=Number(s.total||0);pending+=Math.max(0,Number(s.total||0)-Number(s.paid||0))});
+ (data.clients||[]).forEach(c=>{sold+=Number(c.initialDebt||0);pending+=Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))});
  data.payments.forEach(p=>received+=Number(p.amount||0));
  const todaySales=data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===today.toDateString()}).reduce((a,s)=>a+Number(s.total||0),0);
  return {sold,received,pending,todaySales}
@@ -354,13 +355,17 @@ function finance(){
  const nextMonth=new Date(nowD.getFullYear(),nowD.getMonth()+1,1);nextMonth.setHours(0,0,0,0);
  const monthSales=sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=monthStart&&d<nextMonth});
  const monthPayments=payments.filter(p=>{const d=dt(p.createdAt);return d&&d>=monthStart&&d<nextMonth});
- const revenue=monthSales.reduce((a,s)=>a+Number(s.total||0),0);
+ const legacyClients=(data.clients||[]).filter(c=>Number(c.initialDebt||0)>0);
+ const legacyRevenue=legacyClients.reduce((a,c)=>a+Number(c.initialDebt||0),0);
+ const legacyPending=legacyClients.reduce((a,c)=>a+Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0)),0);
+ const legacyCount=legacyClients.length;
+ const revenue=monthSales.reduce((a,s)=>a+Number(s.total||0),0)+legacyRevenue;
  const received=monthPayments.reduce((a,p)=>a+Number(p.amount||0),0);
- const pending=monthSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ const pending=monthSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0)+legacyPending;
  const cost=monthSales.reduce((a,s)=>a+(s.historical||s.excludeFromProfit?0:(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0)),0);
  const profit=revenue-cost;
  const margin=revenue>0?(profit/revenue)*100:0;
- const ticket=monthSales.length?revenue/monthSales.length:0;
+ const ticket=(monthSales.length+legacyCount)?revenue/(monthSales.length+legacyCount):0;
  const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+Number(i.qty||0),0),0);
  const allReceived=payments.reduce((a,p)=>a+Number(p.amount||0),0);
  const allPurchases=purchases.reduce((a,p)=>a+Number(p.total||0),0);
@@ -371,7 +376,7 @@ function finance(){
  const methods=Object.entries(byMethod).sort((a,b)=>b[1]-a[1]).map(([m,v])=>`<div class="section-title"><span>${esc(m)}</span><b>${money(v)}</b></div>`).join("")||'<div class="empty">Nenhum recebimento neste mês.</div>';
  return `<div class="page"><div class="head"><div><h1>Financeiro</h1><p>Visão completa do seu negócio • ${nowD.toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}</p></div></div>
  <div class="finance-grid">
-  <div class="finance-card"><small>Faturamento do mês</small><strong>${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
+  <div class="finance-card"><small>Faturamento do mês</small><strong>${money(revenue)}</strong><p>${monthSales.length+legacyCount} venda(s) • inclui R$ ${legacyRevenue.toFixed(2).replace(".",",")} antigos</p></div>
   <div class="finance-card"><small>Lucro estimado</small><strong class="finance-positive">${money(profit)}</strong><p>vendas menos custo dos produtos</p></div>
   <div class="finance-card"><small>Margem de lucro</small><strong>${margin.toFixed(1)}%</strong><p>sobre o faturamento</p></div>
   <div class="finance-card"><small>Ticket médio</small><strong>${money(ticket)}</strong><p>por venda</p></div>
