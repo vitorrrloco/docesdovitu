@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU</title>
+<title>DOCES DO VITU 1.2.11</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -109,13 +109,6 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .finance-duo .top-sellers-list .item{width:100%;max-width:100%;box-sizing:border-box;scroll-snap-align:start}
 }
 
-/* Confirmação rápida de venda */
-.sale-confirm-overlay{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;pointer-events:none;background:rgba(74,40,25,.08);animation:saleFade .72s ease both}
-.sale-confirm-card{width:min(290px,78vw);padding:22px 18px 20px;border-radius:24px;background:var(--white);border:1px solid var(--line);box-shadow:0 18px 55px rgba(74,40,25,.18);text-align:center;animation:salePop .42s cubic-bezier(.2,.85,.25,1) both}
-.sale-check{width:66px;height:66px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:#e7f4ed;color:var(--green);font-size:38px;font-weight:900;position:relative}
-.sale-check:after{content:"";position:absolute;inset:-6px;border:3px solid var(--green);border-top-color:transparent;border-radius:50%;animation:saleSpin .52s ease-out both}
-.sale-confirm-card b{display:block;font-size:20px}.sale-confirm-card small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
-@keyframes saleFade{0%{opacity:0}18%{opacity:1}82%{opacity:1}100%{opacity:0}}@keyframes salePop{0%{opacity:0;transform:scale(.9) translateY(8px)}100%{opacity:1;transform:none}}@keyframes saleSpin{0%{transform:rotate(-150deg);opacity:0}100%{transform:rotate(220deg);opacity:1}}
 .boot-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px;opacity:1;transition:opacity .18s ease,visibility .18s ease}.boot-loader.done{opacity:0;visibility:hidden;pointer-events:none}.boot-card{width:min(330px,88vw);text-align:center;padding:26px 22px;border-radius:22px;background:var(--white);box-shadow:0 14px 45px rgba(74,40,25,.14);display:flex;flex-direction:column;align-items:center;gap:8px}.boot-logo{font-size:42px;line-height:1}.boot-card b{font-size:19px;color:var(--dark)}.boot-card small{color:var(--muted);margin-bottom:8px}.boot-track{width:100%;height:7px;border-radius:99px;background:var(--cream2);overflow:hidden}.boot-bar{height:100%;width:0%;border-radius:99px;background:var(--brown);transition:width .12s ease}.boot-card strong{font-size:13px;color:var(--brown);min-height:18px}
 @media(prefers-reduced-motion:reduce){.boot-loader,.boot-bar{transition:none!important}}
 </style>
@@ -190,6 +183,7 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import {writeBatch} from 'https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js';
 import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig={
@@ -229,7 +223,7 @@ onAuthStateChanged(auth,async user=>{
  unsubs.forEach(u=>u());unsubs=[];bootSet(0);
  if(!user){uid=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('bootLoader').classList.add('done');return}
  uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentUserEmail==='viitorcontas@gmail.com'?'Vitor':'Vitor';$('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');
- try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
+ try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await seedHistoricalFinancials();bootSet(35);await subscribeReady();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
 
 function col(name){return collection(db,"businesses","docesDoVitu",name)}
 function oldCol(name){return collection(db,"users",uid,name)}
@@ -251,22 +245,33 @@ async function logAction(action,details=""){
  catch(e){console.warn("Log não salvo",e)}
 }
 async function seedImportedDebts(){
- const markerRef=doc(col("meta"),"initialDebtsV2");
+ const markerRef=doc(col("meta"),"initialDebtsV1");
+ try{const marker=await getDoc(markerRef);if(marker.exists())return;
+  const debts={"Gilberto":47,"Gabriel":15,"Rafael":32,"Jacare":16,"Guedes":13,"Duarte":24,"Eduardo":57,"Steuck":1,"Richard":67,"Roger":22,"Daniel Ponick":22,"Gabriel Ponick":2,"Crystian":34,"Vitor":15,"Maria Eduarda":8,"Murilo":5,"Diovana":2,"Julio":6,"Marinho":20,"Kricinski":38,"Mohammed":5,"Samuel":20,"Emanuel":14,"Jonathan":4,"Eduardo Silveira":17};
+  const existing=await getDocs(col("clients"));
+  const byName=new Map(existing.docs.map(d=>[String(d.data().name||"").trim().toLowerCase(),d]));
+  for(const [name,value] of Object.entries(debts)){const found=byName.get(name.toLowerCase());if(found){const old=found.data();if(Number(old.initialDebt||0)===0)await updateDoc(found.ref,{initialDebt:value,initialDebtPaid:0});}else{await addDoc(col("clients"),{name,phone:"",initialDebt:value,initialDebtPaid:0,createdAt:serverTimestamp()});}}
+  await setDoc(markerRef,{done:true,total:502,createdAt:serverTimestamp()});
+ }catch(e){console.warn("Importação inicial de clientes pendentes não concluída",e)}
+}
+async function seedHistoricalFinancials(){
+ const markerRef=doc(col("meta"),"historicalFinancialsV1");
  try{
   const marker=await getDoc(markerRef);if(marker.exists())return;
   const debts={"Gilberto":51.50,"Gabriel":15,"Rafael":41,"Jacare":19,"Guedes":14.50,"Duarte":24,"Eduardo":57,"Steuck":1,"Richard":71.50,"Roger":22,"Daniel Ponick":25,"Gabriel Ponick":3.50,"Crystian":35,"Vitor":16.50,"Maria Eduarda":11,"Murilo":8,"Diovana":2,"Julio":6,"Marinho":22,"Kricinski":38,"Mohammed":6.50,"Samuel":20,"Emanuel":14,"Jonathan":9.50,"Eduardo Silveira":18.50,"Quintino":1.50};
-  const existing=await getDocs(col("clients"));
-  const byName=new Map(existing.docs.map(d=>[String(d.data().name||"").trim().toLowerCase(),d]));
-  for(const [name,value] of Object.entries(debts)){
-   const found=byName.get(name.toLowerCase());
-   if(found){await updateDoc(found.ref,{initialDebt:value,initialDebtPaid:0});}
-   else await addDoc(col("clients"),{name,phone:"",initialDebt:value,initialDebtPaid:0,createdAt:serverTimestamp()});
+  const clientsSnap=await getDocs(col("clients"));
+  const byName=new Map(clientsSnap.docs.map(d=>[String(d.data().name||"").trim().toLowerCase(),d]));
+  const batch=writeBatch(db), ts=serverTimestamp();
+  for(const [name,total] of Object.entries(debts)){
+   const c=byName.get(name.toLowerCase()); if(!c)continue;
+   const paid=name==="Guedes"?14.50:0;
+   batch.set(doc(col("sales"),`historical-${c.id}`),{clientId:c.id,clientName:c.data().name||name,items:[{name:"Paçocas",qty:1,price:Number(total),cost:0}],total:Number(total),paid,paymentMethod:paid?"Pix":null,createdAt:ts,imported:true,source:"base histórica"},{merge:true});
+   batch.update(c.ref,{initialDebt:0,initialDebtPaid:0});
+   if(paid) batch.set(doc(col("payments"),`historical-payment-${c.id}`),{clientId:c.id,clientName:c.data().name||name,saleId:`historical-${c.id}`,amount:paid,method:"Pix",createdAt:ts,imported:true,source:"base histórica"},{merge:true});
   }
-  // The standalone "Daniel" entry was explicitly excluded from the updated list.
-  const daniel=byName.get("daniel");
-  if(daniel) await deleteDoc(daniel.ref);
-  await setDoc(markerRef,{done:true,total:553.50,clients:26,createdAt:serverTimestamp()});
- }catch(e){console.warn("Importação inicial de clientes pendentes não concluída",e)}
+  batch.set(markerRef,{done:true,totalImported:553.50,guedesPaid:14.50,remainingReceivable:539.00,clients:26,createdAt:ts},{merge:true});
+  await batch.commit();
+ }catch(e){console.warn("Financeiro histórico não sincronizado:",e)}
 }
 function subscribeReady(){
  return new Promise(resolve=>{
@@ -427,18 +432,10 @@ function openQuickSale(){
    await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q});
    await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)}${discountPct>0?` • desconto ${discountPct.toFixed(2)}%`:""} • ${p.name} x${q}`);
    await logAction("Estoque",`-${q} ${p.name} após venda`);
-   closeModal();showSaleConfirmed();go("home");
+   closeModal();toast("Venda registrada!");go("sales");
   }catch(e){console.error(e);toast(e.message||"Não foi possível registrar a venda.")}
  };
 }
-function showSaleConfirmed(){
- const el=document.createElement("div");
- el.className="sale-confirm-overlay";
- el.innerHTML='<div class="sale-confirm-card"><div class="sale-check">✓</div><b>Venda confirmada</b><small>Pedido registrado com sucesso</small></div>';
- document.body.appendChild(el);
- setTimeout(()=>el.remove(),760);
-}
-
 function openSale(){
  const products=data.products.filter(p=>Number(p.stock||0)>0);
  if(!products.length){toast("Cadastre um produto com estoque primeiro.");return}
@@ -481,7 +478,7 @@ function openSale(){
    if(paid>0)await addDoc(col("payments"),{saleId:ref.id,clientId:c?.id||"",clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
    await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)}${discountPct>0?` • desconto ${discountPct.toFixed(2)}%`:""} • ${p.name} x${q}`);
    await logAction("Estoque",`-${q} ${p.name} após venda`);
-   closeModal();showSaleConfirmed();go("home");
+   closeModal();toast("Venda registrada!");go("sales");
   }catch(e){toast(e.message||"Não foi possível registrar.")}
  };
 }
@@ -710,28 +707,9 @@ function bindPage(){
 }
 function openSaleDetail(s){
  if(!s)return;let st=status(s.total,s.paid),pending=Math.max(0,s.total-s.paid);
- openModal("Venda",`<div class="form"><div class="section-title"><b>${esc(s.clientName||"Venda balcão")}</b><span>${dateTime(s.createdAt)}</span></div>${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(i.qty*i.price)}</b></div></div>`).join("")}<div class="section-title" style="margin-top:13px"><b>Total</b><b>${money(s.total)}</b></div><div class="section-title"><span>Pago</span><b class="paid">${money(s.paid)}</b></div><div class="section-title"><span>Pendente</span><b class="${statusClass(st)}">${money(pending)}</b></div>${pending>0&&s.clientId?'<button class="primary" id="detailPay" style="margin-top:10px">💵 Registrar pagamento</button>':""}<button class="secondary" id="undoSaleBtn" style="width:100%;margin-top:10px;color:#a9463b;border-color:#e6bdb7">↶ Desfazer venda</button></div>`);
+ openModal("Venda",`<div class="form"><div class="section-title"><b>${esc(s.clientName||"Venda balcão")}</b><span>${dateTime(s.createdAt)}</span></div>${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(i.qty*i.price)}</b></div></div>`).join("")}<div class="section-title" style="margin-top:13px"><b>Total</b><b>${money(s.total)}</b></div><div class="section-title"><span>Pago</span><b class="paid">${money(s.paid)}</b></div><div class="section-title"><span>Pendente</span><b class="${statusClass(st)}">${money(pending)}</b></div>${pending>0&&s.clientId?'<button class="primary" id="detailPay" style="margin-top:10px">💵 Registrar pagamento</button>':""}</div>`);
  if($("detailPay"))$("detailPay").onclick=()=>{let c=data.clients.find(c=>c.id===s.clientId);closeModal();openPaymentForClient(c)}
- if($("undoSaleBtn"))$("undoSaleBtn").onclick=()=>confirmUndoSale(s);
 }
-async function confirmUndoSale(s){
- openModal("Desfazer venda?",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Confirme esta ação</b><br><small>Você realmente quer desfazer a venda de <b>${esc(s.clientName||"Venda balcão")}</b> no valor de <b>${money(s.total)}</b>?<br><br>O lançamento será removido, o estoque será devolvido e os pagamentos ligados a esta venda também serão removidos.</small></div><div class="actions"><button class="secondary" id="cancelUndo">Cancelar</button><button class="primary" id="confirmUndo">Desfazer venda</button></div></div>`);
- $("cancelUndo").onclick=closeModal;
- $("confirmUndo").onclick=async()=>{
-  const btn=$("confirmUndo");if(btn.disabled)return;btn.disabled=true;
-  try{
-   for(const i of (s.items||[])){
-    const p=data.products.find(x=>x.id===i.productId);
-    if(p)await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)+Number(i.qty||0)});
-   }
-   for(const pay of data.payments.filter(p=>p.saleId===s.id)) await deleteDoc(doc(col("payments"),pay.id));
-   await deleteDoc(doc(col("sales"),s.id));
-   await logAction("Venda desfeita",`${s.clientName||"Venda balcão"} • ${money(s.total)}`);
-   closeModal();toast("Venda desfeita!");go("sales");
-  }catch(e){console.error(e);btn.disabled=false;toast("Não foi possível desfazer a venda.")}
- };
-}
-
 async function resetBusinessData(){
  const names=["products","clients","sales","payments","purchases"];
  try{
