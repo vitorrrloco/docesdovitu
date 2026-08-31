@@ -28,37 +28,47 @@ body{overflow:hidden}button,input,select,textarea{font:inherit}input,select,text
 <div id="app"></div>
 <div id="modalRoot"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-import {
-  getFirestore, doc, getDoc, setDoc
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
-  authDomain: "doces-do-vitu.firebaseapp.com",
-  projectId: "doces-do-vitu",
-  storageBucket: "doces-do-vitu.firebasestorage.app",
-  messagingSenderId: "681586131940",
-  appId: "1:681586131940:web:e8c213d9865621467e7df1",
-  measurementId: "G-9QDNX23V8Z"
-};
-
-const app = initializeApp(firebaseConfig);
-const firestore = getFirestore(app);
-const dataRef = doc(firestore, "doces_vitu", "appData");
-
-window.firebaseCloud = {
-  ready: true,
-  async load() {
-    const snap = await getDoc(dataRef);
-    return snap.exists() ? snap.data() : null;
-  },
-  async save(data) {
-    await setDoc(dataRef, data, { merge: true });
-  }
-};
+<script>
+/* Firebase é opcional durante a inicialização.
+   O app renderiza primeiro para evitar tela branca em WebViews/celulares. */
+window.firebaseCloud = { ready:false };
 window.dispatchEvent(new Event("firebase-ready"));
+</script>
+<script type="module">
+try {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js");
+  const { getFirestore, doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js");
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
+    authDomain: "doces-do-vitu.firebaseapp.com",
+    projectId: "doces-do-vitu",
+    storageBucket: "doces-do-vitu.firebasestorage.app",
+    messagingSenderId: "681586131940",
+    appId: "1:681586131940:web:e8c213d9865621467e7df1",
+    measurementId: "G-9QDNX23V8Z"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const firestore = getFirestore(app);
+  const dataRef = doc(firestore, "doces_vitu", "appData");
+
+  window.firebaseCloud = {
+    ready:true,
+    async load() {
+      const snap = await getDoc(dataRef);
+      return snap.exists() ? snap.data() : null;
+    },
+    async save(data) {
+      await setDoc(dataRef, data, { merge:true });
+    }
+  };
+  window.dispatchEvent(new Event("firebase-ready"));
+} catch (e) {
+  console.error("Firebase opcional indisponível:", e);
+  window.firebaseCloud = { ready:false };
+  window.dispatchEvent(new Event("firebase-ready"));
+}
 </script>
 
 <script>
@@ -208,8 +218,11 @@ render();
 
 async function syncFirebase(){
   try{
-    if(!window.firebaseCloud?.ready) await new Promise(resolve=>window.addEventListener("firebase-ready",resolve,{once:true}));
-    const cloud = await window.firebaseCloud.load();
+    if(!window.firebaseCloud?.ready) return;
+    const cloud = await Promise.race([
+      window.firebaseCloud.load(),
+      new Promise(resolve=>setTimeout(()=>resolve(null),5000))
+    ]);
     if(cloud){
       db = {
         products: cloud.products || [],
@@ -236,9 +249,18 @@ async function syncFirebase(){
     toast("☁️ Firebase conectado");
   }catch(e){
     console.error("Firebase:",e);
-    toast("Firebase indisponível. Dados locais mantidos.");
+    /* O sistema continua funcionando mesmo se as Rules/rede bloquearem o Firebase. */
   }
 }
-syncFirebase();
+setTimeout(syncFirebase,80);
+</script>
+<script>
+window.addEventListener("error", function(e){
+  if(!document.getElementById("app")?.innerHTML.trim()){
+    document.getElementById("app").innerHTML =
+      '<div style="height:100dvh;display:grid;place-items:center;padding:25px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Arial;background:#fbf3e8;color:#4a2819">' +
+      '<div><div style="font-size:52px">🍫</div><h2>DOCES DO VITU</h2><p>O sistema encontrou um erro ao iniciar.</p><button onclick="location.reload()" style="padding:13px 18px;border:0;border-radius:14px;background:#4a2819;color:white;font-weight:800">Tentar novamente</button></div></div>';
+  }
+});
 </script>
 </body></html>
