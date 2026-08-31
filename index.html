@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.0</title>
+<title>DOCES DO VITU 1.2.11</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -40,7 +40,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 .page{width:100%;max-width:720px;min-width:0;margin:auto;overflow-x:hidden}.head{display:flex;align-items:end;justify-content:space-between;margin:2px 2px 15px}.head h1{margin:0;font-size:28px;letter-spacing:-.5px}.head p{margin:4px 0 0;color:var(--muted);font-size:13px}
 .hero{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff;border-radius:25px;padding:19px;margin-bottom:13px;box-shadow:var(--shadow);display:flex;justify-content:space-between;gap:10px}.hero small{opacity:.72}.hero h2{font-size:28px;margin:5px 0}.hero p{margin:0;opacity:.78;font-size:12px}.hero .emoji{font-size:42px;align-self:center}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.stat{background:var(--white);border:1px solid var(--line);border-radius:19px;padding:15px;min-height:105px;box-shadow:var(--shadow)}.stat small{display:block;color:var(--muted);font-size:11px}.stat strong{display:block;font-size:22px;margin-top:7px}.stat .green{color:var(--green)}.stat .red{color:var(--red)}
-.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:19px}.quick button{background:var(--white);border:1px solid var(--line);border-radius:17px;min-height:68px;text-align:left;padding:12px;box-shadow:0 4px 14px #4a281908}.quick b{display:block;font-size:13px}.quick span{font-size:22px;float:left;margin-right:9px}
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:19px}.quick-launch{background:var(--dark)!important;color:#fff!important;border-color:var(--dark)!important;grid-column:1/-1;min-height:58px!important;text-align:center!important;padding:10px 14px!important;display:flex;align-items:center;justify-content:center;gap:8px}.quick-launch span{float:none!important;margin:0!important;font-size:22px}.quick-launch b{display:inline!important;font-size:14px}.fast-products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}.fast-product{background:var(--cream2);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:left;min-height:58px;color:var(--dark)}.fast-product b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fast-product small{display:block;margin-top:3px;color:var(--muted);font-size:10px}.quick-client-results{max-height:170px;overflow:auto;margin-top:6px}.quick-client-results .client-result{background:var(--white);border:1px solid var(--line);margin-bottom:5px}.quick button{background:var(--white);border:1px solid var(--line);border-radius:17px;min-height:68px;text-align:left;padding:12px;box-shadow:0 4px 14px #4a281908}.quick b{display:block;font-size:13px}.quick span{font-size:22px;float:left;margin-right:9px}
 .section{margin-top:15px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:0 2px 9px}.section-title b{font-size:17px}.link{background:none;color:var(--brown);font-size:12px;font-weight:800}
 .list{display:grid;gap:9px}.item{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;align-items:center;gap:10px}.avatar{width:43px;height:43px;flex:0 0 43px;border-radius:14px;background:var(--cream2);display:grid;place-items:center;font-size:19px}.item-main{min-width:0;flex:1}.item-main b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item-main small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.item-right{text-align:right}.item-right b{display:block;font-size:13px}.status{font-size:9px;font-weight:800;margin-top:4px}.paid{color:var(--green)}.pending{color:var(--red)}.partial{color:var(--orange)}
 .client-results{position:relative;left:auto;right:auto;top:auto;z-index:10000;background:var(--white);border:1px solid var(--line);border-radius:15px;box-shadow:0 12px 30px #0002;max-height:240px;overflow:auto;padding:6px}.client-result{display:flex;flex-direction:column;align-items:flex-start;width:100%;background:transparent;color:var(--text);padding:11px 12px;border-radius:11px;text-align:left}.client-result:hover,.client-result:focus,.client-result.active{background:var(--cream2);outline:none}.client-result small{color:var(--muted);font-size:11px;margin-top:2px}.client-no-results{padding:12px;color:var(--muted);font-size:13px}.search{height:50px;width:100%;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 14px;outline:none;margin-bottom:10px}
@@ -85,6 +85,32 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .nav{display:grid;grid-template-columns:repeat(5,1fr)}
   .nav:before{display:none}
 }
+
+/* V1.2.0 FINAL - Financeiro compacto e centralizado no celular */
+.finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
+.finance-duo .analysis-card{min-width:0;padding:13px}
+.finance-duo .section-title b{font-size:15px}
+.finance-duo .item{padding:10px;border-radius:15px;gap:8px}
+.finance-duo .avatar{width:38px;height:38px;flex-basis:38px;border-radius:12px;font-size:17px}
+.finance-duo .item-main b{font-size:13px}
+.finance-duo .item-main small{font-size:9px}
+@media(max-width:899px){
+  .finance-duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;width:calc(100% - 8px);margin-left:auto;margin-right:auto}
+  .finance-duo .analysis-card{padding:12px;border-radius:18px}
+}
+
+.finance-duo{justify-content:center}
+.finance-duo .top-sellers-list{max-height:126px;overflow-y:auto;overflow-x:hidden;padding-right:2px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.finance-duo .top-sellers-list .item{width:100%}
+@media(max-width:699px){
+  .finance-duo{width:100%;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;justify-items:center}
+  .finance-duo .analysis-card{width:min(100%,430px);min-width:0;box-sizing:border-box}
+  .finance-duo .top-sellers-list{width:100%;max-height:116px;overflow-y:auto;overflow-x:hidden;padding:0 2px;box-sizing:border-box;-webkit-overflow-scrolling:touch;scroll-snap-type:y proximity}
+  .finance-duo .top-sellers-list .item{width:100%;max-width:100%;box-sizing:border-box;scroll-snap-align:start}
+}
+
+.boot-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px;opacity:1;transition:opacity .18s ease,visibility .18s ease}.boot-loader.done{opacity:0;visibility:hidden;pointer-events:none}.boot-card{width:min(330px,88vw);text-align:center;padding:26px 22px;border-radius:22px;background:var(--white);box-shadow:0 14px 45px rgba(74,40,25,.14);display:flex;flex-direction:column;align-items:center;gap:8px}.boot-logo{font-size:42px;line-height:1}.boot-card b{font-size:19px;color:var(--dark)}.boot-card small{color:var(--muted);margin-bottom:8px}.boot-track{width:100%;height:7px;border-radius:99px;background:var(--cream2);overflow:hidden}.boot-bar{height:100%;width:0%;border-radius:99px;background:var(--brown);transition:width .12s ease}.boot-card strong{font-size:13px;color:var(--brown);min-height:18px}
+@media(prefers-reduced-motion:reduce){.boot-loader,.boot-bar{transition:none!important}}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -101,16 +127,21 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 @media(min-width:900px){#brandSplash img{width:300px}}
 </style>
 
-<script>
-window.DOCES_VITU_VERSION = "1.2.12";
-window.DOCES_VITU_LEGACY_SALES = {
-  count: 25,
-  revenue: 502.00,
-  receivable: 502.00,
-  profitIncluded: false,
-  note: "Vendas antigas sem composição de produtos/custos; não calcular lucro."
-};
-</script>
+<style id="professional-motion">
+/* V1.2.8: single-tap motion system, without duplicate click effects */
+.page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
+@keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.modal-bg{animation:modalFade .16s ease-out both}
+.modal-bg .modal{animation:modalEnter .20s cubic-bezier(.2,.8,.2,1) both;transform-origin:center bottom}
+@keyframes modalFade{from{opacity:0}to{opacity:1}}
+@keyframes modalEnter{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+button,.link,.client-result,.fast-product,.item[data-client],.item[data-product],.item[data-sale]{transition:transform .12s ease,box-shadow .12s ease,opacity .12s ease,background-color .12s ease,border-color .12s ease}
+button:active,.link:active,.client-result:active,.fast-product:active{transform:scale(.965);opacity:.9}
+button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-offset:2px}
+.view.page-swap{animation:pageSwap .22s ease-out both}
+@keyframes pageSwap{from{opacity:.15;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.page,.modal-bg,.modal-bg .modal,.view.page-swap,.press-feedback{animation:none!important}button,.link,.client-result,.fast-product{transition:none!important}}
+</style>
 
 </head>
 <body>
@@ -130,9 +161,11 @@ window.DOCES_VITU_LEGACY_SALES = {
  </div>
 </div>
 
+<div id="bootLoader" class="boot-loader" aria-live="polite"><div class="boot-card"><div class="boot-logo">🍫</div><b>DOCES DO VITU</b><small>Preparando seu sistema...</small><div class="boot-track"><div id="bootBar" class="boot-bar"></div></div><strong id="bootPct">0%</strong></div></div>
+
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.2.0</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.2.11</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -150,7 +183,7 @@ window.DOCES_VITU_LEGACY_SALES = {
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
@@ -163,7 +196,7 @@ const firebaseConfig={
 };
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
-let uid=null,unsubs=[],data={products:[],clients:[],sales:[],payments:[]},page="home";
+let uid=null,currentUserName="Vitor",currentUserEmail="",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[]},page="home";
 
 const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -181,24 +214,67 @@ $("createBtn").onclick=async()=>{try{msg("Criando conta...",true);await createUs
 $("password").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginBtn").click()});
 function firebaseError(e){return ({ "auth/invalid-credential":"E-mail ou senha incorretos.","auth/invalid-email":"Digite um e-mail válido.","auth/email-already-in-use":"Esse e-mail já possui uma conta.","auth/weak-password":"A senha precisa ter pelo menos 6 caracteres."}[e.code]||"Não foi possível entrar. Verifique sua conexão e os dados.")}
 
-onAuthStateChanged(auth,user=>{
- unsubs.forEach(u=>u());unsubs=[];
- if(!user){uid=null;$("app").classList.add("hidden");$("login").classList.remove("hidden");return}
- uid=user.uid;$("login").classList.add("hidden");$("app").classList.remove("hidden");subscribe();go("home");logAction("Login","Entrou no sistema");
-});
+let bootProgress=0;
+function bootSet(p){bootProgress=Math.max(0,Math.min(100,p));if($("bootBar")){$("bootBar").style.width=bootProgress+"%";$("bootPct").textContent=Math.round(bootProgress)+"%"}}
+function bootFinish(){bootSet(100);requestAnimationFrame(()=>setTimeout(()=>{$("bootLoader")?.classList.add("done")},80))}
 
-function col(name){return collection(db,"users",uid,name)}
+onAuthStateChanged(auth,async user=>{
+ unsubs.forEach(u=>u());unsubs=[];bootSet(0);
+ if(!user){uid=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('bootLoader').classList.add('done');return}
+ uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentUserEmail==='viitorcontas@gmail.com'?'Vitor':'Vitor';$('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');
+ try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
+
+function col(name){return collection(db,"businesses","docesDoVitu",name)}
+function oldCol(name){return collection(db,"users",uid,name)}
+async function migrateOwnDataToShared(){
+ const marker=`docesDoVituSharedMigration_${uid}`;
+ if(localStorage.getItem(marker)==="done") return;
+ const names=["products","clients","sales","payments","purchases","logs"];
+ for(const name of names){
+  const shared=await getDocs(col(name));
+  if(!shared.empty) continue;
+  const old=await getDocs(oldCol(name));
+  if(old.empty) continue;
+  await Promise.all(old.docs.map(d=>setDoc(doc(col(name),d.id),d.data())));
+ }
+ localStorage.setItem(marker,"done");
+}
 async function logAction(action,details=""){
  try{await addDoc(col("logs"),{action,details,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});}
  catch(e){console.warn("Log não salvo",e)}
 }
-function subscribe(){
- ["products","clients","sales","payments","logs"].forEach(name=>{
-  const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render()},()=>toast("Não foi possível sincronizar "+name+"."));
-  unsubs.push(u);
+async function seedImportedDebts(){
+ const markerRef=doc(col("meta"),"initialDebtsV1");
+ try{const marker=await getDoc(markerRef);if(marker.exists())return;
+  const debts={"Gilberto":47,"Gabriel":15,"Rafael":32,"Jacare":16,"Guedes":13,"Duarte":24,"Eduardo":57,"Steuck":1,"Richard":67,"Roger":22,"Daniel Ponick":22,"Gabriel Ponick":2,"Crystian":34,"Vitor":15,"Maria Eduarda":8,"Murilo":5,"Diovana":2,"Julio":6,"Marinho":20,"Kricinski":38,"Mohammed":5,"Samuel":20,"Emanuel":14,"Jonathan":4,"Eduardo Silveira":17};
+  const existing=await getDocs(col("clients"));
+  const byName=new Map(existing.docs.map(d=>[String(d.data().name||"").trim().toLowerCase(),d]));
+  for(const [name,value] of Object.entries(debts)){const found=byName.get(name.toLowerCase());if(found){const old=found.data();if(Number(old.initialDebt||0)===0)await updateDoc(found.ref,{initialDebt:value,initialDebtPaid:0});}else{await addDoc(col("clients"),{name,phone:"",initialDebt:value,initialDebtPaid:0,createdAt:serverTimestamp()});}}
+  await setDoc(markerRef,{done:true,total:502,createdAt:serverTimestamp()});
+ }catch(e){console.warn("Importação inicial de clientes pendentes não concluída",e)}
+}
+function subscribeReady(){
+ return new Promise(resolve=>{
+  const names=['products','clients','sales','payments','purchases']; let ready=0;
+  const seen=new Set();
+  names.forEach(name=>{
+   const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render();
+    if(!seen.has(name)){seen.add(name);ready++;bootSet(30+ready*13);if(ready===names.length)resolve();}
+   },()=>{if(!seen.has(name)){seen.add(name);ready++;if(ready===names.length)resolve();}toast('Não foi possível sincronizar '+name+'.')});
+   unsubs.push(u);
+  });
  });
 }
-function go(p){page=p;document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));render();$("view").scrollTo(0,0)}
+function subscribe(){return subscribeReady()}
+
+function go(p){
+ page=p;
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));
+ const view=$("view");
+ view.classList.remove("page-swap");
+ render();
+ requestAnimationFrame(()=>{view.classList.add("page-swap");view.scrollTo({top:0,behavior:"auto"});});
+}
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
 
@@ -222,6 +298,7 @@ function home(){
   <div class="stat"><small>PRODUTOS</small><strong>${data.products.length}</strong></div>
  </div>
  <div class="quick">
+  <button class="quick-launch" id="qQuickSale"><span>⚡️</span><b>Lançamentos rápidos</b></button>
   <button id="qSale"><span>🛒</span><b>Nova venda</b></button>
   <button id="qClient"><span>👤</span><b>Novo cliente</b></button>
   <button id="qProduct"><span>📦</span><b>Novo produto</b></button>
@@ -232,7 +309,7 @@ function home(){
  ${low.length?`<div class="section"><div class="section-title"><b>⚠️ Estoque baixo</b></div><div class="list">${low.slice(0,4).map(p=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque mínimo: ${p.minStock||2}</small></div><div class="item-right"><b>${p.stock||0} un.</b></div></div>`).join("")}</div></div>`:""}
  </div>`
 }
-function saleItem(s){let st=status(s.total,s.paid);return `<div class="item" data-sale="${s.id}"><div class="avatar">🍬</div><div class="item-main"><b>${esc(s.clientName||"Venda balcão")}</b><small>${dateTime(s.createdAt)} • ${esc(s.items?.map(i=>i.name).join(", ")||"Venda")}</small></div><div class="item-right"><b>${money(s.total)}</b><div class="status ${statusClass(st)}">${st}</div></div></div>`}
+function saleItem(s){let st=status(s.total,s.paid),disc=Number(s.discountPct||0);return `<div class="item" data-sale="${s.id}"><div class="avatar">🍬</div><div class="item-main"><b>${esc(s.clientName||"Venda balcão")}</b><small>${dateTime(s.createdAt)} • ${esc(s.items?.map(i=>i.name).join(", ")||"Venda")}${disc>0?` • <span style="color:var(--green,#2f8f68);font-weight:800">${disc.toFixed(2).replace('.',',')}% OFF</span>`:""}</small></div><div class="item-right"><b>${money(s.total)}</b><div class="status ${statusClass(st)}">${st}</div></div></div>`}
 
 function sales(){
  const rows=data.sales.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
@@ -247,17 +324,17 @@ function clients(){
  <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
-function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><button class="top-action" id="newProduct">＋</button></div>
  <input class="search" id="stockSearch" placeholder="🔎 Procurar produto">
  <div class="list" id="stockList">${productRows(data.products)}</div></div>`
 }
-function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${Number(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
+function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}${p.supplier?` • ${esc(p.supplier)}`:""}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${Number(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small><div style="display:flex;gap:5px;margin-top:7px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="secondary stock-remove-btn" data-remove-stock="${p.id}" style="padding:7px 8px;font-size:10px">➖ Remover</button><button type="button" class="secondary stock-delete-btn" data-delete-product="${p.id}" style="padding:7px 8px;font-size:10px;color:#a43f37">🗑️</button></div></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
 
 function finance(){
- const sales=data.sales||[], payments=data.payments||[], products=data.products||[], nowD=now();
+ const sales=data.sales||[], payments=data.payments||[], products=data.products||[], purchases=data.purchases||[], nowD=now();
  const monthStart=new Date(nowD.getFullYear(),nowD.getMonth(),1);monthStart.setHours(0,0,0,0);
  const nextMonth=new Date(nowD.getFullYear(),nowD.getMonth()+1,1);nextMonth.setHours(0,0,0,0);
  const monthSales=sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=monthStart&&d<nextMonth});
@@ -270,6 +347,9 @@ function finance(){
  const margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
  const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+Number(i.qty||0),0),0);
+ const allReceived=payments.reduce((a,p)=>a+Number(p.amount||0),0);
+ const allPurchases=purchases.reduce((a,p)=>a+Number(p.total||0),0);
+ const cash=allReceived-allPurchases;
  const byMethod={};monthPayments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+Number(p.amount||0)});
  const top={};monthSales.forEach(s=>(s.items||[]).forEach(i=>{top[i.name]=(top[i.name]||0)+Number(i.qty||0)}));
  const topRows=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name,q])=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(name)}</b><small>${q} unidade(s) vendida(s)</small></div></div>`).join("")||'<div class="empty">Ainda não há vendas neste mês.</div>';
@@ -281,12 +361,13 @@ function finance(){
   <div class="finance-card"><small>Margem de lucro</small><strong>${margin.toFixed(1)}%</strong><p>sobre o faturamento</p></div>
   <div class="finance-card"><small>Ticket médio</small><strong>${money(ticket)}</strong><p>por venda</p></div>
   <div class="finance-card"><small>Recebido no mês</small><strong class="finance-positive">${money(received)}</strong><p>pagamentos registrados</p></div>
+  <div class="finance-card"><small>Caixa atual</small><strong class="finance-positive">${money(cash)}</strong><p>recebimentos menos compras registradas</p></div>
   <div class="finance-card"><small>A receber</small><strong class="finance-negative">${money(pending)}</strong><p>das vendas deste mês</p></div>
   <div class="finance-card"><small>Custo dos produtos</small><strong>${money(cost)}</strong><p>custo informado no estoque</p></div>
   <div class="finance-card"><small>Itens vendidos</small><strong>${totalItems}</strong><p>unidades neste mês</p></div>
  </div>
  <div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">RESUMO</small><div style="margin-top:3px">Resultado financeiro do mês</div></div><strong>${money(profit)}</strong></div><div class="section" style="margin-top:15px"><div class="section-title"><span>Faturamento</span><b>${money(revenue)}</b></div><div class="section-title"><span>Custos</span><b>${money(cost)}</b></div><div class="section-title"><span>Recebido</span><b class="finance-positive">${money(received)}</b></div><div class="section-title"><span>Pendente</span><b class="finance-negative">${money(pending)}</b></div></div></div>
- <div class="row"><div class="analysis-card"><div class="section-title"><b>Recebimentos por forma</b></div>${methods}</div><div class="analysis-card"><div class="section-title"><b>Mais vendidos</b></div><div class="list">${topRows}</div></div></div>
+ <div class="row finance-duo"><div class="analysis-card"><div class="section-title"><b>Recebimentos por forma</b></div>${methods}</div><div class="analysis-card"><div class="section-title"><b>Mais vendidos</b></div><div class="list top-sellers-list">${topRows}</div></div></div>
  <div class="finance-actions"><button class="secondary" id="financeAnalysis">📈 Análise de vendas</button><button class="secondary" id="financeReceivables">💰 A receber</button><button class="secondary" id="financePayments">💵 Registrar pagamento</button><button class="secondary" id="financeAccount">⚙️ Conta</button></div>
  <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button></div>`;
 }
@@ -302,6 +383,39 @@ function more(){
  <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button></div>`
 }
 
+function openQuickSale(){
+ const products=data.products.filter(p=>Number(p.stock||0)>0);
+ if(!products.length){toast("Cadastre um produto com estoque primeiro.");return}
+ const clients=data.clients.slice().sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));
+ openModal("⚡️ Lançamento rápido",`<div class="form">
+  <div class="field"><label>Cliente</label><div style="position:relative"><input id="fqClientSearch" autocomplete="off" placeholder="🔎 Digite o nome ou deixe vazio para balcão"><input id="fqClient" type="hidden"><div id="fqClientResults" class="quick-client-results hidden"></div></div></div>
+  <div class="field"><label>Produto</label><div class="fast-products" id="fqProducts">${products.map(p=>`<button type="button" class="fast-product" data-fq-product="${p.id}"><b>${esc(p.name)}</b><small>${money(p.price)} • ${p.stock} un.</small></button>`).join("")}</div></div>
+  <div class="row"><div class="field"><label>Quantidade</label><input id="fqQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div><div class="field"><label>Valor líquido</label><input id="fqTotal" type="number" min="0" step="0.01" inputmode="decimal" value="0.00"></div></div><div id="fqDiscount" style="font-size:12px;min-height:18px;margin-top:-5px"></div>
+  <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="fqConfirm">Confirmar venda</button></div>
+ </div>`);
+ let selectedId=products[0].id;
+ const selected=()=>data.products.find(p=>p.id===selectedId);
+ const update=()=>{const p=selected(),q=Math.max(1,Number($("fqQty").value)||1);const original=(p?.price||0)*q;const field=$("fqTotal");if(document.activeElement!==field)field.value=original.toFixed(2);updateDiscount(original,Number(field.value)||0)};const updateDiscount=(original,finalValue)=>{const el=$("fqDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
+ document.querySelectorAll("[data-fq-product]").forEach(b=>b.onclick=()=>{selectedId=b.dataset.fqProduct;document.querySelectorAll("[data-fq-product]").forEach(x=>x.style.outline=x===b?"3px solid var(--brown)":"none");update()});
+ const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");
+ const drawClients=()=>{const q=search.value.trim().toLowerCase();const m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result" data-fq-client="${c.id}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';results.classList.remove("hidden")};
+ search.addEventListener("focus",drawClients);search.addEventListener("input",()=>{hidden.value="";drawClients()});
+ results.addEventListener("click",e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}});
+ $("fqQty").oninput=update;$("fqTotal").oninput=()=>{const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("fqTotal").value)||0);updateDiscount(original,val)};$("cancelModal").onclick=closeModal;update();
+ document.querySelector(`[data-fq-product="${selectedId}"]`)?.style.setProperty("outline","3px solid var(--brown)");
+ $("fqConfirm").onclick=async()=>{
+  try{
+   const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),originalTotal=p.price*q,total=Math.max(0,Number($("fqTotal").value)||0),discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0,c=data.clients.find(x=>x.id===$("fqClient").value);
+   if(total<=0)throw Error("Informe um valor válido para a venda.");
+   if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
+   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+   await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q});
+   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)}${discountPct>0?` • desconto ${discountPct.toFixed(2)}%`:""} • ${p.name} x${q}`);
+   await logAction("Estoque",`-${q} ${p.name} após venda`);
+   closeModal();toast("Venda registrada!");go("sales");
+  }catch(e){console.error(e);toast(e.message||"Não foi possível registrar a venda.")}
+ };
+}
 function openSale(){
  const products=data.products.filter(p=>Number(p.stock||0)>0);
  if(!products.length){toast("Cadastre um produto com estoque primeiro.");return}
@@ -309,11 +423,11 @@ function openSale(){
  openModal("Nova venda",`<div class="form">
  <div class="field"><label>Cliente</label><div class="client-picker" style="position:relative"><input id="mClientSearch" autocomplete="off" placeholder="🔎 Digite o nome do cliente..." aria-label="Pesquisar cliente"><input id="mClient" type="hidden" value=""><div id="mClientResults" class="client-results hidden"></div></div></div>
  <div class="field"><label>Produto</label><select id="mProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join("")}</select></div>
- <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Pago agora</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div></div>
+ <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Valor líquido</label><input id="mTotalValue" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div></div><div id="mDiscount" style="font-size:12px;min-height:18px;margin-top:-5px"></div><div class="field"><label>Pago agora</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div>
  <div class="field"><label>Pagamento</label><select id="mMethod"><option>Pagamento no salário</option><option>Dinheiro</option><option>Cartão</option><option>PIX</option></select></div>
  <div id="mTotal" style="font-size:20px;font-weight:900;margin-top:8px"></div>
  <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
- const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1);$("mTotal").textContent="Total: "+money((p?.price||0)*q)};
+ const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q;const field=$("mTotalValue");if(document.activeElement!==field)field.value=original.toFixed(2);$("mTotal").textContent="Total líquido: "+money(Number(field.value)||0);updateSaleDiscount(original,Number(field.value)||0)};const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
  const clientSearch=$("mClientSearch"),clientHidden=$("mClient"),clientResults=$("mClientResults");
  let activeIndex=-1;
  const showClientResults=(term="")=>{const q=term.trim().toLowerCase();const matches=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,12);clientResults.innerHTML=matches.map((c,i)=>`<button type="button" class="client-result" data-pick-client="${c.id}" data-index="${i}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';activeIndex=-1;clientResults.classList.remove("hidden")};
@@ -332,27 +446,39 @@ function openSale(){
  clientResults.addEventListener("mousedown",e=>e.preventDefault());
  clientResults.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const b=e.target.closest("[data-pick-client]");if(b)pickClient(b.dataset.pickClient)});
  document.addEventListener("mousedown",function closeClientDropdown(e){if(!clientSearch.contains(e.target)&&!clientResults.contains(e.target)){clientResults.classList.add("hidden")}}, {once:true});
- $("mProduct").onchange=update;$("mQty").oninput=update;update();
+ $("mProduct").onchange=update;$("mQty").oninput=update;$("mTotalValue").oninput=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("mTotalValue").value)||0);$("mTotal").textContent="Total líquido: "+money(val);updateSaleDiscount(original,val)};update();
  $("cancelModal").onclick=closeModal;$("confirmSale").onclick=async()=>{
   try{
-   let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),total=p.price*q;
+   let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),originalTotal=p.price*q,total=Math.max(0,Number($("mTotalValue").value)||0),discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
+   if(total<=0)throw Error("Informe um valor válido para a venda.");
    if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
    let paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),c=data.clients.find(x=>x.id===$("mClient").value);
-   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:p.price,cost:Number(p.cost||0)}],total,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
    await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q});
    if(paid>0)await addDoc(col("payments"),{saleId:ref.id,clientId:c?.id||"",clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
-   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`);
+   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)}${discountPct>0?` • desconto ${discountPct.toFixed(2)}%`:""} • ${p.name} x${q}`);
    await logAction("Estoque",`-${q} ${p.name} após venda`);
    closeModal();toast("Venda registrada!");go("sales");
   }catch(e){toast(e.message||"Não foi possível registrar.")}
  };
 }
+function clientPending(c){
+ const salesPending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))+salesPending;
+}
+function clientInitialPending(c){return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))}
 function openClient(c){
  const ss=data.sales.filter(s=>s.clientId===c.id).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
- const total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div>${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:12px">💸 Cobrar ${money(pending)}</button>`:""}<div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
+ const total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);
+ openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div>${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:12px">💸 Cobrar ${money(pending)}</button>`:""}<button class="secondary" id="editClientBtn" style="width:100%;margin-bottom:12px">✏️ Editar cliente</button><div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
  $("registerFromClient").onclick=()=>openPaymentForClient(c);
  if($("chargeClientModal"))$("chargeClientModal").onclick=()=>chargeClient(c);
+ $("editClientBtn").onclick=()=>openEditClient(c);
+}
+function openEditClient(c){
+ openModal("Editar cliente",`<div class="form"><div class="field"><label>Nome do cliente</label><input id="editClientName" value="${esc(c.name)}" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="editClientPhone" value="${esc(c.phone||"")}" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelEditClient">Cancelar</button><button class="primary" id="saveEditClient">Salvar alterações</button></div></div>`);
+ $("cancelEditClient").onclick=closeModal;
+ $("saveEditClient").onclick=async()=>{const name=$("editClientName").value.trim();if(!name)return toast("Digite o nome.");try{await updateDoc(doc(col("clients"),c.id),{name,phone:$("editClientPhone").value.trim()});await logAction("Cliente editado",`${c.name} → ${name}`);closeModal();toast("Cliente atualizado!")}catch(e){toast("Não foi possível editar o cliente.")}};
 }
 function pixPayload(amount){
  const value=Number(amount||0).toFixed(2);
@@ -366,7 +492,7 @@ function pixPayload(amount){
 }
 function chargeClient(c){openCharge(c)}
 function openCharge(c){
- const pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ const pending=clientPending(c);
  if(pending<=0){toast("Esse cliente não possui valor pendente.");return}
  const pix=pixPayload(pending);
  const text=`Opa, ${c.name}, os doces ficaram ${money(pending)}\nPix: vitorbernardo015@gmail.com\n\nOu pode copiar:\n\`${pix}\``;
@@ -379,12 +505,16 @@ function openCharge(c){
 }
 function openPaymentForClient(c){
  const pendingSales=data.sales.filter(s=>s.clientId===c.id&&Number(s.total||0)>Number(s.paid||0));
- if(!pendingSales.length){toast("Esse cliente não possui valor pendente.");return}
- openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${pendingSales.reduce((a,s)=>a+Math.max(0,s.total-s.paid),0).toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
+ const initialPending=clientInitialPending(c);
+ const totalPending=initialPending+pendingSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ if(totalPending<=0){toast("Esse cliente não possui valor pendente.");return}
+ openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${totalPending.toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
  $("savePay").onclick=async()=>{
   let amount=Number($("payValue").value)||0;if(amount<=0)return toast("Digite um valor.");
   try{
    let remaining=amount;
+   const useInitial=Math.min(initialPending,remaining);
+   if(useInitial>0){await updateDoc(doc(col("clients"),c.id),{initialDebtPaid:Number(c.initialDebtPaid||0)+useInitial});remaining-=useInitial;}
    for(const s of pendingSales){
     if(remaining<=0)break;
     const open=Math.max(0,Number(s.total)-Number(s.paid||0)),use=Math.min(open,remaining);
@@ -397,13 +527,83 @@ function openPaymentForClient(c){
   }catch(e){toast("Não foi possível registrar o pagamento.")}
  }
 }
+function openRemoveStock(p){
+ if(!p)return;
+ const current=Number(p.stock||0);
+ openModal("Remover do estoque",`<div class="form"><div class="section-title"><b>📦 ${esc(p.name)}</b><span>${current} un.</span></div><div class="field"><label>Quantidade a remover</label><input id="removeQty" type="number" min="1" max="${current}" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="field"><label>Motivo (opcional)</label><input id="removeReason" placeholder="Ex.: produto danificado"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmRemoveStock">Remover</button></div></div>`);
+ $("cancelModal").onclick=closeModal;
+ $("confirmRemoveStock").onclick=async()=>{
+  const qty=Math.floor(Number($("removeQty").value)||0),reason=$("removeReason").value.trim();
+  if(qty<1)return toast("Informe uma quantidade válida.");
+  if(qty>current)return toast("A quantidade não pode ser maior que o estoque atual.");
+  try{await updateDoc(doc(col("products"),p.id),{stock:current-qty});await logAction("Ajuste de estoque",`-${qty} ${p.name} • estoque ${current} → ${current-qty}${reason?` • ${reason}`:""}`);closeModal();toast("Estoque atualizado!");}catch(e){console.error(e);toast("Erro ao remover do estoque: "+(e.code||"verifique a conexão."));}
+ };
+}
+async function deleteProductConfirm(p){
+ if(!p)return;
+ openModal("Excluir produto",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Excluir ${esc(p.name)}?</b><br><small>O produto e o estoque atual serão removidos do cadastro. As vendas antigas e o histórico do Log não serão apagados.</small></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmDeleteProduct" style="background:#b5483f">Excluir produto</button></div></div>`);
+ $("cancelModal").onclick=closeModal;
+ $("confirmDeleteProduct").onclick=async()=>{try{await logAction("Produto excluído",`${p.name} • estoque anterior ${Number(p.stock||0)} un.`);await deleteDoc(doc(col("products"),p.id));closeModal();toast("Produto excluído!");}catch(e){console.error(e);toast("Erro ao excluir produto: "+(e.code||"verifique a conexão."));}};
+}
+
 function openProduct(p=null){
- openModal(p?"Editar produto":"Novo produto",`<div class="form"><div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}"></div><div class="row"><div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" value="${p?.price||""}"></div><div class="field"><label>Custo</label><input id="pCost" type="number" step="0.01" value="${p?.cost||""}"></div></div><div class="row"><div class="field"><label>Estoque</label><input id="pStock" type="number" min="0" value="${p?.stock||0}"></div><div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div></div>`);
- $("cancelModal").onclick=closeModal;$("saveProduct").onclick=async()=>{let obj={name:$("pName").value.trim(),price:Number($("pPrice").value)||0,cost:Number($("pCost").value)||0,stock:Number($("pStock").value)||0,minStock:Number($("pMin").value)||0};if(!obj.name||obj.price<=0)return toast("Preencha nome e preço.");try{if(p){await updateDoc(doc(col("products"),p.id),obj);await logAction("Produto alterado",`${obj.name} • preço ${money(obj.price)} • estoque ${obj.stock}`)}else{await addDoc(col("products"),{...obj,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction("Produto adicionado",`${obj.name} • estoque ${obj.stock}`)}closeModal();toast("Produto salvo!")}catch(e){toast("Erro ao salvar produto.")}}
+ const currentStock=Number(p?.stock||0);
+ const currentCost=Number(p?.cost||0);
+ openModal(p?"Editar produto":"Novo produto",`<div class="form">
+  <div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}" placeholder="Nome do doce"></div>
+  <div class="field"><label>Fornecedor (opcional)</label><input id="pSupplier" value="${esc(p?.supplier||"")}" placeholder="Nome do fornecedor"></div>
+  <div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" min="0" inputmode="decimal" value="${p?.price||""}"></div>
+  <div style="margin-top:4px;padding:13px;border-radius:15px;background:#fff8ef;border:1px solid #ecd9c3">
+   <b style="display:block;margin-bottom:8px">📦 Registrar compra / entrada de estoque</b>
+   <div class="row"><div class="field"><label>Quantidade comprada</label><input id="pPurchaseQty" type="number" min="0" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total da compra</label><input id="pPurchaseTotal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 17,99"></div></div>
+   <div id="pUnitPreview" style="font-size:13px;color:var(--muted);margin-top:3px">Informe quantidade e valor total para calcular o custo unitário automaticamente.</div>
+  </div>
+  <div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div>
+  <div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div>
+ </div>`);
+ $("cancelModal").onclick=closeModal;
+ const updatePurchasePreview=()=>{
+  const qty=Number($("pPurchaseQty")?.value)||0, total=Number($("pPurchaseTotal")?.value)||0;
+  const preview=$("pUnitPreview");
+  if(qty>0&&total>0){preview.textContent=`Custo unitário calculado: ${money(Math.round((total/qty)*100)/100)} por doce.`;preview.style.color="var(--green,#2f8f68)";}
+  else {preview.textContent="Informe quantidade e valor total para calcular o custo unitário automaticamente.";preview.style.color="var(--muted)";}
+ };
+ $("pPurchaseQty").oninput=updatePurchasePreview;$("pPurchaseTotal").oninput=updatePurchasePreview;
+ $("saveProduct").onclick=async()=>{
+  const name=$("pName").value.trim();
+  const supplier=$("pSupplier").value.trim();
+  const price=Number($("pPrice").value)||0;
+  const purchaseQty=Number($("pPurchaseQty").value)||0;
+  const purchaseTotal=Number($("pPurchaseTotal").value)||0;
+  const minStock=Number($("pMin").value)||0;
+  if(!name||price<=0)return toast("Preencha nome e preço.");
+  if(purchaseQty<0||purchaseTotal<0)return toast("Os valores da compra não podem ser negativos.");
+  if((purchaseQty>0&&purchaseTotal<=0)||(purchaseTotal>0&&purchaseQty<=0))return toast("Informe a quantidade e o valor total da compra.");
+  let stock=currentStock;
+  let cost=currentCost;
+  if(purchaseQty>0){
+    cost=Math.round((purchaseTotal/purchaseQty)*100)/100;
+    stock=currentStock+purchaseQty;
+  }
+  const obj={name,price,cost,stock,minStock,supplier};
+  try{
+   if(p){
+    await updateDoc(doc(col("products"),p.id),obj);
+    if(purchaseQty>0) await addDoc(col("purchases"),{productId:p.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    await logAction(purchaseQty>0?"Entrada de estoque":"Produto alterado",purchaseQty>0?`${name} • +${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • preço ${money(price)} • estoque ${stock}`);
+   }else{
+    const productRef=await addDoc(col("products"),{...obj,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    if(purchaseQty>0) await addDoc(col("purchases"),{productId:productRef.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    await logAction(purchaseQty>0?"Entrada de estoque":"Produto adicionado",purchaseQty>0?`${name} • ${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • estoque ${stock}`);
+   }
+   closeModal();toast("Produto salvo!");
+  }catch(e){console.error(e);toast("Erro ao salvar produto: "+(e.code||"verifique a conexão."));}
+ };
+ updatePurchasePreview();
 }
 function openClientForm(){
  openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
- $("cancelModal").onclick=closeModal;$("saveClient").onclick=async()=>{let name=$("cName").value.trim();if(!name)return toast("Digite o nome.");try{await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction("Cliente cadastrado",name);closeModal();toast("Cliente cadastrado!")}catch(e){toast("Erro ao salvar cliente.")}}
+ $("cancelModal").onclick=closeModal;$("saveClient").onclick=async()=>{let name=$("cName").value.trim();if(!name)return toast("Digite o nome.");try{await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),createdAt:serverTimestamp()});logAction("Cliente cadastrado",name);closeModal();toast("Cliente cadastrado!")}catch(e){console.error("Erro ao salvar cliente",e);toast("Erro ao salvar cliente: "+(e.code==="permission-denied"?"sem permissão no Firebase.":e.code||"verifique a conexão."))}}
 }
 
 function openAnalysis(){
@@ -429,9 +629,34 @@ function analysisHtml(kind){
  return `<div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">${periods[kind]}</small><div style="margin-top:3px">Total vendido</div></div><strong>${money(total)}</strong></div><div class="chart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline class="line" points="${pts}"/>${dots}${labels}</svg></div></div>`;
 }
 
-function openModal(title,content){$("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><h2>${title}</h2><button type="button" class="close" id="modalClose">×</button></div>${content}</div></div>`;$("modalClose").onclick=closeModal;$("modalRoot").querySelector(".modal-bg").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal()})}
+function openModal(title,content){
+ $("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><h2>${title}</h2><button type="button" class="close" id="modalClose">×</button></div>${content}</div></div>`;
+ const bg=$("modalRoot").querySelector(".modal-bg");
+ $("modalClose").onclick=closeModal;
+ bg.addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal()});
+ requestAnimationFrame(()=>bg.querySelector(".modal")?.focus?.());
+}
 function closeModal(){$("modalRoot").innerHTML=""}
 
+
+// Universal click/tap feedback, including dynamically-created modal controls.
+document.addEventListener("pointerdown",e=>{
+ const el=e.target.closest("button,.link,.client-result,.fast-product,[role=button]");
+ if(!el)return;
+ el.classList.remove("press-feedback");
+ void el.offsetWidth;
+ el.classList.add("press-feedback");
+ setTimeout(()=>el.classList.remove("press-feedback"),180);
+},{passive:true});
+document.addEventListener("keydown",e=>{
+ if(e.key!=="Enter" && e.key!==" ")return;
+ const el=document.activeElement;
+ if(!el || !el.matches("button,.link,.client-result,.fast-product,[role=button]"))return;
+ el.classList.remove("press-feedback");
+ void el.offsetWidth;
+ el.classList.add("press-feedback");
+ setTimeout(()=>el.classList.remove("press-feedback"),180);
+});
 
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape" && $("modalRoot").innerHTML) closeModal();
@@ -439,7 +664,7 @@ document.addEventListener("keydown",e=>{
 });
 
 function bindPage(){
- $("newSale")?.addEventListener("click",openSale);$("qSale")?.addEventListener("click",openSale);
+ $("newSale")?.addEventListener("click",openSale);$("qSale")?.addEventListener("click",openSale);$("qQuickSale")?.addEventListener("click",openQuickSale);
  $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
  $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());
  $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
@@ -450,13 +675,15 @@ function bindPage(){
  document.querySelectorAll("[data-client]").forEach(x=>x.onclick=e=>{if(e.target.closest(".charge-btn"))return;openClient(data.clients.find(c=>c.id===x.dataset.client))});
  document.querySelectorAll("[data-charge]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.charge);if(c)openCharge(c)});
  document.querySelectorAll("[data-charge-client]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.chargeClient);if(c)chargeClient(c)});
- document.querySelectorAll("[data-product]").forEach(x=>x.onclick=()=>openProduct(data.products.find(p=>p.id===x.dataset.product)));
+ document.querySelectorAll("[data-product]").forEach(x=>x.onclick=e=>{if(e.target.closest("[data-remove-stock]")||e.target.closest("[data-delete-product]"))return;openProduct(data.products.find(p=>p.id===x.dataset.product))});
+ document.querySelectorAll("[data-remove-stock]").forEach(x=>x.onclick=e=>{e.stopPropagation();openRemoveStock(data.products.find(p=>p.id===x.dataset.removeStock))});
+ document.querySelectorAll("[data-delete-product]").forEach(x=>x.onclick=e=>{e.stopPropagation();deleteProductConfirm(data.products.find(p=>p.id===x.dataset.deleteProduct))});
  document.querySelectorAll("[data-sale]").forEach(x=>x.onclick=()=>openSaleDetail(data.sales.find(s=>s.id===x.dataset.sale)));
  document.querySelectorAll("[data-sales-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-sales-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll("#salesBody tr").forEach(r=>{let f=b.dataset.salesFilter; r.style.display=f==="all"||r.dataset.status===f?"":"none"})});
  $("payments")?.addEventListener("click",()=>openReceivables());
  $("receivables")?.addEventListener("click",()=>openReceivables());
- $("account")?.addEventListener("click",openAccount);$("activityLog")?.addEventListener("click",openActivityLog);
- $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,s.total-s.paid),0);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
+ $("account")?.addEventListener("click",openAccount);
+ $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
 }
 function openSaleDetail(s){
  if(!s)return;let st=status(s.total,s.paid),pending=Math.max(0,s.total-s.paid);
@@ -464,7 +691,7 @@ function openSaleDetail(s){
  if($("detailPay"))$("detailPay").onclick=()=>{let c=data.clients.find(c=>c.id===s.clientId);closeModal();openPaymentForClient(c)}
 }
 async function resetBusinessData(){
- const names=["products","clients","sales","payments"];
+ const names=["products","clients","sales","payments","purchases"];
  try{
   const refs=[];
   names.forEach(name=>data[name].forEach(item=>refs.push(doc(col(name),item.id))));
@@ -472,6 +699,19 @@ async function resetBusinessData(){
   closeModal();toast("Dados do negócio resetados!");
  }catch(e){toast("Não foi possível resetar os dados. Tente novamente.")}
 }
+async function resetActivityLog(){
+ try{
+  const snap=await getDocs(col("logs"));
+  if(!snap.empty) await Promise.all(snap.docs.map(d=>deleteDoc(doc(col("logs"),d.id))));
+  data.logs=[];
+  closeModal();
+  toast("Log de atividades resetado!");
+ }catch(e){
+  console.error(e);
+  toast("Não foi possível resetar o log. Verifique as permissões do Firebase.");
+ }
+}
+
 function openAccount(){
  openModal("Conta",`<div class="form">
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
@@ -482,9 +722,11 @@ function openAccount(){
     <b style="color:#a9463b">Zona de dados</b>
     <p style="margin:5px 0 12px;color:var(--muted);font-size:12px;line-height:1.45">Apaga produtos, estoque, clientes, vendas e pagamentos desta conta. O login e a configuração do PIX permanecem.</p>
     <button class="secondary" id="resetBusiness" style="width:100%;color:#a9463b;border-color:#e6bdb7">🗑️ Resetar dados do negócio</button>
+    <button class="secondary" id="resetLog" style="width:100%;margin-top:8px;color:#a9463b;border-color:#e6bdb7">📋 Resetar log de atividades</button>
    </div>
   </details>
  </div>`);
+ $("activityLog").onclick=openActivityLog;
  $("resetBusiness").onclick=()=>{
   openModal("Resetar dados?",`<div class="form">
    <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga os dados do negócio.</b><br><small>Produtos, estoque, clientes, vendas e pagamentos serão excluídos. O login e o PIX não serão apagados. Essa ação não pode ser desfeita.</small></div>
@@ -495,9 +737,28 @@ function openAccount(){
   $("resetConfirm").oninput=e=>$("confirmReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR";
   $("confirmReset").onclick=resetBusinessData;
  };
+ $("resetLog").onclick=()=>{
+  openModal("Resetar log?",`<div class="form">
+   <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga todo o histórico.</b><br><small>Vendas, estoque e clientes não serão apagados. Somente o Log de atividades será excluído.</small></div>
+   <div class="field"><label>Digite RESETAR LOG para confirmar</label><input id="resetLogConfirm" autocomplete="off" placeholder="RESETAR LOG"></div>
+   <div class="actions"><button class="secondary" id="cancelLogReset">Cancelar</button><button class="primary" id="confirmLogReset" disabled>Apagar log</button></div>
+  </div>`);
+  $("cancelLogReset").onclick=closeModal;
+  $("resetLogConfirm").oninput=e=>$("confirmLogReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR LOG";
+  $("confirmLogReset").onclick=resetActivityLog;
+ };
 }
-function openActivityLog(){
- const rows=(data.logs||[]).slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
+async function openActivityLog(){
+ let rows=[];
+ try{
+  const snap=await getDocs(col("logs"));
+  rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+  data.logs=rows;
+ }catch(e){
+  console.error(e);
+  toast("Não foi possível carregar o log. Verifique as permissões do Firebase.");
+ }
+ rows=rows.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
  const types=[...new Set(rows.map(x=>x.action).filter(Boolean))];
  openModal("Log de atividades",`<div class="form">
   <div class="row"><div class="field"><label>Usuário</label><select id="logUser"><option value="all">Todos</option>${[...new Set(rows.map(x=>x.createdByName||"Desconhecido"))].map(n=>`<option>${esc(n)}</option>`).join("")}</select></div><div class="field"><label>Ação</label><select id="logAction"><option value="all">Todas</option>${types.map(n=>`<option>${esc(n)}</option>`).join("")}</select></div></div>
@@ -507,7 +768,7 @@ function openActivityLog(){
  $("logUser").onchange=draw;$("logAction").onchange=draw;draw();
 }
 function openReceivables(){
- const rows=data.clients.map(c=>{let pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,s.total-s.paid),0);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);
+ const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);
  openModal("A receber",`<div class="list">${rows.map(c=>`<div class="item" data-pay-client="${c.id}"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valores pendentes</small></div><div class="item-right"><b class="pending">${money(c.pending)}</b></div></div>`).join("")||'<div class="empty">Ninguém com valor pendente. 🎉</div>'}</div>`);
  document.querySelectorAll("[data-pay-client]").forEach(x=>x.onclick=()=>{let c=data.clients.find(c=>c.id===x.dataset.payClient);closeModal();openPaymentForClient(c)})
 }
@@ -521,22 +782,5 @@ window.addEventListener("load",()=>{
   setTimeout(()=>s.remove(),700);
 });
 </script>
-
-<style>
-#siteVersion{
-  position:fixed;
-  top:6px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:999999;
-  font:600 10px/1.2 Arial,sans-serif;
-  letter-spacing:.2px;
-  opacity:.58;
-  pointer-events:none;
-  white-space:nowrap;
-}
-</style>
-<div id="siteVersion">DOCES DO VITU • V1.2.12</div>
-
 </body>
 </html>
