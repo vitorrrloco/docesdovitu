@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.7</title>
+<title>DOCES DO VITU 1.2.11</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -99,19 +99,6 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .finance-duo .analysis-card{padding:12px;border-radius:18px}
 }
 
-/* V1.2.5: microinterações e transições */
-@keyframes pageEnter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes tapPulse{0%{transform:scale(1)}50%{transform:scale(.97)}100%{transform:scale(1)}}
-.page{animation:pageEnter .19s ease-out both;will-change:opacity,transform}
-button{transition:transform .12s ease,opacity .12s ease,background-color .12s ease,box-shadow .12s ease}
-button:active{transform:scale(.97)}
-.nav button:active{transform:scale(.94)}
-@keyframes clickFeedback{0%{transform:scale(1)}45%{transform:scale(.95)}100%{transform:scale(1)}}
-.click-feedback{animation:clickFeedback .16s ease-out}
-.page{backface-visibility:hidden}
-
-.fast-product:active,.quick button:active,.secondary:active,.primary:active,.top-action:active{box-shadow:0 2px 8px #4a281922}
-@media(prefers-reduced-motion:reduce){.page,button{animation:none!important;transition:none!important}}
 .finance-duo{justify-content:center}
 .finance-duo .top-sellers-list{max-height:126px;overflow-y:auto;overflow-x:hidden;padding-right:2px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .finance-duo .top-sellers-list .item{width:100%}
@@ -121,6 +108,9 @@ button:active{transform:scale(.97)}
   .finance-duo .top-sellers-list{width:100%;max-height:116px;overflow-y:auto;overflow-x:hidden;padding:0 2px;box-sizing:border-box;-webkit-overflow-scrolling:touch;scroll-snap-type:y proximity}
   .finance-duo .top-sellers-list .item{width:100%;max-width:100%;box-sizing:border-box;scroll-snap-align:start}
 }
+
+.boot-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px;opacity:1;transition:opacity .18s ease,visibility .18s ease}.boot-loader.done{opacity:0;visibility:hidden;pointer-events:none}.boot-card{width:min(330px,88vw);text-align:center;padding:26px 22px;border-radius:22px;background:var(--white);box-shadow:0 14px 45px rgba(74,40,25,.14);display:flex;flex-direction:column;align-items:center;gap:8px}.boot-logo{font-size:42px;line-height:1}.boot-card b{font-size:19px;color:var(--dark)}.boot-card small{color:var(--muted);margin-bottom:8px}.boot-track{width:100%;height:7px;border-radius:99px;background:var(--cream2);overflow:hidden}.boot-bar{height:100%;width:0%;border-radius:99px;background:var(--brown);transition:width .12s ease}.boot-card strong{font-size:13px;color:var(--brown);min-height:18px}
+@media(prefers-reduced-motion:reduce){.boot-loader,.boot-bar{transition:none!important}}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -138,7 +128,7 @@ button:active{transform:scale(.97)}
 </style>
 
 <style id="professional-motion">
-/* V1.2.7: motion system for every interaction */
+/* V1.2.8: single-tap motion system, without duplicate click effects */
 .page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
 @keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .modal-bg{animation:modalFade .16s ease-out both}
@@ -148,22 +138,20 @@ button:active{transform:scale(.97)}
 button,.link,.client-result,.fast-product,.item[data-client],.item[data-product],.item[data-sale]{transition:transform .12s ease,box-shadow .12s ease,opacity .12s ease,background-color .12s ease,border-color .12s ease}
 button:active,.link:active,.client-result:active,.fast-product:active{transform:scale(.965);opacity:.9}
 button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-offset:2px}
-.press-feedback{animation:pressFlash .16s ease-out}
-@keyframes pressFlash{0%{transform:scale(.965)}100%{transform:scale(1)}}
 .view.page-swap{animation:pageSwap .22s ease-out both}
 @keyframes pageSwap{from{opacity:.15;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.page,.modal-bg,.modal-bg .modal,.view.page-swap,.press-feedback{animation:none!important}button,.link,.client-result,.fast-product{transition:none!important}}
 </style>
 
 <style>
-.sale-processing-overlay{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(20,12,8,.20);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
-.sale-processing-card{width:min(84vw,320px);padding:24px 18px;border-radius:22px;text-align:center;background:var(--white);box-shadow:0 18px 55px #0003}
-.sale-spinner{width:40px;height:40px;border:4px solid var(--cream2);border-top-color:var(--green);border-radius:50%;margin:0 auto 12px;animation:saleSpin .58s linear infinite}
-.sale-check{font-size:42px;color:var(--green);line-height:1;animation:saleCheck .22s ease-out both}
-.sale-processing-card b{display:block;font-size:17px}.sale-processing-card small{display:block;color:var(--muted);margin-top:5px}
-@keyframes saleSpin{to{transform:rotate(360deg)}}@keyframes saleCheck{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
-</style><style>#siteVersion{position:fixed;top:5px;left:50%;transform:translateX(-50%);z-index:999999;font:600 10px Arial,sans-serif;opacity:.5;pointer-events:none}</style></head>
-<body><div id="siteVersion">V1.2.13</div>
+.sale-processing-overlay{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;background:rgba(20,12,8,.20);backdrop-filter:blur(2px)}
+.sale-processing-card{width:min(84vw,320px);padding:24px 18px;border-radius:22px;text-align:center;background:var(--white,#fff);box-shadow:0 18px 55px #0003}
+.sale-spinner{width:40px;height:40px;border:4px solid #eaded5;border-top-color:var(--green,#3d8f67);border-radius:50%;margin:0 auto 12px;animation:svSpin .58s linear infinite}
+.sale-check{font-size:44px;color:var(--green,#3d8f67);line-height:1;animation:svCheck .2s ease-out both}
+.sale-processing-card b{display:block;font-size:17px}.sale-processing-card small{display:block;color:var(--muted,#777);margin-top:5px}
+@keyframes svSpin{to{transform:rotate(360deg)}}@keyframes svCheck{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
+</style></head>
+<body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
 </div>
@@ -180,9 +168,11 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
  </div>
 </div>
 
+<div id="bootLoader" class="boot-loader" aria-live="polite"><div class="boot-card"><div class="boot-logo">🍫</div><b>DOCES DO VITU</b><small>Preparando seu sistema...</small><div class="boot-track"><div id="bootBar" class="boot-bar"></div></div><strong id="bootPct">0%</strong></div></div>
+
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.2.7</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.13</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -200,7 +190,7 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
@@ -231,11 +221,15 @@ $("createBtn").onclick=async()=>{try{msg("Criando conta...",true);await createUs
 $("password").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginBtn").click()});
 function firebaseError(e){return ({ "auth/invalid-credential":"E-mail ou senha incorretos.","auth/invalid-email":"Digite um e-mail válido.","auth/email-already-in-use":"Esse e-mail já possui uma conta.","auth/weak-password":"A senha precisa ter pelo menos 6 caracteres."}[e.code]||"Não foi possível entrar. Verifique sua conexão e os dados.")}
 
+let bootProgress=0;
+function bootSet(p){bootProgress=Math.max(0,Math.min(100,p));if($("bootBar")){$("bootBar").style.width=bootProgress+"%";$("bootPct").textContent=Math.round(bootProgress)+"%"}}
+function bootFinish(){bootSet(100);requestAnimationFrame(()=>setTimeout(()=>{$("bootLoader")?.classList.add("done")},80))}
+
 onAuthStateChanged(auth,async user=>{
- unsubs.forEach(u=>u());unsubs=[];
- if(!user){uid=null;$("app").classList.add("hidden");$("login").classList.remove("hidden");return}
- uid=user.uid;currentUserEmail=(user.email||"").toLowerCase();currentUserName=currentUserEmail==="xlocox000@gmail.com"?"Eduardo":currentUserEmail==="viitorcontas@gmail.com"?"Vitor":"Vitor";$("currentUser").textContent="👤 "+currentUserName;$("login").classList.add("hidden");$("app").classList.remove("hidden");try{await migrateOwnDataToShared()}catch(e){console.warn("Migração para base compartilhada não concluída",e)}subscribe();go("home");logAction("Login","Entrou no sistema");
-});
+ unsubs.forEach(u=>u());unsubs=[];bootSet(0);
+ if(!user){uid=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('bootLoader').classList.add('done');return}
+ uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentUserEmail==='viitorcontas@gmail.com'?'Vitor':'Vitor';$('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');
+ try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
 
 function col(name){return collection(db,"businesses","docesDoVitu",name)}
 function oldCol(name){return collection(db,"users",uid,name)}
@@ -256,12 +250,30 @@ async function logAction(action,details=""){
  try{await addDoc(col("logs"),{action,details,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});}
  catch(e){console.warn("Log não salvo",e)}
 }
-function subscribe(){
- ["products","clients","sales","payments","purchases"].forEach(name=>{
-  const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render()},()=>toast("Não foi possível sincronizar "+name+"."));
-  unsubs.push(u);
+async function seedImportedDebts(){
+ const markerRef=doc(col("meta"),"initialDebtsV1");
+ try{const marker=await getDoc(markerRef);if(marker.exists())return;
+  const debts={"Gilberto":47,"Gabriel":15,"Rafael":32,"Jacare":16,"Guedes":13,"Duarte":24,"Eduardo":57,"Steuck":1,"Richard":67,"Roger":22,"Daniel Ponick":22,"Gabriel Ponick":2,"Crystian":34,"Vitor":15,"Maria Eduarda":8,"Murilo":5,"Diovana":2,"Julio":6,"Marinho":20,"Kricinski":38,"Mohammed":5,"Samuel":20,"Emanuel":14,"Jonathan":4,"Eduardo Silveira":17};
+  const existing=await getDocs(col("clients"));
+  const byName=new Map(existing.docs.map(d=>[String(d.data().name||"").trim().toLowerCase(),d]));
+  for(const [name,value] of Object.entries(debts)){const found=byName.get(name.toLowerCase());if(found){const old=found.data();if(Number(old.initialDebt||0)===0)await updateDoc(found.ref,{initialDebt:value,initialDebtPaid:0});}else{await addDoc(col("clients"),{name,phone:"",initialDebt:value,initialDebtPaid:0,createdAt:serverTimestamp()});}}
+  await setDoc(markerRef,{done:true,total:502,createdAt:serverTimestamp()});
+ }catch(e){console.warn("Importação inicial de clientes pendentes não concluída",e)}
+}
+function subscribeReady(){
+ return new Promise(resolve=>{
+  const names=['products','clients','sales','payments','purchases']; let ready=0;
+  const seen=new Set();
+  names.forEach(name=>{
+   const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render();
+    if(!seen.has(name)){seen.add(name);ready++;bootSet(30+ready*13);if(ready===names.length)resolve();}
+   },()=>{if(!seen.has(name)){seen.add(name);ready++;if(ready===names.length)resolve();}toast('Não foi possível sincronizar '+name+'.')});
+   unsubs.push(u);
+  });
  });
 }
+function subscribe(){return subscribeReady()}
+
 function go(p){
  page=p;
  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));
@@ -272,16 +284,6 @@ function go(p){
 }
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
-
-// V1.2.6: feedback visual em todo clique de botão/controle clicável.
-document.addEventListener("click",e=>{
- const el=e.target.closest("button,[role=button],.clickable");
- if(!el || el.disabled || el.classList.contains("click-feedback")) return;
- el.classList.remove("click-feedback");
- void el.offsetWidth;
- el.classList.add("click-feedback");
- setTimeout(()=>el.classList.remove("click-feedback"),170);
-},{passive:true});
 
 function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="finance")v.innerHTML=finance();bindPage()}
 function totals(){
@@ -329,7 +331,7 @@ function clients(){
  <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
-function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><button class="top-action" id="newProduct">＋</button></div>
@@ -409,19 +411,25 @@ function openQuickSale(){
  $("fqQty").oninput=update;$("fqTotal").oninput=()=>{const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("fqTotal").value)||0);updateDiscount(original,val)};$("cancelModal").onclick=closeModal;update();
  document.querySelector(`[data-fq-product="${selectedId}"]`)?.style.setProperty("outline","3px solid var(--brown)");
  $("fqConfirm").onclick=async()=>{
-  const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;btn.dataset.busy="1";
-  const overlay=showSaleProcessing();
-  try{
-   const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),originalTotal=p.price*q,total=Math.max(0,Number($("fqTotal").value)||0),discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0,c=data.clients.find(x=>x.id===$("fqClient").value);
-   if(total<=0)throw Error("Informe um valor válido para a venda.");
-   if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
-   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-   await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q});
-   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)}${discountPct>0?` • desconto ${discountPct.toFixed(2)}%`:""} • ${p.name} x${q}`);
-   await logAction("Estoque",`-${q} ${p.name} após venda`);
-   closeModal();render();go("dashboard");saleConfirmed(overlay);
-  }catch(e){console.error(e);overlay.remove();toast(e.message||"Não foi possível registrar a venda.")}finally{btn.dataset.busy="0"}
- };
+ const btn=$("fqConfirm");if(!btn||btn.dataset.busy==="1")return;btn.dataset.busy="1";
+ const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Registrando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);
+ try{
+  const p=data.products.find(x=>x.id===selectedId),q=Math.max(1,Number($("fqQty").value)||1),total=Math.max(0,Number($("fqTotal").value)||0),clientId=$("fqClient").value||"";
+  if(!p)throw Error("Selecione um produto.");
+  if(total<=0)throw Error("Informe o valor da venda.");
+  if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
+  const c=data.clients.find(x=>x.id===clientId),originalTotal=Number(p.price||0)*q,discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
+  const saleRef=doc(col("sales"));
+  await Promise.all([
+   setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
+   updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q}),
+   logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`)
+  ]);
+  closeModal();render();go("home");
+  overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';
+  setTimeout(()=>overlay.remove(),550);
+ }catch(e){console.error(e);overlay.remove();toast(e.message||"Não foi possível registrar a venda.")}finally{btn.dataset.busy="0"}
+};
 }
 function openSale(){
  const products=data.products.filter(p=>Number(p.stock||0)>0);
@@ -455,28 +463,44 @@ function openSale(){
  document.addEventListener("mousedown",function closeClientDropdown(e){if(!clientSearch.contains(e.target)&&!clientResults.contains(e.target)){clientResults.classList.add("hidden")}}, {once:true});
  $("mProduct").onchange=update;$("mQty").oninput=update;$("mTotalValue").oninput=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("mTotalValue").value)||0);$("mTotal").textContent="Total líquido: "+money(val);updateSaleDiscount(original,val)};update();
  $("cancelModal").onclick=closeModal;$("confirmSale").onclick=async()=>{
-  const btn=$("confirmSale");if(btn.dataset.busy==="1")return;btn.dataset.busy="1";
-  const overlay=showSaleProcessing();
-  try{
-   let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),originalTotal=p.price*q,total=Math.max(0,Number($("mTotalValue").value)||0),discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
-   if(total<=0)throw Error("Informe um valor válido para a venda.");
-   if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
-   let paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),c=data.clients.find(x=>x.id===$("mClient").value);
-   const ref=await addDoc(col("sales"),{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-   await updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q});
-   if(paid>0)await addDoc(col("payments"),{saleId:ref.id,clientId:c?.id||"",clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
-   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)}${discountPct>0?` • desconto ${discountPct.toFixed(2)}%`:""} • ${p.name} x${q}`);
-   await logAction("Estoque",`-${q} ${p.name} após venda`);
-   closeModal();render();go("dashboard");saleConfirmed(overlay);
-  }catch(e){overlay.remove();toast(e.message||"Não foi possível registrar.")}finally{btn.dataset.busy="0"}
- };
+ const btn=$("confirmSale");if(!btn||btn.dataset.busy==="1")return;btn.dataset.busy="1";
+ const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Registrando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);
+ try{
+  const p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),total=Math.max(0,Number($("mTotalValue").value)||0),clientId=$("mClient").value||"";
+  if(!p)throw Error("Selecione um produto.");
+  if(total<=0)throw Error("Informe o valor da venda.");
+  if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
+  const c=data.clients.find(x=>x.id===clientId),paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),originalTotal=Number(p.price||0)*q,discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
+  const saleRef=doc(col("sales"));
+  await Promise.all([
+   setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
+   updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q}),
+   logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`)
+  ]);
+  if(paid>0)await addDoc(col("payments"),{saleId:saleRef.id,clientId,clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
+  closeModal();render();go("home");
+  overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';
+  setTimeout(()=>overlay.remove(),550);
+ }catch(e){console.error(e);overlay.remove();toast(e.message||"Não foi possível registrar a venda.")}finally{btn.dataset.busy="0"}
+};
 }
+function clientPending(c){
+ const salesPending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))+salesPending;
+}
+function clientInitialPending(c){return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))}
 function openClient(c){
  const ss=data.sales.filter(s=>s.clientId===c.id).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
- const total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div>${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:12px">💸 Cobrar ${money(pending)}</button>`:""}<div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
+ const total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);
+ openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div>${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:12px">💸 Cobrar ${money(pending)}</button>`:""}<button class="secondary" id="editClientBtn" style="width:100%;margin-bottom:12px">✏️ Editar cliente</button><div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
  $("registerFromClient").onclick=()=>openPaymentForClient(c);
  if($("chargeClientModal"))$("chargeClientModal").onclick=()=>chargeClient(c);
+ $("editClientBtn").onclick=()=>openEditClient(c);
+}
+function openEditClient(c){
+ openModal("Editar cliente",`<div class="form"><div class="field"><label>Nome do cliente</label><input id="editClientName" value="${esc(c.name)}" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="editClientPhone" value="${esc(c.phone||"")}" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelEditClient">Cancelar</button><button class="primary" id="saveEditClient">Salvar alterações</button></div></div>`);
+ $("cancelEditClient").onclick=closeModal;
+ $("saveEditClient").onclick=async()=>{const name=$("editClientName").value.trim();if(!name)return toast("Digite o nome.");try{await updateDoc(doc(col("clients"),c.id),{name,phone:$("editClientPhone").value.trim()});await logAction("Cliente editado",`${c.name} → ${name}`);closeModal();toast("Cliente atualizado!")}catch(e){toast("Não foi possível editar o cliente.")}};
 }
 function pixPayload(amount){
  const value=Number(amount||0).toFixed(2);
@@ -490,7 +514,7 @@ function pixPayload(amount){
 }
 function chargeClient(c){openCharge(c)}
 function openCharge(c){
- const pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ const pending=clientPending(c);
  if(pending<=0){toast("Esse cliente não possui valor pendente.");return}
  const pix=pixPayload(pending);
  const text=`Opa, ${c.name}, os doces ficaram ${money(pending)}\nPix: vitorbernardo015@gmail.com\n\nOu pode copiar:\n\`${pix}\``;
@@ -503,12 +527,16 @@ function openCharge(c){
 }
 function openPaymentForClient(c){
  const pendingSales=data.sales.filter(s=>s.clientId===c.id&&Number(s.total||0)>Number(s.paid||0));
- if(!pendingSales.length){toast("Esse cliente não possui valor pendente.");return}
- openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${pendingSales.reduce((a,s)=>a+Math.max(0,s.total-s.paid),0).toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
+ const initialPending=clientInitialPending(c);
+ const totalPending=initialPending+pendingSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ if(totalPending<=0){toast("Esse cliente não possui valor pendente.");return}
+ openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${totalPending.toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
  $("savePay").onclick=async()=>{
   let amount=Number($("payValue").value)||0;if(amount<=0)return toast("Digite um valor.");
   try{
    let remaining=amount;
+   const useInitial=Math.min(initialPending,remaining);
+   if(useInitial>0){await updateDoc(doc(col("clients"),c.id),{initialDebtPaid:Number(c.initialDebtPaid||0)+useInitial});remaining-=useInitial;}
    for(const s of pendingSales){
     if(remaining<=0)break;
     const open=Math.max(0,Number(s.total)-Number(s.paid||0)),use=Math.min(open,remaining);
@@ -677,69 +705,13 @@ function bindPage(){
  $("payments")?.addEventListener("click",()=>openReceivables());
  $("receivables")?.addEventListener("click",()=>openReceivables());
  $("account")?.addEventListener("click",openAccount);
- $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,s.total-s.paid),0);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
+ $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
 }
 function openSaleDetail(s){
- if(!s)return;
- const pending=Math.max(0,Number(s.total||0)-Number(s.paid||0));
- openModal("Venda",`<div class="form">
-  <div class="section-title"><b>${esc(s.clientName||"Venda balcão")}</b><span>${dateTime(s.createdAt)}</span></div>
-  ${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(Number(i.qty||0)*Number(i.price||0))}</b></div></div>`).join("")}
-  <div class="section-title" style="margin-top:13px"><b>Total</b><b>${money(s.total)}</b></div>
-  <div class="section-title"><span>Pago</span><b class="paid">${money(s.paid)}</b></div>
-  <div class="section-title"><span>Pendente</span><b class="${pending>0?'pending':'paid'}">${money(pending)}</b></div>
-  ${pending>0&&s.clientId?'<button class="primary" id="detailPay" style="margin-top:10px">💵 Registrar pagamento</button>':""}
-  <div class="actions" style="margin-top:10px"><button class="secondary" id="editSale">✏️ Alterar venda</button><button class="secondary" id="deleteSale" style="color:var(--red)">🗑️ Excluir venda</button></div>
- </div>`);
- if($("detailPay"))$("detailPay").onclick=()=>{const c=data.clients.find(x=>x.id===s.clientId);closeModal();if(c)openPaymentForClient(c)};
- $("editSale").onclick=()=>openEditSale(s);
- $("deleteSale").onclick=()=>confirmDeleteSale(s);
+ if(!s)return;let st=status(s.total,s.paid),pending=Math.max(0,s.total-s.paid);
+ openModal("Venda",`<div class="form"><div class="section-title"><b>${esc(s.clientName||"Venda balcão")}</b><span>${dateTime(s.createdAt)}</span></div>${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(i.qty*i.price)}</b></div></div>`).join("")}<div class="section-title" style="margin-top:13px"><b>Total</b><b>${money(s.total)}</b></div><div class="section-title"><span>Pago</span><b class="paid">${money(s.paid)}</b></div><div class="section-title"><span>Pendente</span><b class="${statusClass(st)}">${money(pending)}</b></div>${pending>0&&s.clientId?'<button class="primary" id="detailPay" style="margin-top:10px">💵 Registrar pagamento</button>':""}</div>`);
+ if($("detailPay"))$("detailPay").onclick=()=>{let c=data.clients.find(c=>c.id===s.clientId);closeModal();openPaymentForClient(c)}
 }
-function openEditSale(s){
- const products=data.products.filter(p=>Number(p.stock||0)>0||p.id===s.items?.[0]?.productId),clients=data.clients||[],item=s.items?.[0]||{};
- openModal("Alterar venda",`<div class="form">
-  <div class="field"><label>Cliente</label><select id="esClient"><option value="">Venda balcão</option>${clients.map(c=>`<option value="${c.id}" ${c.id===s.clientId?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div>
-  <div class="field"><label>Produto</label><select id="esProduct">${products.map(p=>`<option value="${p.id}" ${p.id===item.productId?"selected":""}>${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join("")}</select></div>
-  <div class="row"><div class="field"><label>Quantidade</label><input id="esQty" type="number" min="1" value="${Number(item.qty||1)}"></div><div class="field"><label>Valor líquido</label><input id="esTotal" type="number" min="0" step="0.01" value="${Number(s.total||0).toFixed(2)}" inputmode="decimal"></div></div>
-  <div id="esDiscount" style="font-size:12px;min-height:18px"></div>
-  <div class="field"><label>Pago</label><input id="esPaid" type="number" min="0" step="0.01" value="${Number(s.paid||0).toFixed(2)}"></div>
-  <div class="actions"><button class="secondary" id="esCancel">Cancelar</button><button class="primary" id="esSave">Salvar alterações</button></div>
- </div>`);
- const calc=()=>{const p=products.find(x=>x.id===$("esProduct").value),q=Math.max(1,Number($("esQty").value)||1),orig=Number(p?.price||0)*q,val=Math.max(0,Number($("esTotal").value)||0),d=$("esDiscount");d.innerHTML=orig>val?`<span style="color:var(--green);font-weight:800">🟢 Desconto ${money(orig-val)} (${((orig-val)/orig*100).toFixed(2).replace(".",",")}%)</span>`:""};
- $("esProduct").onchange=calc;$("esQty").oninput=calc;$("esTotal").oninput=calc;$("esCancel").onclick=closeModal;calc();
- $("esSave").onclick=async()=>{
-  const btn=$("esSave");if(btn.dataset.busy==="1")return;btn.dataset.busy="1";const overlay=showSaleProcessing("Salvando alterações...");
-  try{
-   const np=products.find(x=>x.id===$("esProduct").value),nq=Math.max(1,Number($("esQty").value)||1),nt=Math.max(0,Number($("esTotal").value)||0),paid=Math.max(0,Math.min(nt,Number($("esPaid").value)||0)),nc=clients.find(c=>c.id===$("esClient").value);
-   if(!np||nt<=0)throw Error("Informe produto e valor válidos.");
-   const oi=s.items?.[0]||{},op=data.products.find(p=>p.id===oi.productId),oq=Number(oi.qty||0);
-   const ops=[];
-   if(op&&op.id===np.id){const stock=Number(op.stock||0)+oq;if(nq>stock)throw Error("Estoque insuficiente.");ops.push(updateDoc(doc(col("products"),op.id),{stock:stock-nq}))}
-   else{if(nq>Number(np.stock||0))throw Error("Estoque insuficiente.");if(op)ops.push(updateDoc(doc(col("products"),op.id),{stock:Number(op.stock||0)+oq}));ops.push(updateDoc(doc(col("products"),np.id),{stock:Number(np.stock||0)-nq}))}
-   const orig=Number(np.price||0)*nq,disc=Math.max(0,orig-nt),pct=orig>0?disc/orig*100:0;
-   ops.push(updateDoc(doc(col("sales"),s.id),{clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",items:[{productId:np.id,name:np.name,qty:nq,price:nt/nq,originalPrice:np.price,cost:Number(np.cost||0)}],originalTotal:orig,total:nt,discountAmount:disc,discountPct:pct,paid,updatedAt:serverTimestamp()}));
-   const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));
-   if(paid>0)ops.push(addDoc(col("payments"),{saleId:s.id,clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",amount:paid,createdAt:serverTimestamp(),method:s.paymentMethod||"Pagamento"}));
-   ops.push(logAction("Venda alterada",`${s.clientName||"Venda balcão"} • ${money(nt)}`));
-   await Promise.all(ops);closeModal();render();toast("Venda alterada!");saleConfirmed(overlay);
-  }catch(e){overlay.remove();toast(e.message||"Não foi possível alterar a venda.")}finally{btn.dataset.busy="0"}
- };
-}
-function confirmDeleteSale(s){
- openModal("Excluir venda?",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Tem certeza que deseja excluir esta venda?</b><br><small>${esc(s.clientName||"Venda balcão")} • ${money(s.total)}<br>O estoque será devolvido e os pagamentos vinculados serão removidos.</small></div><div class="field"><label>Digite EXCLUIR para confirmar</label><input id="delSaleText" autocomplete="off" placeholder="EXCLUIR"></div><div class="actions"><button class="secondary" id="delCancel">Cancelar</button><button class="primary" id="delDo" disabled>Excluir venda</button></div></div>`);
- $("delCancel").onclick=closeModal;$("delSaleText").oninput=e=>$("delDo").disabled=e.target.value.trim().toUpperCase()!=="EXCLUIR";
- $("delDo").onclick=async()=>{
-  const btn=$("delDo");if(btn.dataset.busy==="1")return;btn.dataset.busy="1";const overlay=showSaleProcessing("Excluindo venda...");
-  try{
-   const ops=[];
-   for(const i of (s.items||[])){const p=data.products.find(x=>x.id===i.productId);if(p)ops.push(updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)+Number(i.qty||0)}))}
-   const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));
-   ops.push(deleteDoc(doc(col("sales"),s.id)));ops.push(logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`));
-   await Promise.all(ops);closeModal();render();saleConfirmed(overlay);
-  }catch(e){overlay.remove();toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy="0"}
- };
-}
-
 async function resetBusinessData(){
  const names=["products","clients","sales","payments","purchases"];
  try{
@@ -818,7 +790,7 @@ async function openActivityLog(){
  $("logUser").onchange=draw;$("logAction").onchange=draw;draw();
 }
 function openReceivables(){
- const rows=data.clients.map(c=>{let pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,s.total-s.paid),0);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);
+ const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);
  openModal("A receber",`<div class="list">${rows.map(c=>`<div class="item" data-pay-client="${c.id}"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valores pendentes</small></div><div class="item-right"><b class="pending">${money(c.pending)}</b></div></div>`).join("")||'<div class="empty">Ninguém com valor pendente. 🎉</div>'}</div>`);
  document.querySelectorAll("[data-pay-client]").forEach(x=>x.onclick=()=>{let c=data.clients.find(c=>c.id===x.dataset.payClient);closeModal();openPaymentForClient(c)})
 }
