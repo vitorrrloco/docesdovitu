@@ -131,7 +131,7 @@ function showSaleConfirmed(){const el=document.createElement("div");el.className
 
 function dashboard(){
  const rev=revenue(), rec=debtTotal(), avg=db.sales.length?rev/db.sales.length:0;
- const counts={};db.sales.forEach(s=>(counts[s.items?.[0]?.name||"Venda")&&(counts[s.items?.[0]?.name||"Venda"]=(counts[s.items?.[0]?.name||"Venda"]||0)+1));
+ const counts={};db.sales.forEach(s=>{const n=(s.items&&s.items[0]&&s.items[0].name)||"Venda";counts[n]=(counts[n]||0)+1;});
  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,2);
  return `<div class="page"><div class="head"><div><h1>Dashboard</h1><p>Visão geral da sua loja</p></div></div>
  <div class="hero"><div><small>Faturamento acumulado</small><h2>${money(rev)}</h2><p>${db.sales.length} lançamentos registrados</p></div><div class="emoji">🍫</div></div>
