@@ -222,7 +222,7 @@ onAuthStateChanged(auth,async user=>{
  unsubs.forEach(u=>u());unsubs=[];bootSet(0);
  if(!user){uid=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('bootLoader').classList.add('done');return}
  uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentUserEmail==='viitorcontas@gmail.com'?'Vitor':'Vitor';$('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');
- try{bootSet(15);await migrateOwnDataToShared();bootSet(30);await subscribeReady();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
+ try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
 
 function col(name){return collection(db,"businesses","docesDoVitu",name)}
 function oldCol(name){return collection(db,"users",uid,name)}
@@ -242,6 +242,16 @@ async function migrateOwnDataToShared(){
 async function logAction(action,details=""){
  try{await addDoc(col("logs"),{action,details,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});}
  catch(e){console.warn("Log não salvo",e)}
+}
+async function seedImportedDebts(){
+ const markerRef=doc(col("meta"),"initialDebtsV1");
+ try{const marker=await getDoc(markerRef);if(marker.exists())return;
+  const debts={"Gilberto":47,"Gabriel":15,"Rafael":32,"Jacare":16,"Guedes":13,"Duarte":24,"Eduardo":57,"Steuck":1,"Richard":67,"Roger":22,"Daniel Ponick":22,"Gabriel Ponick":2,"Crystian":34,"Vitor":15,"Maria Eduarda":8,"Murilo":5,"Diovana":2,"Julio":6,"Marinho":20,"Kricinski":38,"Mohammed":5,"Samuel":20,"Emanuel":14,"Jonathan":4,"Eduardo Silveira":17};
+  const existing=await getDocs(col("clients"));
+  const byName=new Map(existing.docs.map(d=>[String(d.data().name||"").trim().toLowerCase(),d]));
+  for(const [name,value] of Object.entries(debts)){const found=byName.get(name.toLowerCase());if(found){const old=found.data();if(Number(old.initialDebt||0)===0)await updateDoc(found.ref,{initialDebt:value,initialDebtPaid:0});}else{await addDoc(col("clients"),{name,phone:"",initialDebt:value,initialDebtPaid:0,createdAt:serverTimestamp()});}}
+  await setDoc(markerRef,{done:true,total:502,createdAt:serverTimestamp()});
+ }catch(e){console.warn("Importação inicial de clientes pendentes não concluída",e)}
 }
 function subscribeReady(){
  return new Promise(resolve=>{
@@ -314,7 +324,7 @@ function clients(){
  <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
-function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><button class="top-action" id="newProduct">＋</button></div>
@@ -452,12 +462,23 @@ function openSale(){
   }catch(e){toast(e.message||"Não foi possível registrar.")}
  };
 }
+function clientPending(c){
+ const salesPending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))+salesPending;
+}
+function clientInitialPending(c){return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))}
 function openClient(c){
  const ss=data.sales.filter(s=>s.clientId===c.id).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
- const total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=ss.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div>${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:12px">💸 Cobrar ${money(pending)}</button>`:""}<div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
+ const total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);
+ openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div>${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:12px">💸 Cobrar ${money(pending)}</button>`:""}<button class="secondary" id="editClientBtn" style="width:100%;margin-bottom:12px">✏️ Editar cliente</button><div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
  $("registerFromClient").onclick=()=>openPaymentForClient(c);
  if($("chargeClientModal"))$("chargeClientModal").onclick=()=>chargeClient(c);
+ $("editClientBtn").onclick=()=>openEditClient(c);
+}
+function openEditClient(c){
+ openModal("Editar cliente",`<div class="form"><div class="field"><label>Nome do cliente</label><input id="editClientName" value="${esc(c.name)}" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="editClientPhone" value="${esc(c.phone||"")}" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelEditClient">Cancelar</button><button class="primary" id="saveEditClient">Salvar alterações</button></div></div>`);
+ $("cancelEditClient").onclick=closeModal;
+ $("saveEditClient").onclick=async()=>{const name=$("editClientName").value.trim();if(!name)return toast("Digite o nome.");try{await updateDoc(doc(col("clients"),c.id),{name,phone:$("editClientPhone").value.trim()});await logAction("Cliente editado",`${c.name} → ${name}`);closeModal();toast("Cliente atualizado!")}catch(e){toast("Não foi possível editar o cliente.")}};
 }
 function pixPayload(amount){
  const value=Number(amount||0).toFixed(2);
@@ -471,7 +492,7 @@ function pixPayload(amount){
 }
 function chargeClient(c){openCharge(c)}
 function openCharge(c){
- const pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ const pending=clientPending(c);
  if(pending<=0){toast("Esse cliente não possui valor pendente.");return}
  const pix=pixPayload(pending);
  const text=`Opa, ${c.name}, os doces ficaram ${money(pending)}\nPix: vitorbernardo015@gmail.com\n\nOu pode copiar:\n\`${pix}\``;
@@ -484,12 +505,16 @@ function openCharge(c){
 }
 function openPaymentForClient(c){
  const pendingSales=data.sales.filter(s=>s.clientId===c.id&&Number(s.total||0)>Number(s.paid||0));
- if(!pendingSales.length){toast("Esse cliente não possui valor pendente.");return}
- openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${pendingSales.reduce((a,s)=>a+Math.max(0,s.total-s.paid),0).toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
+ const initialPending=clientInitialPending(c);
+ const totalPending=initialPending+pendingSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ if(totalPending<=0){toast("Esse cliente não possui valor pendente.");return}
+ openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${totalPending.toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
  $("savePay").onclick=async()=>{
   let amount=Number($("payValue").value)||0;if(amount<=0)return toast("Digite um valor.");
   try{
    let remaining=amount;
+   const useInitial=Math.min(initialPending,remaining);
+   if(useInitial>0){await updateDoc(doc(col("clients"),c.id),{initialDebtPaid:Number(c.initialDebtPaid||0)+useInitial});remaining-=useInitial;}
    for(const s of pendingSales){
     if(remaining<=0)break;
     const open=Math.max(0,Number(s.total)-Number(s.paid||0)),use=Math.min(open,remaining);
@@ -658,7 +683,7 @@ function bindPage(){
  $("payments")?.addEventListener("click",()=>openReceivables());
  $("receivables")?.addEventListener("click",()=>openReceivables());
  $("account")?.addEventListener("click",openAccount);
- $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,s.total-s.paid),0);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
+ $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
 }
 function openSaleDetail(s){
  if(!s)return;let st=status(s.total,s.paid),pending=Math.max(0,s.total-s.paid);
@@ -743,7 +768,7 @@ async function openActivityLog(){
  $("logUser").onchange=draw;$("logAction").onchange=draw;draw();
 }
 function openReceivables(){
- const rows=data.clients.map(c=>{let pending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,s.total-s.paid),0);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);
+ const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);
  openModal("A receber",`<div class="list">${rows.map(c=>`<div class="item" data-pay-client="${c.id}"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valores pendentes</small></div><div class="item-right"><b class="pending">${money(c.pending)}</b></div></div>`).join("")||'<div class="empty">Ninguém com valor pendente. 🎉</div>'}</div>`);
  document.querySelectorAll("[data-pay-client]").forEach(x=>x.onclick=()=>{let c=data.clients.find(c=>c.id===x.dataset.payClient);closeModal();openPaymentForClient(c)})
 }
