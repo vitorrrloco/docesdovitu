@@ -143,6 +143,21 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 @media(prefers-reduced-motion:reduce){.page,.modal-bg,.modal-bg .modal,.view.page-swap,.press-feedback{animation:none!important}button,.link,.client-result,.fast-product{transition:none!important}}
 </style>
 
+
+<script>
+window.DOCES_VITU_HISTORICAL_SALES = [
+ {name:"Gilberto",total:47},{name:"Gabriel",total:15},{name:"Rafael",total:32},
+ {name:"Jacare",total:16},{name:"Guedes",total:13},{name:"Duarte",total:24},
+ {name:"Eduardo",total:57},{name:"Steuck",total:1},{name:"Richard",total:67},
+ {name:"Roger",total:22},{name:"Daniel Ponick",total:22},{name:"Gabriel Ponick",total:2},
+ {name:"Crystian",total:34},{name:"Vitor",total:15},{name:"Maria Eduarda",total:8},
+ {name:"Murilo",total:5},{name:"Diovana",total:2},{name:"Julio",total:6},
+ {name:"Marinho",total:20},{name:"Kricinski",total:38},{name:"Mohammed",total:5},
+ {name:"Samuel",total:20},{name:"Emanuel",total:14},{name:"Jonathan",total:4},
+ {name:"Eduardo Silveira",total:17}
+];
+</script>
+
 </head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
@@ -342,7 +357,7 @@ function finance(){
  const revenue=monthSales.reduce((a,s)=>a+Number(s.total||0),0);
  const received=monthPayments.reduce((a,p)=>a+Number(p.amount||0),0);
  const pending=monthSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- const cost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0),0);
+ const cost=monthSales.reduce((a,s)=>a+(s.historical||s.excludeFromProfit?0:(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0)),0);
  const profit=revenue-cost;
  const margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
@@ -782,5 +797,36 @@ window.addEventListener("load",()=>{
   setTimeout(()=>s.remove(),700);
 });
 </script>
+
+<script>
+(function(){
+  const HIST = window.DOCES_VITU_HISTORICAL_SALES || [];
+  const KEY = "docesVituHistoricalSalesV1";
+  function inject(){
+    if(!window.data || !Array.isArray(window.data.sales)) return false;
+    if(localStorage.getItem(KEY)==="done") return true;
+    const now = new Date();
+    const year=now.getFullYear(), month=now.getMonth();
+    HIST.forEach((x,i)=>{
+      window.data.sales.push({
+        id:"historical-"+i,
+        clientId:null,
+        clientName:x.name,
+        total:x.total,
+        paid:0,
+        items:[],
+        createdAt:{seconds:Math.floor(new Date(year,month,1,12,0,0).getTime()/1000)},
+        historical:true,
+        excludeFromProfit:true
+      });
+    });
+    localStorage.setItem(KEY,"done");
+    return true;
+  }
+  let tries=0;
+  const timer=setInterval(()=>{ if(inject() || ++tries>80) clearInterval(timer); },100);
+})();
+</script>
+
 </body>
 </html>
