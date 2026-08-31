@@ -146,16 +146,46 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 
 <script>
 window.DOCES_VITU_HISTORICAL_SALES = [
- {name:"Gilberto",total:47},{name:"Gabriel",total:15},{name:"Rafael",total:32},
- {name:"Jacare",total:16},{name:"Guedes",total:13},{name:"Duarte",total:24},
- {name:"Eduardo",total:57},{name:"Steuck",total:1},{name:"Richard",total:67},
- {name:"Roger",total:22},{name:"Daniel Ponick",total:22},{name:"Gabriel Ponick",total:2},
- {name:"Crystian",total:34},{name:"Vitor",total:15},{name:"Maria Eduarda",total:8},
- {name:"Murilo",total:5},{name:"Diovana",total:2},{name:"Julio",total:6},
- {name:"Marinho",total:20},{name:"Kricinski",total:38},{name:"Mohammed",total:5},
- {name:"Samuel",total:20},{name:"Emanuel",total:14},{name:"Jonathan",total:4},
- {name:"Eduardo Silveira",total:17}
+ {name:"Gilberto",total:51.50},
+ {name:"Gabriel",total:15.00},
+ {name:"Rafael",total:41.00},
+ {name:"Jacare",total:19.00},
+ {name:"Guedes",total:14.50},
+ {name:"Duarte",total:24.00},
+ {name:"Eduardo",total:57.00},
+ {name:"Steuck",total:1.00},
+ {name:"Richard",total:71.50},
+ {name:"Roger",total:22.00},
+ {name:"Daniel Ponick",total:25.00},
+ {name:"Gabriel Ponick",total:3.50},
+ {name:"Crystian",total:35.00},
+ {name:"Vitor",total:16.50},
+ {name:"Maria Eduarda",total:11.00},
+ {name:"Murilo",total:8.00},
+ {name:"Diovana",total:2.00},
+ {name:"Julio",total:6.00},
+ {name:"Marinho",total:22.00},
+ {name:"Kricinski",total:38.00},
+ {name:"Mohammed",total:6.50},
+ {name:"Samuel",total:20.00},
+ {name:"Emanuel",total:14.00},
+ {name:"Jonathan",total:9.50},
+ {name:"Eduardo Silveira",total:18.50},
+ {name:"Quintino",total:1.50}
 ];
+</script>
+
+
+<script>
+(function(){
+  const UPDATED = [('Gilberto', 51.5), ('Gabriel', 15.0), ('Rafael', 41.0), ('Jacare', 19.0), ('Guedes', 14.5), ('Duarte', 24.0), ('Eduardo', 57.0), ('Steuck', 1.0), ('Richard', 71.5), ('Roger', 22.0), ('Daniel Ponick', 25.0), ('Gabriel Ponick', 3.5), ('Crystian', 35.0), ('Vitor', 16.5), ('Maria Eduarda', 11.0), ('Murilo', 8.0), ('Diovana', 2.0), ('Julio', 6.0), ('Marinho', 22.0), ('Kricinski', 38.0), ('Mohammed', 6.5), ('Samuel', 20.0), ('Emanuel', 14.0), ('Jonathan', 9.5), ('Eduardo Silveira', 18.5), ('Daniel', 3.0), ('Quintino', 1.5)];
+  window.DOCES_VITU_UPDATED_DEBTS = UPDATED;
+  window.DOCES_VITU_UPDATED_DEBT_TOTAL = 556.50;
+  try {
+    localStorage.setItem("docesVituLegacyDatasetVersion","2026-08-31-v3");
+    localStorage.removeItem("docesVituHistoricalSalesV1");
+  } catch(e) {}
+})();
 </script>
 
 </head>
