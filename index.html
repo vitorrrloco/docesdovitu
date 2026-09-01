@@ -286,20 +286,30 @@ document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.p
 $("quickSale").onclick=()=>openSale();
 
 function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="finance")v.innerHTML=finance();bindPage()}
+function isImportedDebtSale(s){
+ const name=String(s.clientName||"").trim().toLowerCase();
+ if(!name)return false;
+ const c=(data.clients||[]).find(x=>String(x.name||"").trim().toLowerCase()===name);
+ if(!c || Number(c.initialDebt||0)<=0)return false;
+ const total=Number(s.total||0), paid=Number(s.paid||0);
+ if(paid>0)return false;
+ const knownOld={"gilberto":47,"gabriel":15,"rafael":32,"jacare":16,"guedes":13,"duarte":24,"eduardo":57,"steuck":1,"richard":67,"roger":22,"daniel ponick":22,"gabriel ponick":2,"crystian":34,"vitor":15,"maria eduarda":8,"murilo":5,"diovana":2,"julio":6,"marinho":20,"kricinski":38,"mohammed":5,"samuel":20,"emanuel":14,"jonathan":4,"eduardo silveira":17,"quintino":1.5};
+ const knownNew={"gilberto":51.5,"gabriel":15,"rafael":41,"jacare":19,"guedes":14.5,"duarte":24,"eduardo":57,"steuck":1,"richard":71.5,"roger":22,"daniel ponick":25,"gabriel ponick":3.5,"crystian":35,"vitor":16.5,"maria eduarda":11,"murilo":8,"diovana":2,"julio":6,"marinho":22,"kricinski":38,"mohammed":6.5,"samuel":20,"emanuel":14,"jonathan":9.5,"eduardo silveira":18.5,"quintino":1.5};
+ return Math.abs(total-Number(knownOld[name]??-999))<0.001 || Math.abs(total-Number(knownNew[name]??-999))<0.001;
+}
 function totals(){
  const today=now();let sold=0,received=0,pending=0;
  data.sales.forEach(s=>{sold+=Number(s.total||0);pending+=Math.max(0,Number(s.total||0)-Number(s.paid||0))});
  data.payments.forEach(p=>received+=Number(p.amount||0));
- const todaySalesRaw=data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===today.toDateString()}).reduce((a,s)=>a+Number(s.total||0),0);
- const importedDebtTotal=data.clients.reduce((a,c)=>a+Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0)),0);
- const todaySales=(importedDebtTotal>0&&todaySalesRaw>0) ? Math.max(0,todaySalesRaw-(Math.abs(todaySalesRaw-importedDebtTotal)<1?importedDebtTotal:0)) : todaySalesRaw;
- return {sold,received,pending,todaySales}
+ const todaySalesList=data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===today.toDateString()&&!isImportedDebtSale(s)});
+ const todaySales=todaySalesList.reduce((a,s)=>a+Number(s.total||0),0);
+ return {sold,received,pending,todaySales,todaySalesCount:todaySalesList.length}
 }
 function home(){
  const t=totals(),low=data.products.filter(p=>Number(p.stock||0)<=Number(p.minStock||2));
  return `<div class="page">
  <div class="head"><div><h1>Olá! 🍫</h1><p>Seu resumo de hoje</p></div></div>
- <div class="hero"><div><small>VENDAS HOJE</small><h2>${money(t.todaySales)}</h2><p>${data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===now().toDateString()}).length} vendas registradas hoje</p></div><div class="emoji">🍬</div></div>
+ <div class="hero"><div><small>VENDAS HOJE</small><h2>${money(t.todaySales)}</h2><p>${t.todaySalesCount} vendas registradas hoje</p></div><div class="emoji">🍬</div></div>
  <div class="stats">
   <div class="stat"><small>TOTAL VENDIDO</small><strong>${money(t.sold)}</strong></div>
   <div class="stat"><small>A RECEBER</small><strong class="red">${money(t.pending)}</strong></div>
