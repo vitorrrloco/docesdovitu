@@ -708,10 +708,55 @@ function bindPage(){
  $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
 }
 function openSaleDetail(s){
- if(!s)return;let st=status(s.total,s.paid),pending=Math.max(0,s.total-s.paid);
- openModal("Venda",`<div class="form"><div class="section-title"><b>${esc(s.clientName||"Venda balcão")}</b><span>${dateTime(s.createdAt)}</span></div>${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(i.qty*i.price)}</b></div></div>`).join("")}<div class="section-title" style="margin-top:13px"><b>Total</b><b>${money(s.total)}</b></div><div class="section-title"><span>Pago</span><b class="paid">${money(s.paid)}</b></div><div class="section-title"><span>Pendente</span><b class="${statusClass(st)}">${money(pending)}</b></div>${pending>0&&s.clientId?'<button class="primary" id="detailPay" style="margin-top:10px">💵 Registrar pagamento</button>':""}</div>`);
- if($("detailPay"))$("detailPay").onclick=()=>{let c=data.clients.find(c=>c.id===s.clientId);closeModal();openPaymentForClient(c)}
+ if(!s)return;
+ const pending=Math.max(0,Number(s.total||0)-Number(s.paid||0));
+ openModal("Venda",`<div class="form">
+  <div class="section-title"><b>${esc(s.clientName||"Venda balcão")}</b><span>${dateTime(s.createdAt)}</span></div>
+  ${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(Number(i.qty||0)*Number(i.price||0))}</b></div></div>`).join("")}
+  <div class="section-title"><b>Total</b><b>${money(s.total)}</b></div>
+  <div class="section-title"><span>Pago</span><b class="paid">${money(s.paid)}</b></div>
+  <div class="section-title"><span>A receber</span><b class="${pending>0?'pending':'paid'}">${money(pending)}</b></div>
+  <div class="actions" style="margin-top:12px"><button class="secondary" id="editSale">✏️ Editar venda</button><button class="secondary" id="deleteSale" style="color:var(--red,#b84b40)">🗑️ Excluir venda</button></div>
+ </div>`);
+ $("editSale").onclick=()=>openEditSale(s);
+ $("deleteSale").onclick=()=>confirmDeleteSale(s);
 }
+function openEditSale(s){
+ const products=data.products||[],clients=data.clients||[],old=s.items?.[0]||{};
+ openModal("Editar venda",`<div class="form">
+  <div class="field"><label>Cliente</label><select id="esClient"><option value="">Venda balcão</option>${clients.map(c=>`<option value="${c.id}" ${c.id===s.clientId?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
+  <div class="field"><label>Produto</label><select id="esProduct">${products.map(p=>`<option value="${p.id}" ${p.id===old.productId?'selected':''}>${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join('')}</select></div>
+  <div class="row"><div class="field"><label>Quantidade</label><input id="esQty" type="number" min="1" value="${Number(old.qty||1)}"></div><div class="field"><label>Valor</label><input id="esTotal" type="number" min="0" step="0.01" value="${Number(s.total||0).toFixed(2)}"></div></div>
+  <div class="field"><label>Valor pago</label><input id="esPaid" type="number" min="0" step="0.01" value="${Number(s.paid||0).toFixed(2)}"></div>
+  <div class="actions"><button class="secondary" id="esCancel">Cancelar</button><button class="primary" id="esSave">Salvar alterações</button></div>
+ </div>`);
+ $("esCancel").onclick=closeModal;
+ $("esSave").onclick=async()=>{
+  const btn=$("esSave");if(btn.dataset.busy)return;btn.dataset.busy="1";
+  try{
+   const np=products.find(p=>p.id===$("esProduct").value),nq=Math.max(1,Number($("esQty").value)||1),nt=Math.max(0,Number($("esTotal").value)||0),paid=Math.min(nt,Math.max(0,Number($("esPaid").value)||0)),nc=clients.find(c=>c.id===$("esClient").value),oi=s.items?.[0]||{},op=products.find(p=>p.id===oi.productId),oq=Number(oi.qty||0);
+   if(!np||!nt)throw Error("Produto e valor são obrigatórios.");
+   const ops=[];
+   if(op&&op.id===np.id){const available=Number(op.stock||0)+oq;if(nq>available)throw Error("Estoque insuficiente.");ops.push(updateDoc(doc(col("products"),op.id),{stock:available-nq}));}
+   else{if(nq>Number(np.stock||0))throw Error("Estoque insuficiente.");if(op)ops.push(updateDoc(doc(col("products"),op.id),{stock:Number(op.stock||0)+oq}));ops.push(updateDoc(doc(col("products"),np.id),{stock:Number(np.stock||0)-nq}));}
+   const originalTotal=Number(np.price||0)*nq,discountAmount=Math.max(0,originalTotal-nt),discountPct=originalTotal?discountAmount/originalTotal*100:0;
+   ops.push(updateDoc(doc(col("sales"),s.id),{clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",items:[{productId:np.id,name:np.name,qty:nq,price:nt/nq,originalPrice:np.price,cost:Number(np.cost||0)}],originalTotal,total:nt,discountAmount,discountPct,paid,updatedAt:serverTimestamp()}));
+   const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));
+   if(paid>0)ops.push(addDoc(col("payments"),{saleId:s.id,clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",amount:paid,createdAt:serverTimestamp(),method:s.paymentMethod||"Pagamento"}));
+   await Promise.all(ops);closeModal();render();toast("Venda alterada com sucesso!");
+  }catch(e){console.error(e);toast(e.message||"Não foi possível alterar a venda.")}finally{btn.dataset.busy=""}
+ };
+}
+function confirmDeleteSale(s){
+ openModal("Excluir venda?",`<div class="form"><p>Tem certeza que deseja excluir <b>${esc(s.clientName||"Venda balcão")}</b> no valor de <b>${money(s.total)}</b>?</p><p><small>O estoque será devolvido e os pagamentos vinculados serão removidos.</small></p><div class="field"><label>Digite EXCLUIR para confirmar</label><input id="delSaleText" autocomplete="off"></div><div class="actions"><button class="secondary" id="delCancel">Cancelar</button><button class="primary" id="delDo" disabled>Excluir venda</button></div></div>`);
+ $("delCancel").onclick=closeModal;
+ $("delSaleText").oninput=e=>$("delDo").disabled=e.target.value.trim().toUpperCase()!=="EXCLUIR";
+ $("delDo").onclick=async()=>{
+  const btn=$("delDo");if(btn.dataset.busy)return;btn.dataset.busy="1";
+  try{const ops=[];for(const i of(s.items||[])){const p=data.products.find(x=>x.id===i.productId);if(p)ops.push(updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)+Number(i.qty||0)}));}const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));ops.push(deleteDoc(doc(col("sales"),s.id)));ops.push(logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`));await Promise.all(ops);closeModal();render();toast("Venda excluída com sucesso!");}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy=""}
+ };
+}
+
 async function resetBusinessData(){
  const names=["products","clients","sales","payments","purchases"];
  try{
