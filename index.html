@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.11</title>
+<title>DOCES DO VITU 1.3.0</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -143,15 +143,29 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 @media(prefers-reduced-motion:reduce){.page,.modal-bg,.modal-bg .modal,.view.page-swap,.press-feedback{animation:none!important}button,.link,.client-result,.fast-product{transition:none!important}}
 </style>
 
+
+<script>
+window.DOCES_VITU_HISTORICAL_SALES = [
+ {name:"Gilberto",total:51.50},{name:"Gabriel",total:15},{name:"Rafael",total:41},
+ {name:"Jacare",total:19},{name:"Guedes",total:14.50,paid:14.50},{name:"Duarte",total:24},
+ {name:"Eduardo",total:57},{name:"Steuck",total:1},{name:"Richard",total:71.50},
+ {name:"Roger",total:22},{name:"Daniel Ponick",total:25},{name:"Gabriel Ponick",total:3.50},
+ {name:"Crystian",total:35},{name:"Vitor",total:16.50},{name:"Maria Eduarda",total:11},
+ {name:"Murilo",total:8},{name:"Diovana",total:2},{name:"Julio",total:6},
+ {name:"Marinho",total:22},{name:"Kricinski",total:38},{name:"Mohammed",total:6.50},
+ {name:"Samuel",total:20},{name:"Emanuel",total:14},{name:"Jonathan",total:9.50},
+ {name:"Eduardo Silveira",total:18.50},{name:"Daniel",total:3},{name:"Quintino",total:1.50}
+];
+</script>
+
 <style>
-.sale-processing-overlay{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;background:rgba(20,12,8,.20);backdrop-filter:blur(2px)}
-.sale-processing-card{width:min(84vw,320px);padding:24px 18px;border-radius:22px;text-align:center;background:var(--white,#fff);box-shadow:0 18px 55px #0003}
-.sale-spinner{width:40px;height:40px;border:4px solid #eaded5;border-top-color:var(--green,#3d8f67);border-radius:50%;margin:0 auto 12px;animation:svSpin .58s linear infinite}
-.sale-check{font-size:44px;color:var(--green,#3d8f67);line-height:1;animation:svCheck .2s ease-out both}
-.sale-processing-card b{display:block;font-size:17px}.sale-processing-card small{display:block;color:var(--muted,#777);margin-top:5px}
-@keyframes svSpin{to{transform:rotate(360deg)}}@keyframes svCheck{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
-</style></head>
-<body>
+.sale-processing-overlay{position:fixed;inset:0;z-index:1000000;display:grid;place-items:center;background:rgba(20,12,8,.24);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);animation:spIn .12s ease-out both}
+.sale-processing-card{width:min(84vw,310px);padding:23px 18px;border-radius:22px;text-align:center;background:var(--card,#fff);box-shadow:0 18px 55px rgba(0,0,0,.20)}
+.sale-spinner{width:40px;height:40px;border:4px solid #e8ded7;border-top-color:#4c2a1d;border-radius:50%;margin:0 auto 12px;animation:spSpin .62s linear infinite}
+.sale-processing-card b{display:block;font-size:17px}.sale-processing-card small{display:block;color:var(--muted);margin-top:5px}
+@keyframes spSpin{to{transform:rotate(360deg)}}@keyframes spIn{from{opacity:0}to{opacity:1}}
+</style><style>#siteVersion{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:999999;font:600 10px/1.2 Arial,sans-serif;opacity:.55;pointer-events:none}</style></head>
+<body><div id="siteVersion">V1.3.0</div>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
 </div>
@@ -172,7 +186,7 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.13</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>Controle de vendas • V1.3.0</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -191,6 +205,7 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {getMessaging,getToken,onMessage,deleteToken} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-messaging.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
@@ -202,6 +217,9 @@ const firebaseConfig={
  measurementId:"G-9QDNX23V8Z"
 };
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+const messaging=typeof window!=="undefined"&&"Notification" in window&&"serviceWorker" in navigator?getMessaging(app):null;
+const VAPID_KEY="BBN-3roZAe-cW0l8MdVkkmwuFLbREWg3sZVFA0KQlbOouu2jVx1u3tpZp1a9e6zru5450TGQR5ShQkJ7AnqcDQM";
+let fcmToken="",notificationRegistration=null;
 const $=id=>document.getElementById(id);
 let uid=null,currentUserName="Vitor",currentUserEmail="",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[]},page="home";
 
@@ -225,11 +243,75 @@ let bootProgress=0;
 function bootSet(p){bootProgress=Math.max(0,Math.min(100,p));if($("bootBar")){$("bootBar").style.width=bootProgress+"%";$("bootPct").textContent=Math.round(bootProgress)+"%"}}
 function bootFinish(){bootSet(100);requestAnimationFrame(()=>setTimeout(()=>{$("bootLoader")?.classList.add("done")},80))}
 
+
+async function registerNotificationWorker(){
+ if(!('serviceWorker' in navigator)) throw new Error('Este navegador não suporta Service Worker.');
+ notificationRegistration=await navigator.serviceWorker.register('./firebase-messaging-sw.js',{scope:'./'});
+ await navigator.serviceWorker.ready;
+ return notificationRegistration;
+}
+async function enableNotifications(){
+ if(!messaging) throw new Error('Notificações não são suportadas neste navegador.');
+ if(!window.isSecureContext) throw new Error('As notificações precisam de HTTPS.');
+ if(Notification.permission==='denied') throw new Error('As notificações estão bloqueadas nas configurações do navegador.');
+ const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
+ if(permission!=='granted') throw new Error('Permissão para notificações não concedida.');
+ const registration=await registerNotificationWorker();
+ fcmToken=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:registration});
+ if(!fcmToken) throw new Error('Não foi possível obter o token do dispositivo.');
+ await setDoc(doc(col('notificationDevices'),uid),{token:fcmToken,uid,email:currentUserEmail,name:currentUserName,platform:navigator.platform||'',userAgent:navigator.userAgent,permission,updatedAt:serverTimestamp(),active:true},{merge:true});
+ try{localStorage.setItem('docesVituNotifications','on')}catch{}
+ return fcmToken;
+}
+async function disableNotifications(){
+ if(messaging){try{await deleteToken(messaging)}catch(e){console.warn('Não foi possível remover token local',e)}}
+ try{await deleteDoc(doc(col('notificationDevices'),uid))}catch(e){console.warn('Dispositivo não removido do Firebase',e)}
+ fcmToken='';try{localStorage.removeItem('docesVituNotifications')}catch{}
+}
+async function testNotification(){
+ if(!('Notification' in window)) throw new Error('Este navegador não suporta notificações.');
+ if(Notification.permission!=='granted') await enableNotifications();
+ if('serviceWorker' in navigator){
+  const reg=await navigator.serviceWorker.ready;
+  await reg.showNotification('DOCES DO VITU',{body:'Notificações ativadas com sucesso! 🔔',icon:'./icon-512.png',badge:'./favicon.png',tag:'doces-vitu-test'});
+ }else new Notification('DOCES DO VITU',{body:'Notificações ativadas com sucesso! 🔔'});
+}
+function notificationStatus(){
+ if(!('Notification' in window))return {label:'Não suportadas',ok:false};
+ if(!window.isSecureContext)return {label:'Precisa de HTTPS',ok:false};
+ if(Notification.permission==='granted')return {label:'Ativadas',ok:true};
+ if(Notification.permission==='denied')return {label:'Bloqueadas',ok:false};
+ return {label:'Desativadas',ok:false};
+}
+function renderNotificationSettings(){
+ const st=notificationStatus();
+ return `<div class="form" id="notificationSettings">
+  <div class="section-title"><b>🔔 Notificações</b><span id="notificationStatus" class="status ${st.ok?'paid':'pending'}">${st.ok?'🟢':'🔴'} ${st.label}</span></div>
+  <p style="color:var(--muted);font-size:12px;line-height:1.45;margin:4px 0 12px">Receba alertas do DOCES DO VITU neste dispositivo. O sistema usa Firebase Cloud Messaging.</p>
+  <div class="actions"><button class="primary" id="enableNotifications">🔔 Ativar notificações</button><button class="secondary" id="testNotification">🧪 Testar notificação</button></div>
+  <button class="secondary" id="disableNotifications" style="width:100%;margin-top:8px;color:var(--red)">Desativar neste dispositivo</button>
+  <small style="display:block;color:var(--muted);margin-top:10px;line-height:1.4">No iPhone/iPad, para push em segundo plano, abra o sistema como app adicionado à Tela de Início e permita notificações.</small>
+ </div>`;
+}
+function bindNotificationSettings(){
+ $('enableNotifications')?.addEventListener('click',async()=>{const b=$('enableNotifications');b.disabled=true;b.textContent='⏳ Ativando...';try{await enableNotifications();toast('Notificações ativadas!');openAccount()}catch(e){console.error(e);toast(e.message||'Não foi possível ativar.')}finally{b.disabled=false;b.textContent='🔔 Ativar notificações'}});
+ $('testNotification')?.addEventListener('click',async()=>{const b=$('testNotification');b.disabled=true;b.textContent='⏳ Testando...';try{await testNotification();toast('Notificação de teste enviada!')}catch(e){console.error(e);toast(e.message||'Falha no teste.')}finally{b.disabled=false;b.textContent='🧪 Testar'}});
+ $('disableNotifications')?.addEventListener('click',async()=>{try{await disableNotifications();toast('Notificações desativadas neste dispositivo.');openAccount()}catch(e){toast('Não foi possível desativar.')}});
+}
+async function initMessagingListener(){
+ if(!messaging)return;
+ try{await registerNotificationWorker()}catch(e){console.warn('Service Worker de notificações indisponível',e);return}
+ onMessage(messaging,payload=>{
+  const n=payload?.notification||{};
+  toast((n.title||'DOCES DO VITU')+(n.body?' • '+n.body:''));
+ });
+}
+
 onAuthStateChanged(auth,async user=>{
  unsubs.forEach(u=>u());unsubs=[];bootSet(0);
  if(!user){uid=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('bootLoader').classList.add('done');return}
  uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentUserEmail==='viitorcontas@gmail.com'?'Vitor':'Vitor';$('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');
- try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
+ try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(90);go('home');bootFinish();$('app').classList.remove('hidden');initMessagingListener().catch(()=>{});logAction('Login','Entrou no sistema');return;logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
 
 function col(name){return collection(db,"businesses","docesDoVitu",name)}
 function oldCol(name){return collection(db,"users",uid,name)}
@@ -289,6 +371,7 @@ function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=
 function totals(){
  const today=now();let sold=0,received=0,pending=0;
  data.sales.forEach(s=>{sold+=Number(s.total||0);pending+=Math.max(0,Number(s.total||0)-Number(s.paid||0))});
+ (data.clients||[]).forEach(c=>{sold+=Number(c.initialDebt||0);pending+=Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))});
  data.payments.forEach(p=>received+=Number(p.amount||0));
  const todaySales=data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===today.toDateString()}).reduce((a,s)=>a+Number(s.total||0),0);
  return {sold,received,pending,todaySales}
@@ -346,13 +429,17 @@ function finance(){
  const nextMonth=new Date(nowD.getFullYear(),nowD.getMonth()+1,1);nextMonth.setHours(0,0,0,0);
  const monthSales=sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=monthStart&&d<nextMonth});
  const monthPayments=payments.filter(p=>{const d=dt(p.createdAt);return d&&d>=monthStart&&d<nextMonth});
- const revenue=monthSales.reduce((a,s)=>a+Number(s.total||0),0);
+ const legacyClients=(data.clients||[]).filter(c=>Number(c.initialDebt||0)>0);
+ const legacyRevenue=legacyClients.reduce((a,c)=>a+Number(c.initialDebt||0),0);
+ const legacyPending=legacyClients.reduce((a,c)=>a+Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0)),0);
+ const legacyCount=legacyClients.length;
+ const revenue=monthSales.reduce((a,s)=>a+Number(s.total||0),0)+legacyRevenue;
  const received=monthPayments.reduce((a,p)=>a+Number(p.amount||0),0);
- const pending=monthSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- const cost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0),0);
+ const pending=monthSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0)+legacyPending;
+ const cost=monthSales.reduce((a,s)=>a+(s.historical||s.excludeFromProfit?0:(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0)),0);
  const profit=revenue-cost;
  const margin=revenue>0?(profit/revenue)*100:0;
- const ticket=monthSales.length?revenue/monthSales.length:0;
+ const ticket=(monthSales.length+legacyCount)?revenue/(monthSales.length+legacyCount):0;
  const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+Number(i.qty||0),0),0);
  const allReceived=payments.reduce((a,p)=>a+Number(p.amount||0),0);
  const allPurchases=purchases.reduce((a,p)=>a+Number(p.total||0),0);
@@ -363,7 +450,7 @@ function finance(){
  const methods=Object.entries(byMethod).sort((a,b)=>b[1]-a[1]).map(([m,v])=>`<div class="section-title"><span>${esc(m)}</span><b>${money(v)}</b></div>`).join("")||'<div class="empty">Nenhum recebimento neste mês.</div>';
  return `<div class="page"><div class="head"><div><h1>Financeiro</h1><p>Visão completa do seu negócio • ${nowD.toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}</p></div></div>
  <div class="finance-grid">
-  <div class="finance-card"><small>Faturamento do mês</small><strong>${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
+  <div class="finance-card"><small>Faturamento do mês</small><strong>${money(revenue)}</strong><p>${monthSales.length+legacyCount} venda(s) • inclui R$ ${legacyRevenue.toFixed(2).replace(".",",")} antigos</p></div>
   <div class="finance-card"><small>Lucro estimado</small><strong class="finance-positive">${money(profit)}</strong><p>vendas menos custo dos produtos</p></div>
   <div class="finance-card"><small>Margem de lucro</small><strong>${margin.toFixed(1)}%</strong><p>sobre o faturamento</p></div>
   <div class="finance-card"><small>Ticket médio</small><strong>${money(ticket)}</strong><p>por venda</p></div>
@@ -411,25 +498,22 @@ function openQuickSale(){
  $("fqQty").oninput=update;$("fqTotal").oninput=()=>{const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("fqTotal").value)||0);updateDiscount(original,val)};$("cancelModal").onclick=closeModal;update();
  document.querySelector(`[data-fq-product="${selectedId}"]`)?.style.setProperty("outline","3px solid var(--brown)");
  $("fqConfirm").onclick=async()=>{
- const btn=$("fqConfirm");if(!btn||btn.dataset.busy==="1")return;btn.dataset.busy="1";
- const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Registrando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);
+ const btn=$("fqConfirm");if(btn?.classList.contains("sale-saving"))return;btn?.classList.add("sale-saving");
+ const overlay=showSaleProcessing();
  try{
-  const p=data.products.find(x=>x.id===selectedId),q=Math.max(1,Number($("fqQty").value)||1),total=Math.max(0,Number($("fqTotal").value)||0),clientId=$("fqClient").value||"";
-  if(!p)throw Error("Selecione um produto.");
-  if(total<=0)throw Error("Informe o valor da venda.");
+  const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),originalTotal=Number(p.price||0)*q,total=Math.max(0,Number($("fqTotal").value)||0);
+  const discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0,c=data.clients.find(x=>x.id===$("fqClient").value);
+  if(total<=0)throw Error("Informe um valor válido para a venda.");
   if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
-  const c=data.clients.find(x=>x.id===clientId),originalTotal=Number(p.price||0)*q,discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
-  const saleRef=doc(col("sales"));
+  const saleRef=doc(col("sales")),productRef=doc(col("products"),p.id);
   await Promise.all([
-   setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
-   updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q}),
-   logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`)
+   setDoc(saleRef,{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
+   updateDoc(productRef,{stock:Number(p.stock||0)-q}),
+   saleLogs(c?.name||"Venda balcão",total,p.name,q,discountPct)
   ]);
-  closeModal();render();go("home");
-  overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';
-  setTimeout(()=>overlay.remove(),550);
- }catch(e){console.error(e);overlay.remove();toast(e.message||"Não foi possível registrar a venda.")}finally{btn.dataset.busy="0"}
-};
+  closeModal();render();hideSaleProcessing(overlay);showSaleConfirmed();
+ }catch(e){console.error(e);hideSaleProcessing(overlay);btn?.classList.remove("sale-saving");toast(e.message||"Não foi possível registrar a venda.")}
+ };
 }
 function openSale(){
  const products=data.products.filter(p=>Number(p.stock||0)>0);
@@ -463,26 +547,25 @@ function openSale(){
  document.addEventListener("mousedown",function closeClientDropdown(e){if(!clientSearch.contains(e.target)&&!clientResults.contains(e.target)){clientResults.classList.add("hidden")}}, {once:true});
  $("mProduct").onchange=update;$("mQty").oninput=update;$("mTotalValue").oninput=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("mTotalValue").value)||0);$("mTotal").textContent="Total líquido: "+money(val);updateSaleDiscount(original,val)};update();
  $("cancelModal").onclick=closeModal;$("confirmSale").onclick=async()=>{
- const btn=$("confirmSale");if(!btn||btn.dataset.busy==="1")return;btn.dataset.busy="1";
- const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Registrando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);
+ const btn=$("confirmSale");if(btn?.classList.contains("sale-saving"))return;btn.classList.add("sale-saving");
+ const overlay=showSaleProcessing();
  try{
-  const p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),total=Math.max(0,Number($("mTotalValue").value)||0),clientId=$("mClient").value||"";
-  if(!p)throw Error("Selecione um produto.");
-  if(total<=0)throw Error("Informe o valor da venda.");
+  const p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),originalTotal=Number(p.price||0)*q,total=Math.max(0,Number($("mTotalValue").value)||0);
+  const discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
+  if(total<=0)throw Error("Informe um valor válido para a venda.");
   if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
-  const c=data.clients.find(x=>x.id===clientId),paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),originalTotal=Number(p.price||0)*q,discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
-  const saleRef=doc(col("sales"));
-  await Promise.all([
-   setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
-   updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q}),
-   logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`)
-  ]);
-  if(paid>0)await addDoc(col("payments"),{saleId:saleRef.id,clientId,clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
-  closeModal();render();go("home");
-  overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';
-  setTimeout(()=>overlay.remove(),550);
- }catch(e){console.error(e);overlay.remove();toast(e.message||"Não foi possível registrar a venda.")}finally{btn.dataset.busy="0"}
-};
+  const paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),c=data.clients.find(x=>x.id===$("mClient").value);
+  const saleRef=doc(col("sales")),productRef=doc(col("products"),p.id);
+  const ops=[
+   setDoc(saleRef,{clientId:c?.id||"",clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
+   updateDoc(productRef,{stock:Number(p.stock||0)-q}),
+   saleLogs(c?.name||"Venda balcão",total,p.name,q,discountPct)
+  ];
+  if(paid>0)ops.push(addDoc(col("payments"),{saleId:saleRef.id,clientId:c?.id||"",clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value}));
+  await Promise.all(ops);
+  closeModal();render();hideSaleProcessing(overlay);showSaleConfirmed();
+ }catch(e){console.error(e);hideSaleProcessing(overlay);btn.classList.remove("sale-saving");toast(e.message||"Não foi possível registrar.")}
+ };
 }
 function clientPending(c){
  const salesPending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
@@ -709,54 +792,70 @@ function bindPage(){
 }
 function openSaleDetail(s){
  if(!s)return;
- const pending=Math.max(0,Number(s.total||0)-Number(s.paid||0));
+ const st=status(s.total,s.paid),pending=Math.max(0,Number(s.total||0)-Number(s.paid||0));
  openModal("Venda",`<div class="form">
   <div class="section-title"><b>${esc(s.clientName||"Venda balcão")}</b><span>${dateTime(s.createdAt)}</span></div>
-  ${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(Number(i.qty||0)*Number(i.price||0))}</b></div></div>`).join("")}
-  <div class="section-title"><b>Total</b><b>${money(s.total)}</b></div>
+  ${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(i.qty*i.price)}</b></div></div>`).join("")}
+  <div class="section-title" style="margin-top:13px"><b>Total</b><b>${money(s.total)}</b></div>
   <div class="section-title"><span>Pago</span><b class="paid">${money(s.paid)}</b></div>
-  <div class="section-title"><span>A receber</span><b class="${pending>0?'pending':'paid'}">${money(pending)}</b></div>
-  <div class="actions" style="margin-top:12px"><button class="secondary" id="editSale">✏️ Editar venda</button><button class="secondary" id="deleteSale" style="color:var(--red,#b84b40)">🗑️ Excluir venda</button></div>
+  <div class="section-title"><span>Pendente</span><b class="${statusClass(st)}">${money(pending)}</b></div>
+  ${pending>0&&s.clientId?'<button class="primary" id="detailPay" style="margin-top:10px">💵 Registrar pagamento</button>':""}
+  <div class="row" style="margin-top:10px"><button class="secondary" id="editSale" style="width:100%">✏️ Alterar venda</button><button class="secondary" id="deleteSale" style="width:100%;color:#a9463b;border-color:#e6bdb7">🗑️ Excluir venda</button></div>
  </div>`);
+ if($("detailPay"))$("detailPay").onclick=()=>{const c=data.clients.find(x=>x.id===s.clientId);closeModal();if(c)openPaymentForClient(c)};
  $("editSale").onclick=()=>openEditSale(s);
  $("deleteSale").onclick=()=>confirmDeleteSale(s);
 }
 function openEditSale(s){
- const products=data.products||[],clients=data.clients||[],old=s.items?.[0]||{};
- openModal("Editar venda",`<div class="form">
-  <div class="field"><label>Cliente</label><select id="esClient"><option value="">Venda balcão</option>${clients.map(c=>`<option value="${c.id}" ${c.id===s.clientId?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
-  <div class="field"><label>Produto</label><select id="esProduct">${products.map(p=>`<option value="${p.id}" ${p.id===old.productId?'selected':''}>${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join('')}</select></div>
-  <div class="row"><div class="field"><label>Quantidade</label><input id="esQty" type="number" min="1" value="${Number(old.qty||1)}"></div><div class="field"><label>Valor</label><input id="esTotal" type="number" min="0" step="0.01" value="${Number(s.total||0).toFixed(2)}"></div></div>
-  <div class="field"><label>Valor pago</label><input id="esPaid" type="number" min="0" step="0.01" value="${Number(s.paid||0).toFixed(2)}"></div>
-  <div class="actions"><button class="secondary" id="esCancel">Cancelar</button><button class="primary" id="esSave">Salvar alterações</button></div>
+ const products=data.products||[],clients=data.clients||[],oldItem=s.items?.[0]||{};
+ openModal("Alterar venda",`<div class="form">
+  <div class="field"><label>Cliente</label><select id="editSaleClient"><option value="">Venda balcão</option>${clients.map(c=>`<option value="${c.id}" ${c.id===s.clientId?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div>
+  <div class="field"><label>Produto</label><select id="editSaleProduct">${products.map(p=>`<option value="${p.id}" ${p.id===oldItem.productId?"selected":""}>${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join("")}</select></div>
+  <div class="row"><div class="field"><label>Quantidade</label><input id="editSaleQty" type="number" min="1" value="${Number(oldItem.qty||1)}"></div><div class="field"><label>Valor líquido</label><input id="editSaleTotal" type="number" min="0" step="0.01" value="${Number(s.total||0).toFixed(2)}" inputmode="decimal"></div></div>
+  <div id="editSaleDiscount" style="font-size:12px;min-height:18px"></div>
+  <div class="field"><label>Pago</label><input id="editSalePaid" type="number" min="0" step="0.01" value="${Number(s.paid||0).toFixed(2)}"></div>
+  <div class="actions"><button class="secondary" id="cancelEditSale">Cancelar</button><button class="primary" id="saveEditSale">Salvar alterações</button></div>
  </div>`);
- $("esCancel").onclick=closeModal;
- $("esSave").onclick=async()=>{
-  const btn=$("esSave");if(btn.dataset.busy)return;btn.dataset.busy="1";
+ const calc=()=>{const p=products.find(x=>x.id===$("editSaleProduct").value),q=Math.max(1,Number($("editSaleQty").value)||1),orig=Number(p?.price||0)*q,val=Math.max(0,Number($("editSaleTotal").value)||0),el=$("editSaleDiscount");el.innerHTML=orig>0&&val<orig?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(orig-val)} (${((orig-val)/orig*100).toFixed(2).replace(".",",")}%)</span>`:""};
+ $("editSaleProduct").onchange=calc;$("editSaleQty").oninput=calc;$("editSaleTotal").oninput=calc;calc();$("cancelEditSale").onclick=closeModal;
+ $("saveEditSale").onclick=async()=>{
+  const btn=$("saveEditSale");if(btn.classList.contains("sale-saving"))return;btn.classList.add("sale-saving");const overlay=showSaleProcessing("Salvando alterações...");
   try{
-   const np=products.find(p=>p.id===$("esProduct").value),nq=Math.max(1,Number($("esQty").value)||1),nt=Math.max(0,Number($("esTotal").value)||0),paid=Math.min(nt,Math.max(0,Number($("esPaid").value)||0)),nc=clients.find(c=>c.id===$("esClient").value),oi=s.items?.[0]||{},op=products.find(p=>p.id===oi.productId),oq=Number(oi.qty||0);
-   if(!np||!nt)throw Error("Produto e valor são obrigatórios.");
+   const np=products.find(x=>x.id===$("editSaleProduct").value),nq=Math.max(1,Number($("editSaleQty").value)||1),nt=Math.max(0,Number($("editSaleTotal").value)||0),paid=Math.max(0,Math.min(nt,Number($("editSalePaid").value)||0)),nc=clients.find(x=>x.id===$("editSaleClient").value);
+   if(!np||nt<=0)throw Error("Informe produto e valor válidos.");
+   const op=products.find(x=>x.id===oldItem.productId),oq=Number(oldItem.qty||0);
    const ops=[];
-   if(op&&op.id===np.id){const available=Number(op.stock||0)+oq;if(nq>available)throw Error("Estoque insuficiente.");ops.push(updateDoc(doc(col("products"),op.id),{stock:available-nq}));}
-   else{if(nq>Number(np.stock||0))throw Error("Estoque insuficiente.");if(op)ops.push(updateDoc(doc(col("products"),op.id),{stock:Number(op.stock||0)+oq}));ops.push(updateDoc(doc(col("products"),np.id),{stock:Number(np.stock||0)-nq}));}
-   const originalTotal=Number(np.price||0)*nq,discountAmount=Math.max(0,originalTotal-nt),discountPct=originalTotal?discountAmount/originalTotal*100:0;
-   ops.push(updateDoc(doc(col("sales"),s.id),{clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",items:[{productId:np.id,name:np.name,qty:nq,price:nt/nq,originalPrice:np.price,cost:Number(np.cost||0)}],originalTotal,total:nt,discountAmount,discountPct,paid,updatedAt:serverTimestamp()}));
+   if(op&&np.id===op.id){
+    const available=Number(op.stock||0)+oq;if(nq>available)throw Error("Estoque insuficiente.");
+    ops.push(updateDoc(doc(col("products"),op.id),{stock:available-nq}));
+   }else{
+    if(np.id!==op?.id&&nq>Number(np.stock||0))throw Error("Estoque insuficiente no novo produto.");
+    if(op)ops.push(updateDoc(doc(col("products"),op.id),{stock:Number(op.stock||0)+oq}));
+    ops.push(updateDoc(doc(col("products"),np.id),{stock:Number(np.stock||0)-nq}));
+   }
+   const orig=Number(np.price||0)*nq,disc=Math.max(0,orig-nt),pct=orig>0?disc/orig*100:0;
+   ops.push(updateDoc(doc(col("sales"),s.id),{clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",items:[{productId:np.id,name:np.name,qty:nq,price:nt/nq,originalPrice:np.price,cost:Number(np.cost||0)}],originalTotal:orig,total:nt,discountAmount:disc,discountPct:pct,paid,updatedAt:serverTimestamp(),updatedByUid:uid,updatedByName:currentUserName}));
    const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));
-   if(paid>0)ops.push(addDoc(col("payments"),{saleId:s.id,clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",amount:paid,createdAt:serverTimestamp(),method:s.paymentMethod||"Pagamento"}));
-   await Promise.all(ops);closeModal();render();toast("Venda alterada com sucesso!");
-  }catch(e){console.error(e);toast(e.message||"Não foi possível alterar a venda.")}finally{btn.dataset.busy=""}
+   if(paid>0)ops.push(addDoc(col("payments"),{saleId:s.id,clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:s.paymentMethod||"Pagamento"}));
+   ops.push(logAction("Venda alterada",`${s.clientName||"Venda balcão"} → ${nc?.name||"Venda balcão"} • ${money(nt)}`));
+   await Promise.all(ops);closeModal();render();hideSaleProcessing(overlay);toast("Venda alterada com sucesso!");
+  }catch(e){console.error(e);hideSaleProcessing(overlay);btn.classList.remove("sale-saving");toast(e.message||"Não foi possível alterar a venda.")}
  };
 }
 function confirmDeleteSale(s){
- openModal("Excluir venda?",`<div class="form"><p>Tem certeza que deseja excluir <b>${esc(s.clientName||"Venda balcão")}</b> no valor de <b>${money(s.total)}</b>?</p><p><small>O estoque será devolvido e os pagamentos vinculados serão removidos.</small></p><div class="field"><label>Digite EXCLUIR para confirmar</label><input id="delSaleText" autocomplete="off"></div><div class="actions"><button class="secondary" id="delCancel">Cancelar</button><button class="primary" id="delDo" disabled>Excluir venda</button></div></div>`);
- $("delCancel").onclick=closeModal;
- $("delSaleText").oninput=e=>$("delDo").disabled=e.target.value.trim().toUpperCase()!=="EXCLUIR";
- $("delDo").onclick=async()=>{
-  const btn=$("delDo");if(btn.dataset.busy)return;btn.dataset.busy="1";
-  try{const ops=[];for(const i of(s.items||[])){const p=data.products.find(x=>x.id===i.productId);if(p)ops.push(updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)+Number(i.qty||0)}));}const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));ops.push(deleteDoc(doc(col("sales"),s.id)));ops.push(logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`));await Promise.all(ops);closeModal();render();toast("Venda excluída com sucesso!");}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy=""}
+ openModal("Excluir venda?",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Tem certeza que deseja excluir esta venda?</b><br><small>${esc(s.clientName||"Venda balcão")} • ${money(s.total)}<br>O estoque será devolvido e os pagamentos vinculados serão excluídos.</small></div><div class="field"><label>Digite EXCLUIR para confirmar</label><input id="deleteSaleConfirm" placeholder="EXCLUIR" autocomplete="off"></div><div class="actions"><button class="secondary" id="cancelDeleteSale">Cancelar</button><button class="primary" id="doDeleteSale" disabled>Excluir venda</button></div></div>`);
+ $("cancelDeleteSale").onclick=closeModal;$("deleteSaleConfirm").oninput=e=>$("doDeleteSale").disabled=e.target.value.trim().toUpperCase()!=="EXCLUIR";
+ $("doDeleteSale").onclick=async()=>{
+  const btn=$("doDeleteSale");if(btn.classList.contains("sale-saving"))return;btn.classList.add("sale-saving");const overlay=showSaleProcessing("Excluindo venda...");
+  try{
+   const ops=[];
+   for(const item of (s.items||[])){const p=data.products.find(x=>x.id===item.productId);if(p)ops.push(updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)+Number(item.qty||0)}))}
+   const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));
+   ops.push(deleteDoc(doc(col("sales"),s.id)));ops.push(logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`));
+   await Promise.all(ops);closeModal();render();hideSaleProcessing(overlay);showSaleUndone();
+  }catch(e){console.error(e);hideSaleProcessing(overlay);btn.classList.remove("sale-saving");toast(e.message||"Não foi possível excluir a venda.")}
  };
 }
-
 async function resetBusinessData(){
  const names=["products","clients","sales","payments","purchases"];
  try{
@@ -781,7 +880,7 @@ async function resetActivityLog(){
 
 function openAccount(){
  openModal("Conta",`<div class="form">
-  <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
+  <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>${renderNotificationSettings()}
   <button class="secondary" id="activityLog" style="width:100%;margin-top:10px">📋 Log de atividades</button>
   <details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
    <summary style="cursor:pointer;color:var(--muted);font-weight:800;font-size:13px">Configurações avançadas</summary>
@@ -794,6 +893,7 @@ function openAccount(){
   </details>
  </div>`);
  $("activityLog").onclick=openActivityLog;
+ bindNotificationSettings();
  $("resetBusiness").onclick=()=>{
   openModal("Resetar dados?",`<div class="form">
    <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga os dados do negócio.</b><br><small>Produtos, estoque, clientes, vendas e pagamentos serão excluídos. O login e o PIX não serão apagados. Essa ação não pode ser desfeita.</small></div>
@@ -849,5 +949,36 @@ window.addEventListener("load",()=>{
   setTimeout(()=>s.remove(),700);
 });
 </script>
+
+<script>
+(function(){
+  const HIST = window.DOCES_VITU_HISTORICAL_SALES || [];
+  const KEY = "docesVituHistoricalSalesV2";
+  function inject(){
+    if(!window.data || !Array.isArray(window.data.sales)) return false;
+    if(localStorage.getItem(KEY)==="done") return true;
+    const now = new Date();
+    const year=now.getFullYear(), month=now.getMonth();
+    HIST.forEach((x,i)=>{
+      window.data.sales.push({
+        id:"historical-"+i,
+        clientId:null,
+        clientName:x.name,
+        total:x.total,
+        paid:Number(x.paid||0),
+        items:[],
+        createdAt:{seconds:Math.floor(new Date(year,month,1,12,0,0).getTime()/1000)},
+        historical:true,
+        excludeFromProfit:true
+      });
+    });
+    localStorage.setItem(KEY,"done");
+    return true;
+  }
+  let tries=0;
+  const timer=setInterval(()=>{ if(inject() || ++tries>80) clearInterval(timer); },100);
+})();
+</script>
+
 </body>
 </html>

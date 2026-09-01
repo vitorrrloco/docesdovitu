@@ -1,12 +1,22 @@
 {
   "name": "DOCES DO VITU",
-  "short_name": "Doces do Vitu",
+  "short_name": "DOCES DO VITU",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#faf4ee",
+  "background_color": "#fbf3e8",
   "theme_color": "#5b321f",
   "icons": [
-    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"},
-    {"src":"apple-touch-icon.png","sizes":"180x180","type":"image/png","purpose":"any"}
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }
