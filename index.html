@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.15</title>
+<title>DOCES DO VITU 1.2.19</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -86,7 +86,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .nav:before{display:none}
 }
 
-/* V1.2.0 FINAL - Financeiro compacto e centralizado no celular */
+/* V1.2.19 FINAL - Financeiro compacto e centralizado no celular */
 .finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
 .finance-duo .analysis-card{min-width:0;padding:13px}
 .finance-duo .section-title b{font-size:15px}
@@ -128,7 +128,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 </style>
 
 <style id="professional-motion">
-/* V1.2.8: single-tap motion system, without duplicate click effects */
+/* V1.2.19: single-tap motion system, without duplicate click effects */
 .page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
 @keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .modal-bg{animation:modalFade .16s ease-out both}
@@ -173,7 +173,7 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.15</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.19</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -352,8 +352,7 @@ function finance(){
  const pending=monthSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
  const soldCost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0),0);
  const baseProductCost=115.27;
- const purchaseCost=baseProductCost+purchases.reduce((a,p)=>a+Number(p.total||0),0);
- const cost=purchaseCost;
+ const cost=baseProductCost;
  const profit=revenue-soldCost;
  const margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
@@ -391,7 +390,7 @@ function more(){
   <button id="payments"><span class="mi">💵</span><b>Pagamentos</b><small>Registrar recebimentos</small></button>
   <button id="account"><span class="mi">⚙️</span><b>Conta</b><small>${esc(auth.currentUser?.email||"")}</small></button>
  </div>
- <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button></div>`
+ <button class="secondary" id="logout-dup2" style="width:100%;margin-top:12px">Sair da conta</button></div>`
 }
 
 function openQuickSale(){
@@ -445,7 +444,7 @@ function openSale(){
  <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Valor líquido</label><input id="mTotalValue" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div></div><div id="mDiscount" style="font-size:12px;min-height:18px;margin-top:-5px"></div><div class="field"><label>Pago agora</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div>
  <div class="field"><label>Pagamento</label><select id="mMethod"><option>Pagamento no salário</option><option>Dinheiro</option><option>Cartão</option><option>PIX</option></select></div>
  <div id="mTotal" style="font-size:20px;font-weight:900;margin-top:8px"></div>
- <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
+ <div class="actions"><button type="button" class="secondary" id="cancelModal-dup2">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
  const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q;const field=$("mTotalValue");if(document.activeElement!==field)field.value=original.toFixed(2);$("mTotal").textContent="Total líquido: "+money(Number(field.value)||0);updateSaleDiscount(original,Number(field.value)||0)};const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
  const clientSearch=$("mClientSearch"),clientHidden=$("mClient"),clientResults=$("mClientResults");
  let activeIndex=-1;
@@ -556,7 +555,7 @@ function openPaymentForClient(c){
 function openAddStock(p){
  if(!p)return;
  const current=Number(p.stock||0);
- openModal("Adicionar estoque",`<div class="form"><div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} unidade(s)</small></div></div><div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="Ex.: 26,49"></div><div id="addStockPreview" style="font-size:12px;color:var(--muted)">O custo unitário será calculado automaticamente. O valor desta compra também será somado ao custo acumulado.</div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
+ openModal("Adicionar estoque",`<div class="form"><div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} unidade(s)</small></div></div><div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="Ex.: 26,49"></div><div id="addStockPreview" style="font-size:12px;color:var(--muted)">O custo unitário será calculado automaticamente. O valor desta compra também será somado ao custo acumulado.</div><div class="actions"><button class="secondary" id="cancelModal-dup3">Cancelar</button><button class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
  const preview=()=>{const q=Number($("addStockQty")?.value)||0,t=Number($("addStockTotal")?.value)||0;if($("addStockPreview"))$("addStockPreview").textContent=q>0&&t>0?`Custo unitário desta compra: ${money(Math.round(t/q*100)/100)} • ${money(t)} será somado ao custo acumulado.`:"O custo unitário será calculado automaticamente. O valor desta compra também será somado ao custo acumulado."};
  $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$("cancelModal").onclick=closeModal;
  $("confirmAddStock").onclick=async()=>{const q=Math.floor(Number($("addStockQty").value)||0),t=Number($("addStockTotal").value)||0;if(q<1)return toast("Informe a quantidade comprada.");if(t<=0)return toast("Informe o valor total pago.");const unit=Math.round(t/q*100)/100;try{await updateDoc(doc(col("products"),p.id),{stock:current+q,cost:unit});await addDoc(col("purchases"),{productId:p.id,productName:p.name,quantity:q,total:t,unitCost:unit,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction("Entrada de estoque",`${p.name} • +${q} un. • compra ${money(t)} • custo unitário ${money(unit)}`);closeModal();toast(`+${q} unidades adicionadas!`)}catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.code||"verifique a conexão."))}};
@@ -565,7 +564,7 @@ function openAddStock(p){
 function openRemoveStock(p){
  if(!p)return;
  const current=Number(p.stock||0);
- openModal("Remover do estoque",`<div class="form"><div class="section-title"><b>📦 ${esc(p.name)}</b><span>${current} un.</span></div><div class="field"><label>Quantidade a remover</label><input id="removeQty" type="number" min="1" max="${current}" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="field"><label>Motivo (opcional)</label><input id="removeReason" placeholder="Ex.: produto danificado"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmRemoveStock">Remover</button></div></div>`);
+ openModal("Remover do estoque",`<div class="form"><div class="section-title"><b>📦 ${esc(p.name)}</b><span>${current} un.</span></div><div class="field"><label>Quantidade a remover</label><input id="removeQty" type="number" min="1" max="${current}" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="field"><label>Motivo (opcional)</label><input id="removeReason" placeholder="Ex.: produto danificado"></div><div class="actions"><button class="secondary" id="cancelModal-dup4">Cancelar</button><button class="primary" id="confirmRemoveStock">Remover</button></div></div>`);
  $("cancelModal").onclick=closeModal;
  $("confirmRemoveStock").onclick=async()=>{
   const qty=Math.floor(Number($("removeQty").value)||0),reason=$("removeReason").value.trim();
@@ -576,7 +575,7 @@ function openRemoveStock(p){
 }
 async function deleteProductConfirm(p){
  if(!p)return;
- openModal("Excluir produto",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Excluir ${esc(p.name)}?</b><br><small>O produto e o estoque atual serão removidos do cadastro. As vendas antigas e o histórico do Log não serão apagados.</small></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmDeleteProduct" style="background:#b5483f">Excluir produto</button></div></div>`);
+ openModal("Excluir produto",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Excluir ${esc(p.name)}?</b><br><small>O produto e o estoque atual serão removidos do cadastro. As vendas antigas e o histórico do Log não serão apagados.</small></div><div class="actions"><button class="secondary" id="cancelModal-dup5">Cancelar</button><button class="primary" id="confirmDeleteProduct" style="background:#b5483f">Excluir produto</button></div></div>`);
  $("cancelModal").onclick=closeModal;
  $("confirmDeleteProduct").onclick=async()=>{try{await logAction("Produto excluído",`${p.name} • estoque anterior ${Number(p.stock||0)} un.`);await deleteDoc(doc(col("products"),p.id));closeModal();toast("Produto excluído!");}catch(e){console.error(e);toast("Erro ao excluir produto: "+(e.code||"verifique a conexão."));}};
 }
@@ -594,7 +593,7 @@ function openProduct(p=null){
    <div id="pUnitPreview" style="font-size:13px;color:var(--muted);margin-top:3px">Informe quantidade e valor total para calcular o custo unitário automaticamente.</div>
   </div>
   <div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div>
-  <div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div>
+  <div class="actions"><button class="secondary" id="cancelModal-dup6">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div>
  </div>`);
  $("cancelModal").onclick=closeModal;
  const updatePurchasePreview=()=>{
@@ -637,18 +636,45 @@ function openProduct(p=null){
  updatePurchasePreview();
 }
 function openClientForm(){
- openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
+ openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal-dup7">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
  $("cancelModal").onclick=closeModal;$("saveClient").onclick=async()=>{let name=$("cName").value.trim();if(!name)return toast("Digite o nome.");try{await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),createdAt:serverTimestamp()});logAction("Cliente cadastrado",name);closeModal();toast("Cliente cadastrado!")}catch(e){console.error("Erro ao salvar cliente",e);toast("Erro ao salvar cliente: "+(e.code==="permission-denied"?"sem permissão no Firebase.":e.code||"verifique a conexão."))}}
 }
 
 function openAnalysis(){
  const periods={hour:"Hoje por horário",day:"Últimos 7 dias",week:"Últimas semanas",month:"Este mês"};
  openModal("Análise de vendas",`<div class="tabs" id="analysisTabs"><button class="active" data-a="hour">Horário</button><button data-a="day">Dia</button><button data-a="week">Semana</button><button data-a="month">Mês</button></div><div id="analysisContent"></div>`);
- const renderA=kind=>{document.querySelectorAll("#analysisTabs button").forEach(b=>b.classList.toggle("active",b.dataset.a===kind));$("analysisContent").innerHTML=analysisHtml(kind,periods[kind]);bindChartTooltip()};
+ const renderA=kind=>{document.querySelectorAll("#analysisTabs button").forEach(b=>b.classList.toggle("active",b.dataset.a===kind));$("analysisContent").innerHTML=analysisHtml(kind,periods[kind]);bindChartTooltip();bindChartTooltip()};
  document.querySelectorAll("#analysisTabs button").forEach(b=>b.onclick=()=>renderA(b.dataset.a));renderA("hour");
 }
 function saleValueInRange(start,end){return data.sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=start&&d<end}).reduce((a,s)=>a+Number(s.total||0),0)}
-function bindChartTooltip(){const chart=$("analysisContent")?.querySelector(".chart");if(!chart)return;let tip=$("chartTooltip");if(!tip){tip=document.createElement("div");tip.id="chartTooltip";tip.className="chart-tooltip";document.body.appendChild(tip)}const show=(d,e)=>{tip.textContent=`${d.dataset.label}: ${d.dataset.value}`;tip.style.left=`${Math.max(55,Math.min(innerWidth-55,e.clientX))}px`;tip.style.top=`${Math.max(55,e.clientY)}px`;tip.classList.add("show")};const hide=()=>tip.classList.remove("show");chart.querySelectorAll(".chart-hit").forEach(d=>{d.addEventListener("pointerenter",e=>show(d,e));d.addEventListener("pointermove",e=>show(d,e));d.addEventListener("pointerdown",e=>{show(d,e);setTimeout(hide,1600)});d.addEventListener("pointerleave",hide);d.addEventListener("pointerup",()=>setTimeout(hide,700))})}
+
+function bindChartTooltip(){
+ const chart=document.querySelector("#analysisContent .chart");
+ if(!chart)return;
+ let tip=document.querySelector("#chartTooltip");
+ if(!tip){
+  tip=document.createElement("div");
+  tip.id="chartTooltip";
+  tip.className="chart-tooltip";
+  document.body.appendChild(tip);
+ }
+ const hide=()=>tip.classList.remove("show");
+ const show=(dot,x,y)=>{
+  const label=dot.getAttribute("data-chart-label")||"";
+  const value=dot.getAttribute("data-chart-value")||"R$ 0,00";
+  tip.textContent=`${label}: ${value}`;
+  tip.style.left=`${Math.max(60,Math.min(window.innerWidth-60,x))}px`;
+  tip.style.top=`${Math.max(55,y)}px`;
+  tip.classList.add("show");
+ };
+ chart.querySelectorAll(".chart-hit").forEach(dot=>{
+  dot.addEventListener("pointerenter",e=>show(dot,e.clientX,e.clientY));
+  dot.addEventListener("pointermove",e=>show(dot,e.clientX,e.clientY));
+  dot.addEventListener("pointerdown",e=>{e.preventDefault();show(dot,e.clientX,e.clientY);});
+  dot.addEventListener("pointerup",()=>setTimeout(hide,1200));
+  dot.addEventListener("pointerleave",hide);
+ });
+}
 function analysisHtml(kind){
  const periods={hour:"Hoje por horário",day:"Últimos 7 dias",week:"Últimas 8 semanas",month:"Este mês"};
  const sales=data.sales||[], nowD=now(), points=[];
@@ -661,7 +687,7 @@ function analysisHtml(kind){
  const coords=points.map((p,i)=>({x:pad+i*(w-2*pad)/den,y:h-pad-(p.value/max)*(h-2*pad)}));
  const pts=coords.map(p=>`${p.x},${p.y}`).join(" "),step=Math.max(1,Math.ceil(points.length/8));
  const labels=points.map((p,i)=>i%step===0?`<text x="${coords[i].x}" y="${h-2}" text-anchor="middle">${esc(p.label)}</text>`:"").join("");
- const dots=coords.map((p,i)=>`<circle class="dot chart-hit" cx="${p.x}" cy="${p.y}" r="5" data-label="${esc(points[i].label)}" data-value="${money(points[i].value)}"></circle>`).join("");
+ const dots=coords.map((p,i)=>`<circle class="dot chart-hit" cx="${p.x}" cy="${p.y}" r="5" data-chart-label="${esc(points[i].label)}" data-chart-value="${money(points[i].value)}"></circle>`).join("");
  return `<div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">${periods[kind]}</small><div style="margin-top:3px">Total vendido</div></div><strong>${money(total)}</strong></div><div class="chart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline class="line" points="${pts}"/>${dots}${labels}</svg></div></div>`;
 }
 
