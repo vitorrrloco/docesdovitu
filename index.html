@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.11</title>
+<title>DOCES DO VITU 1.2.15</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -173,7 +173,7 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.13</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.15</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -350,8 +350,11 @@ function finance(){
  const revenue=monthSales.reduce((a,s)=>a+Number(s.total||0),0);
  const received=monthPayments.reduce((a,p)=>a+Number(p.amount||0),0);
  const pending=monthSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- const cost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0),0);
- const profit=revenue-cost;
+ const soldCost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0),0);
+ const baseProductCost=115.27;
+ const purchaseCost=baseProductCost+purchases.reduce((a,p)=>a+Number(p.total||0),0);
+ const cost=purchaseCost;
+ const profit=revenue-soldCost;
  const margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
  const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+Number(i.qty||0),0),0);
@@ -365,7 +368,7 @@ function finance(){
  return `<div class="page"><div class="head"><div><h1>Financeiro</h1><p>Visão completa do seu negócio • ${nowD.toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}</p></div></div>
  <div class="finance-grid">
   <div class="finance-card"><small>Faturamento do mês</small><strong>${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
-  <div class="finance-card"><small>Lucro estimado</small><strong class="finance-positive">${money(profit)}</strong><p>vendas menos custo dos produtos</p></div>
+  <div class="finance-card"><small>Lucro estimado</small><strong class="finance-positive">${money(profit)}</strong><p>vendas menos custo dos itens vendidos</p></div>
   <div class="finance-card"><small>Margem de lucro</small><strong>${margin.toFixed(1)}%</strong><p>sobre o faturamento</p></div>
   <div class="finance-card"><small>Ticket médio</small><strong>${money(ticket)}</strong><p>por venda</p></div>
   <div class="finance-card"><small>Recebido no mês</small><strong class="finance-positive">${money(received)}</strong><p>pagamentos registrados</p></div>
@@ -553,8 +556,8 @@ function openPaymentForClient(c){
 function openAddStock(p){
  if(!p)return;
  const current=Number(p.stock||0);
- openModal("Adicionar estoque",`<div class="form"><div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} unidade(s)</small></div></div><div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="Ex.: 26,49"></div><div id="addStockPreview" style="font-size:12px;color:var(--muted)">O custo unitário será calculado automaticamente.</div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
- const preview=()=>{const q=Number($("addStockQty")?.value)||0,t=Number($("addStockTotal")?.value)||0;if($("addStockPreview"))$("addStockPreview").textContent=q>0&&t>0?`Custo unitário desta compra: ${money(Math.round(t/q*100)/100)}.`:"O custo unitário será calculado automaticamente."};
+ openModal("Adicionar estoque",`<div class="form"><div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} unidade(s)</small></div></div><div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="Ex.: 26,49"></div><div id="addStockPreview" style="font-size:12px;color:var(--muted)">O custo unitário será calculado automaticamente. O valor desta compra também será somado ao custo acumulado.</div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
+ const preview=()=>{const q=Number($("addStockQty")?.value)||0,t=Number($("addStockTotal")?.value)||0;if($("addStockPreview"))$("addStockPreview").textContent=q>0&&t>0?`Custo unitário desta compra: ${money(Math.round(t/q*100)/100)} • ${money(t)} será somado ao custo acumulado.`:"O custo unitário será calculado automaticamente. O valor desta compra também será somado ao custo acumulado."};
  $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$("cancelModal").onclick=closeModal;
  $("confirmAddStock").onclick=async()=>{const q=Math.floor(Number($("addStockQty").value)||0),t=Number($("addStockTotal").value)||0;if(q<1)return toast("Informe a quantidade comprada.");if(t<=0)return toast("Informe o valor total pago.");const unit=Math.round(t/q*100)/100;try{await updateDoc(doc(col("products"),p.id),{stock:current+q,cost:unit});await addDoc(col("purchases"),{productId:p.id,productName:p.name,quantity:q,total:t,unitCost:unit,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction("Entrada de estoque",`${p.name} • +${q} un. • compra ${money(t)} • custo unitário ${money(unit)}`);closeModal();toast(`+${q} unidades adicionadas!`)}catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.code||"verifique a conexão."))}};
  preview();
