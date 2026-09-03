@@ -112,46 +112,55 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 .boot-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px;opacity:1;transition:opacity .18s ease,visibility .18s ease}.boot-loader.done{opacity:0;visibility:hidden;pointer-events:none}.boot-card{width:min(330px,88vw);text-align:center;padding:26px 22px;border-radius:22px;background:var(--white);box-shadow:0 14px 45px rgba(74,40,25,.14);display:flex;flex-direction:column;align-items:center;gap:8px}.boot-logo{font-size:42px;line-height:1}.boot-card b{font-size:19px;color:var(--dark)}.boot-card small{color:var(--muted);margin-bottom:8px}.boot-track{width:100%;height:7px;border-radius:99px;background:var(--cream2);overflow:hidden}.boot-bar{height:100%;width:0%;border-radius:99px;background:var(--brown);transition:width .12s ease}.boot-card strong{font-size:13px;color:var(--brown);min-height:18px}
 @media(prefers-reduced-motion:reduce){.boot-loader,.boot-bar{transition:none!important}}
 
-/* DOCES DO VITU V1.2.20 */
-:root{
- --v20-bg:#f7f7f8;
- --v20-surface:#ffffff;
- --v20-surface2:#f0f1f3;
- --v20-text:#17181a;
- --v20-muted:#62666d;
- --v20-border:#dedfe3;
+/* ===== V1.2.20 DARK MODE ===== */
+html.v20-dark,html.v20-dark body{background:#09090b!important;color:#f5f5f5!important}
+html.v20-dark #login{background:#09090b!important}
+html.v20-dark .login-card,.v20-dark .top,.v20-dark .nav,.v20-dark .stat,.v20-dark .item,
+.v20-dark .form,.v20-dark .analysis-card,.v20-dark .finance-card,.v20-dark .more button,
+.v20-dark .table-wrap,.v20-dark .search,.v20-dark .field input,.v20-dark .field select,
+.v20-dark .field textarea,.v20-dark .client-results,.v20-dark .quick button,
+.v20-dark .fast-product,.v20-dark .client-result,.v20-dark .modal{
+ background:#151517!important;color:#f5f5f5!important;border-color:#29292e!important
 }
-html.dark-theme body{background:var(--v20-bg)!important;color:var(--v20-text)!important}
-html.dark-theme header,html.dark-theme nav,html.dark-theme main,html.dark-theme section,
-html.dark-theme .card,html.dark-theme .panel,html.dark-theme .box,html.dark-theme .modal,
-html.dark-theme .modal-content,html.dark-theme .modal-box,html.dark-theme .stat,
-html.dark-theme .product-card,html.dark-theme .list-item,html.dark-theme .table-wrap{
- background:var(--v20-surface)!important;color:var(--v20-text)!important;border-color:var(--v20-border)!important
+.v20-dark .field input,.v20-dark .field select,.v20-dark .field textarea,.v20-dark .search{
+ background:#1d1d21!important;color:#f5f5f5!important
 }
-html.dark-theme input,html.dark-theme select,html.dark-theme textarea{
- background:var(--v20-surface2)!important;color:var(--v20-text)!important;border-color:var(--v20-border)!important
+.v20-dark input::placeholder,.v20-dark textarea::placeholder{color:#8f929a!important}
+.v20-dark .head p,.v20-dark .item-main small,.v20-dark .field label,.v20-dark .stat small,
+.v20-dark .finance-card small,.v20-dark .finance-card p,.v20-dark .more small,
+.v20-dark .fast-product small,.v20-dark .client-result small,.v20-dark .analysis-card small,
+.v20-dark .section-title span{color:#a4a6ad!important}
+.v20-dark h1,.v20-dark h2,.v20-dark h3,.v20-dark h4,.v20-dark p,.v20-dark label,
+.v20-dark span,.v20-dark b,.v20-dark strong,.v20-dark td,.v20-dark th{color:#f5f5f5}
+.v20-dark .secondary,.v20-dark .top-action,.v20-dark .tabs button,.v20-dark .link{
+ background:#222225!important;color:#f5f5f5!important;border-color:#35353b!important
 }
-html.dark-theme input::placeholder,html.dark-theme textarea::placeholder{color:#8e949d!important}
-html.dark-theme h1,html.dark-theme h2,html.dark-theme h3,html.dark-theme h4,html.dark-theme h5,
-html.dark-theme p,html.dark-theme label,html.dark-theme span,html.dark-theme small,
-html.dark-theme strong,html.dark-theme b,html.dark-theme td,html.dark-theme th{color:inherit}
-html.dark-theme .muted,html.dark-theme .hint,html.dark-theme .subtext{color:var(--v20-muted)!important}
-html.dark-theme table,html.dark-theme td,html.dark-theme th{border-color:var(--v20-border)!important}
-html.dark-theme svg text{fill:var(--v20-text)!important}
-html.dark-theme .modal-backdrop{background:rgba(0,0,0,.68)!important}
+.v20-dark .tabs button.active{background:#4a2819!important;color:#fff!important}
+.v20-dark th{background:#202023!important;color:#fff!important}
+.v20-dark td{background:#151517!important;color:#f5f5f5!important;border-color:#29292e!important}
+.v20-dark .quick-launch{background:#4a2819!important;color:#fff!important}
+.v20-dark .brand-mark{background:#2a1a12!important}
+.v20-dark .avatar{background:#242429!important}
+.v20-dark .modal-bg{background:rgba(0,0,0,.82)!important}
+.v20-dark .boot-loader{background:#09090b!important}
+.v20-dark .boot-card{background:#151517!important;color:#f5f5f5!important}
+.v20-dark .boot-card b,.v20-dark .boot-card small,.v20-dark .boot-card strong{color:#f5f5f5!important}
+.v20-dark .chart-tooltip{background:#f5f5f5!important;color:#111!important}
+.v20-dark .status.paid,.v20-dark .paid{color:#57c98d!important}
+.v20-dark .status.pending,.v20-dark .pending{color:#ff8279!important}
+.v20-dark .partial{color:#eab46a!important}
 
-#v20ThemeToggle{
- display:inline-flex;align-items:center;justify-content:center;gap:5px;
- padding:6px 9px;border:1px solid #ddd;border-radius:9px;
- background:#fff;color:#222;font-size:11px;font-weight:800;cursor:pointer;
- white-space:nowrap
-}
-html.dark-theme #v20ThemeToggle{background:#23262b;color:#fff;border-color:#454b55}
+.v20-theme-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.v20-theme-row button{min-height:52px;border-radius:13px;border:1px solid var(--line);background:#fff;color:#222;font-weight:800}
+.v20-theme-row button.active{box-shadow:0 0 0 3px #b77a4e33;border-color:#b77a4e}
+html.v20-dark .v20-theme-row button{background:#222225;color:#f5f5f5;border-color:#35353b}
 
-#v20ClientSortWrap{display:flex;align-items:center;gap:7px;margin:8px 0 12px}
-#v20ClientSortWrap label{font-size:12px;font-weight:800}
-#v20ClientSort{padding:7px 9px;border-radius:9px;border:1px solid #ddd;background:#fff;color:#222;font-size:12px;font-weight:700}
-html.dark-theme #v20ClientSort{background:#23262b;color:#fff;border-color:#454b55}
+.v20-dark .table-wrap{background:#151517!important;border-color:#29292e!important}
+.v20-dark table{background:#151517!important;color:#f5f5f5!important}
+.v20-dark .chart{background:transparent!important}
+.v20-dark .chart text{fill:#f5f5f5!important}
+.v20-dark .line{stroke:#d7b08a!important}
+.v20-dark .dot{fill:#b77a4e!important;stroke:#151517!important}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -195,22 +204,17 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 </style><script>
 (function(){
  const KEY="doces_do_vitu_theme";
- function applyV20Theme(mode){
-  document.documentElement.classList.toggle("dark-theme",mode==="dark");
-  const b=document.getElementById("v20ThemeToggle");
-  if(b)b.textContent=mode==="dark"?"☀️ Claro":"🌙 Escuro";
+ function getTheme(){try{return localStorage.getItem(KEY)||"light"}catch(e){return"light"}}
+ function applyTheme(mode){
+   document.documentElement.classList.toggle("v20-dark",mode==="dark");
+   document.querySelectorAll("[data-v20-theme]").forEach(b=>b.classList.toggle("active",b.dataset.v20Theme===mode));
  }
- let saved="light";
- try{saved=localStorage.getItem(KEY)||"light"}catch(e){}
- applyV20Theme(saved);
- window.toggleV20Theme=function(){
-  const next=document.documentElement.classList.contains("dark-theme")?"light":"dark";
-  try{localStorage.setItem(KEY,next)}catch(e){}
-  applyV20Theme(next);
- };
+ window.v20SetTheme=function(mode){try{localStorage.setItem(KEY,mode)}catch(e){}applyTheme(mode);};
+ applyTheme(getTheme());
+ window.v20SyncTheme=function(){applyTheme(getTheme());};
 })();
 </script></head>
-<body><button id="v20ThemeToggle" type="button" onclick="toggleV20Theme()">🌙 Escuro</button>
+<body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
 </div>
@@ -386,9 +390,15 @@ function sales(){
 function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==="Parcial"?"partial":"pending",d=dt(s.createdAt);return `<tr data-status="${filter}" data-sale="${s.id}"><td>${d?d.toLocaleDateString("pt-BR"):"-"}</td><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(s.clientName||"Balcão")}</td><td>${esc(s.items?.map(i=>i.name).join(", ")||"-")}</td><td>${s.items?.reduce((a,i)=>a+Number(i.qty||0),0)||0}</td><td>${money(s.total)}</td><td class="${statusClass(st)}">${st}</td></tr>`}
 
 function clients(){
+ const sort=(()=>{try{return localStorage.getItem("doces_do_vitu_client_sort")||"az"}catch(e){return"az"}})();
+ const sorted=sortClients(data.clients,sort);
  return `<div class="page"><div class="head"><div><h1>Clientes</h1><p>Compras e valores de cada pessoa</p></div><button class="top-action" id="newClient">＋</button></div>
- <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
- <div id="v20ClientSortWrap"><label for="v20ClientSort">Ordenar:</label><select id="v20ClientSort"><option value="az">A → Z</option><option value="za">Z → A</option></select></div><div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
+ <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><input class="search" id="clientSearch" placeholder="🔎 Procurar cliente" style="margin:0;flex:1"><select id="clientSortOrder" aria-label="Ordenar clientes" style="height:50px;border:1px solid var(--line);border-radius:15px;background:#fff;padding:0 10px;min-width:94px"><option value="az"${sort==="az"?" selected":""}>A → Z</option><option value="za"${sort==="za"?" selected":""}>Z → A</option></select></div>
+ <div class="list" id="clientList">${clientRows(sorted)}</div></div>`
+}
+function sortClients(list,mode="az"){
+ const arr=[...(Array.isArray(list)?list:[])].sort((a,b)=>String(a.name||"").trim().localeCompare(String(b.name||"").trim(),"pt-BR",{sensitivity:"base"}));
+ return mode==="za"?arr.reverse():arr;
 }
 function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
@@ -790,7 +800,16 @@ function bindPage(){
  $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
  $("seeSales")?.addEventListener("click",()=>go("sales"));
  $("logout")?.addEventListener("click",()=>signOut(auth));
- $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
+ $("clientSearch")?.addEventListener("input",e=>{
+ const q=e.target.value.toLowerCase(),mode=$("clientSortOrder")?.value||"az";
+ $("clientList").innerHTML=clientRows(sortClients(data.clients.filter(c=>c.name.toLowerCase().includes(q)),mode));
+});
+$("clientSortOrder")?.addEventListener("change",e=>{
+ const mode=e.target.value;
+ try{localStorage.setItem("doces_do_vitu_client_sort",mode)}catch(err){}
+ const q=$("clientSearch")?.value.toLowerCase()||"";
+ $("clientList").innerHTML=clientRows(sortClients(data.clients.filter(c=>c.name.toLowerCase().includes(q)),mode));
+});
  $("stockSearch")?.addEventListener("input",e=>{$("stockList").innerHTML=productRows(data.products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())))});
  document.querySelectorAll("[data-client]").forEach(x=>x.onclick=e=>{if(e.target.closest(".charge-btn"))return;openClient(data.clients.find(c=>c.id===x.dataset.client))});
  document.querySelectorAll("[data-charge]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.charge);if(c)openCharge(c)});
@@ -804,7 +823,7 @@ function bindPage(){
  $("payments")?.addEventListener("click",()=>openReceivables());
  $("receivables")?.addEventListener("click",()=>openReceivables());
  $("account")?.addEventListener("click",openAccount);
- $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.v20SortClients(clients).map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
+ $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
 }
 function openSaleDetail(s){
  if(!s)return;
@@ -878,10 +897,19 @@ async function resetActivityLog(){
  }
 }
 
+function v20SyncThemeButtons(){if(window.v20SyncTheme)window.v20SyncTheme();}
 function openAccount(){
  openModal("Conta",`<div class="form">
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
   <button class="secondary" id="activityLog" style="width:100%;margin-top:10px">📋 Log de atividades</button>
+  <div class="v20-setting-card" style="margin-top:12px;padding:13px;border-radius:15px;border:1px solid var(--line);background:var(--white)">
+   <b style="display:block;margin-bottom:3px">🎨 Aparência</b>
+   <small style="color:var(--muted)">Escolha o tema do sistema.</small>
+   <div class="v20-theme-row">
+    <button type="button" data-v20-theme="light" onclick="v20SetTheme('light')">☀️ Modo claro</button>
+    <button type="button" data-v20-theme="dark" onclick="v20SetTheme('dark')">🌙 Modo escuro</button>
+   </div>
+  </div>
   <details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
    <summary style="cursor:pointer;color:var(--muted);font-weight:800;font-size:13px">Configurações avançadas</summary>
    <div style="margin-top:12px;padding:12px;border-radius:14px;background:#fff4f2;border:1px solid #efd2cc">
@@ -892,7 +920,7 @@ function openAccount(){
    </div>
   </details>
  </div>`);
- $("activityLog").onclick=openActivityLog;
+ $("activityLog").onclick=openActivityLog;v20SyncThemeButtons();
  $("resetBusiness").onclick=()=>{
   openModal("Resetar dados?",`<div class="form">
    <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga os dados do negócio.</b><br><small>Produtos, estoque, clientes, vendas e pagamentos serão excluídos. O login e o PIX não serão apagados. Essa ação não pode ser desfeita.</small></div>
@@ -948,45 +976,5 @@ window.addEventListener("load",()=>{
   setTimeout(()=>s.remove(),700);
 });
 </script>
-<script>
-(function(){
- const KEY="doces_do_vitu_client_sort";
- window.v20SortClients=function(list){
-  const mode=document.getElementById("v20ClientSort")?.value||"az";
-  const arr=[...(Array.isArray(list)?list:[])];
-  arr.sort(function(a,b){
-   const na=String((a&&((a.name??a.nome??a.cliente)))??a??"").trim();
-   const nb=String((b&&((b.name??b.nome??b.cliente)))??b??"").trim();
-   return na.localeCompare(nb,"pt-BR",{sensitivity:"base"});
-  });
-  if(mode==="za")arr.reverse();
-  return arr;
- };
- window.v20GetClientSort=function(){
-  const s=document.getElementById("v20ClientSort");
-  return s?s.value:"az";
- };
- document.addEventListener("DOMContentLoaded",function(){
-  const s=document.getElementById("v20ClientSort");
-  if(!s)return;
-  try{s.value=localStorage.getItem(KEY)||"az"}catch(e){}
-  s.addEventListener("change",function(){
-   try{localStorage.setItem(KEY,s.value)}catch(e){}
-   // Trigger the actual renderer used by the existing app.
-   if(typeof renderClients==="function")renderClients();
-   else if(typeof renderClientes==="function")renderClientes();
-   else if(typeof renderClientList==="function")renderClientList();
-   else if(typeof renderClientListHtml==="function")renderClientListHtml();
-   else if(typeof renderApp==="function")renderApp();
-  });
- });
-})();
-</script><script>
-document.addEventListener("DOMContentLoaded",function(){
- const s=document.getElementById("v20ClientSort");
- if(s){
-  window.dispatchEvent(new CustomEvent("doces-v20-client-sort",{detail:{value:s.value}}));
- }
-});
-</script></body>
+</body>
 </html>
