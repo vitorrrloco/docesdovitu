@@ -112,25 +112,46 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 .boot-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px;opacity:1;transition:opacity .18s ease,visibility .18s ease}.boot-loader.done{opacity:0;visibility:hidden;pointer-events:none}.boot-card{width:min(330px,88vw);text-align:center;padding:26px 22px;border-radius:22px;background:var(--white);box-shadow:0 14px 45px rgba(74,40,25,.14);display:flex;flex-direction:column;align-items:center;gap:8px}.boot-logo{font-size:42px;line-height:1}.boot-card b{font-size:19px;color:var(--dark)}.boot-card small{color:var(--muted);margin-bottom:8px}.boot-track{width:100%;height:7px;border-radius:99px;background:var(--cream2);overflow:hidden}.boot-bar{height:100%;width:0%;border-radius:99px;background:var(--brown);transition:width .12s ease}.boot-card strong{font-size:13px;color:var(--brown);min-height:18px}
 @media(prefers-reduced-motion:reduce){.boot-loader,.boot-bar{transition:none!important}}
 
-/* V1.2.20 - Light/Dark theme */
-html.dark-theme{--v20-bg:#111214;--v20-surface:#1a1c20;--v20-surface2:#23262b;--v20-text:#f3f4f6;--v20-muted:#b9bec7;--v20-border:#393e47}
+/* DOCES DO VITU V1.2.20 */
+:root{
+ --v20-bg:#f7f7f8;
+ --v20-surface:#ffffff;
+ --v20-surface2:#f0f1f3;
+ --v20-text:#17181a;
+ --v20-muted:#62666d;
+ --v20-border:#dedfe3;
+}
 html.dark-theme body{background:var(--v20-bg)!important;color:var(--v20-text)!important}
 html.dark-theme header,html.dark-theme nav,html.dark-theme main,html.dark-theme section,
-html.dark-theme .card,html.dark-theme .panel,html.dark-theme .modal,html.dark-theme .modal-content,
-html.dark-theme .box,html.dark-theme .stat,html.dark-theme .product-card,html.dark-theme .list-item,
-html.dark-theme .table-wrap{background:var(--v20-surface)!important;color:var(--v20-text)!important;border-color:var(--v20-border)!important}
-html.dark-theme input,html.dark-theme select,html.dark-theme textarea{background:var(--v20-surface2)!important;color:var(--v20-text)!important;border-color:var(--v20-border)!important}
-html.dark-theme input::placeholder,html.dark-theme textarea::placeholder{color:#9299a4!important}
+html.dark-theme .card,html.dark-theme .panel,html.dark-theme .box,html.dark-theme .modal,
+html.dark-theme .modal-content,html.dark-theme .modal-box,html.dark-theme .stat,
+html.dark-theme .product-card,html.dark-theme .list-item,html.dark-theme .table-wrap{
+ background:var(--v20-surface)!important;color:var(--v20-text)!important;border-color:var(--v20-border)!important
+}
+html.dark-theme input,html.dark-theme select,html.dark-theme textarea{
+ background:var(--v20-surface2)!important;color:var(--v20-text)!important;border-color:var(--v20-border)!important
+}
+html.dark-theme input::placeholder,html.dark-theme textarea::placeholder{color:#8e949d!important}
 html.dark-theme h1,html.dark-theme h2,html.dark-theme h3,html.dark-theme h4,html.dark-theme h5,
-html.dark-theme p,html.dark-theme label,html.dark-theme span,html.dark-theme small,html.dark-theme strong,
-html.dark-theme b,html.dark-theme td,html.dark-theme th{color:inherit}
+html.dark-theme p,html.dark-theme label,html.dark-theme span,html.dark-theme small,
+html.dark-theme strong,html.dark-theme b,html.dark-theme td,html.dark-theme th{color:inherit}
 html.dark-theme .muted,html.dark-theme .hint,html.dark-theme .subtext{color:var(--v20-muted)!important}
 html.dark-theme table,html.dark-theme td,html.dark-theme th{border-color:var(--v20-border)!important}
 html.dark-theme svg text{fill:var(--v20-text)!important}
-.v20-theme-toggle{border:1px solid #ddd;border-radius:10px;background:#fff;color:#222;padding:7px 10px;font-size:12px;font-weight:800;cursor:pointer}
-html.dark-theme .v20-theme-toggle{background:#23262b;color:#fff;border-color:#454b55}
-.v20-client-sort{display:flex;align-items:center;gap:8px;margin:0 0 10px}
-.v20-client-sort select{padding:7px 9px;border-radius:9px}
+html.dark-theme .modal-backdrop{background:rgba(0,0,0,.68)!important}
+
+#v20ThemeToggle{
+ display:inline-flex;align-items:center;justify-content:center;gap:5px;
+ padding:6px 9px;border:1px solid #ddd;border-radius:9px;
+ background:#fff;color:#222;font-size:11px;font-weight:800;cursor:pointer;
+ white-space:nowrap
+}
+html.dark-theme #v20ThemeToggle{background:#23262b;color:#fff;border-color:#454b55}
+
+#v20ClientSortWrap{display:flex;align-items:center;gap:7px;margin:8px 0 12px}
+#v20ClientSortWrap label{font-size:12px;font-weight:800}
+#v20ClientSort{padding:7px 9px;border-radius:9px;border:1px solid #ddd;background:#fff;color:#222;font-size:12px;font-weight:700}
+html.dark-theme #v20ClientSort{background:#23262b;color:#fff;border-color:#454b55}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -173,29 +194,30 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 .chart-tooltip{position:fixed;z-index:99999;pointer-events:none;display:none;background:var(--dark,#24150f);color:#fff;padding:8px 10px;border-radius:10px;font-size:12px;font-weight:800;box-shadow:0 8px 24px #0003;white-space:nowrap;transform:translate(-50%,-120%)}.chart-tooltip.show{display:block}
 </style><script>
 (function(){
- const K="doces_do_vitu_theme";
- function applyTheme(m){
-  document.documentElement.classList.toggle("dark-theme",m==="dark");
+ const KEY="doces_do_vitu_theme";
+ function applyV20Theme(mode){
+  document.documentElement.classList.toggle("dark-theme",mode==="dark");
   const b=document.getElementById("v20ThemeToggle");
-  if(b)b.textContent=m==="dark"?"☀️ Modo claro":"🌙 Modo escuro";
+  if(b)b.textContent=mode==="dark"?"☀️ Claro":"🌙 Escuro";
  }
- let m="light";try{m=localStorage.getItem(K)||"light"}catch(e){}
- applyTheme(m);
- window.v20ToggleTheme=function(){
-  const n=document.documentElement.classList.contains("dark-theme")?"light":"dark";
-  try{localStorage.setItem(K,n)}catch(e){}
-  applyTheme(n);
+ let saved="light";
+ try{saved=localStorage.getItem(KEY)||"light"}catch(e){}
+ applyV20Theme(saved);
+ window.toggleV20Theme=function(){
+  const next=document.documentElement.classList.contains("dark-theme")?"light":"dark";
+  try{localStorage.setItem(KEY,next)}catch(e){}
+  applyV20Theme(next);
  };
 })();
 </script></head>
-<body>
+<body><button id="v20ThemeToggle" type="button" onclick="toggleV20Theme()">🌙 Escuro</button>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
 </div>
 
 <div id="login">
  <div class="login-card">
-  <div class="logo"><div><div class="candy">🍫</div><b>DOCES DO VITU</b> <button id="v20ThemeToggle" class="v20-theme-toggle" type="button" onclick="v20ToggleTheme()">🌙 Modo escuro</button><small>vendas • estoque • recebimentos</small></div></div>
+  <div class="logo"><div><div class="candy">🍫</div><b>DOCES DO VITU</b><small>vendas • estoque • recebimentos</small></div></div>
   <h1>Entrar</h1><p>Acesse seu controle de vendas.</p>
   <div class="field"><label>E-mail</label><input id="email" type="email" autocomplete="username" placeholder="seu@email.com"></div>
   <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Sua senha"></div>
@@ -366,7 +388,7 @@ function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==
 function clients(){
  return `<div class="page"><div class="head"><div><h1>Clientes</h1><p>Compras e valores de cada pessoa</p></div><button class="top-action" id="newClient">＋</button></div>
  <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
- <div class="v20-client-sort"><label for="v20ClientSort">Ordenar:</label><select id="v20ClientSort"><option value="az">A → Z</option><option value="za">Z → A</option></select></div><div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
+ <div id="v20ClientSortWrap"><label for="v20ClientSort">Ordenar:</label><select id="v20ClientSort"><option value="az">A → Z</option><option value="za">Z → A</option></select></div><div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
 function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
@@ -782,7 +804,7 @@ function bindPage(){
  $("payments")?.addEventListener("click",()=>openReceivables());
  $("receivables")?.addEventListener("click",()=>openReceivables());
  $("account")?.addEventListener("click",openAccount);
- $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
+ $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.v20SortClients(clients).map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
 }
 function openSaleDetail(s){
  if(!s)return;
@@ -928,24 +950,43 @@ window.addEventListener("load",()=>{
 </script>
 <script>
 (function(){
- const K="doces_do_vitu_client_sort";
- window.v20SortClientArray=function(arr){
+ const KEY="doces_do_vitu_client_sort";
+ window.v20SortClients=function(list){
   const mode=document.getElementById("v20ClientSort")?.value||"az";
-  const a=[...(Array.isArray(arr)?arr:[])].sort((x,y)=>{
-   const nx=String(x?.name??x?.nome??"").trim(), ny=String(y?.name??y?.nome??"").trim();
-   return nx.localeCompare(ny,"pt-BR",{sensitivity:"base"});
+  const arr=[...(Array.isArray(list)?list:[])];
+  arr.sort(function(a,b){
+   const na=String((a&&((a.name??a.nome??a.cliente)))??a??"").trim();
+   const nb=String((b&&((b.name??b.nome??b.cliente)))??b??"").trim();
+   return na.localeCompare(nb,"pt-BR",{sensitivity:"base"});
   });
-  return mode==="za"?a.reverse():a;
+  if(mode==="za")arr.reverse();
+  return arr;
  };
- document.addEventListener("DOMContentLoaded",()=>{
-  const s=document.getElementById("v20ClientSort"); if(!s)return;
-  try{s.value=localStorage.getItem(K)||"az"}catch(e){}
-  s.addEventListener("change",()=>{
-   try{localStorage.setItem(K,s.value)}catch(e){}
-   if(typeof renderClientes==="function")renderClientes();
-   else if(typeof renderClients==="function")renderClients();
+ window.v20GetClientSort=function(){
+  const s=document.getElementById("v20ClientSort");
+  return s?s.value:"az";
+ };
+ document.addEventListener("DOMContentLoaded",function(){
+  const s=document.getElementById("v20ClientSort");
+  if(!s)return;
+  try{s.value=localStorage.getItem(KEY)||"az"}catch(e){}
+  s.addEventListener("change",function(){
+   try{localStorage.setItem(KEY,s.value)}catch(e){}
+   // Trigger the actual renderer used by the existing app.
+   if(typeof renderClients==="function")renderClients();
+   else if(typeof renderClientes==="function")renderClientes();
+   else if(typeof renderClientList==="function")renderClientList();
+   else if(typeof renderClientListHtml==="function")renderClientListHtml();
+   else if(typeof renderApp==="function")renderApp();
   });
  });
 })();
+</script><script>
+document.addEventListener("DOMContentLoaded",function(){
+ const s=document.getElementById("v20ClientSort");
+ if(s){
+  window.dispatchEvent(new CustomEvent("doces-v20-client-sort",{detail:{value:s.value}}));
+ }
+});
 </script></body>
 </html>
