@@ -170,6 +170,12 @@ html.v20-dark .profile-name small{
   color:#e6e6e9!important;
   opacity:1!important;
 }
+
+html.v20-dark .purchase-box{background:#1b1b1f!important;border-color:#3a3a42!important}
+html.v20-dark #pUnitPreview{background:#26262b!important;color:#fff!important;border-color:#4a4a53!important}
+html.v20-dark .purchase-box label{color:#fff!important}
+html.v20-dark #fqCart .item{background:#151518!important;color:#fff!important}
+html.v20-dark #fqGrandTotal,html.v20-dark #fqFinalTotal{color:#fff!important}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -259,7 +265,7 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc,writeBatch} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
@@ -275,6 +281,7 @@ const $=id=>document.getElementById(id);
 let uid=null,currentUserName="Vitor",currentUserEmail="",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[]},page="home";
 
 const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const numBR=v=>{let s=String(v??"").trim().replace(/\s/g,"");if(s.includes(",")&&s.includes("."))s=s.replace(/\./g,"").replace(",",".");else if(s.includes(","))s=s.replace(",",".");const n=Number(s);return Number.isFinite(n)?n:0};
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const dt=v=>{let d=v?.toDate?v.toDate():new Date(v);return isNaN(d)?null:d};
 const dateTime=v=>{let d=dt(v);return d?d.toLocaleDateString("pt-BR")+" • "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"};
@@ -473,40 +480,99 @@ function openQuickSale(){
  const clients=data.clients.slice().sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));
  openModal("⚡️ Lançamento rápido",`<div class="form">
   <div class="field"><label>Cliente</label><div style="position:relative"><input id="fqClientSearch" autocomplete="off" placeholder="🔎 Digite o nome ou deixe vazio para balcão"><input id="fqClient" type="hidden"><div id="fqClientResults" class="quick-client-results hidden"></div></div></div>
-  <div class="field"><label>Produto</label><div class="fast-products" id="fqProducts">${products.map(p=>`<button type="button" class="fast-product" data-fq-product="${p.id}"><b>${esc(p.name)}</b><small>${money(p.price)} • ${p.stock} un.</small></button>`).join("")}</div></div>
-  <div class="row"><div class="field"><label>Quantidade</label><input id="fqQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div><div class="field"><label>Valor líquido</label><input id="fqTotal" type="number" min="0" step="0.01" inputmode="decimal" value="0.00"></div></div><div id="fqDiscount" style="font-size:12px;min-height:18px;margin-top:-5px"></div>
-  <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="fqConfirm">Confirmar venda</button></div>
+
+  <div class="field"><label>Adicionar produto</label>
+   <div class="row">
+    <div class="field"><select id="fqProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join("")}</select></div>
+    <div class="field"><input id="fqQty" type="number" min="1" step="1" value="1" inputmode="numeric" placeholder="Qtd."></div>
+   </div>
+   <button type="button" class="primary" id="fqAddProduct" style="width:100%;margin-top:4px">＋ Adicionar produto à venda</button>
+  </div>
+
+  <div id="fqCart" class="list" style="margin-top:4px"></div>
+  <div id="fqCartEmpty" class="empty" style="margin-top:5px">Nenhum produto adicionado.</div>
+
+  <div class="section-title" style="margin-top:12px"><span>Total da venda</span><b id="fqGrandTotal">R$ 0,00</b></div>
+  <div class="field"><label>Desconto opcional</label><input id="fqDiscountValue" type="text" inputmode="decimal" value="0,00" placeholder="R$ 0,00"></div>
+  <div id="fqFinalTotal" style="font-size:20px;font-weight:900;margin-top:4px">Total líquido: R$ 0,00</div>
+  <div class="actions"><button type="button" class="secondary" id="cancelQuickSale">Cancelar</button><button type="button" class="primary" id="fqConfirm">Confirmar venda</button></div>
  </div>`);
- let selectedId=products[0].id;
- const selected=()=>data.products.find(p=>p.id===selectedId);
- const update=()=>{const p=selected(),q=Math.max(1,Number($("fqQty").value)||1);const original=(p?.price||0)*q;const field=$("fqTotal");if(document.activeElement!==field)field.value=original.toFixed(2);updateDiscount(original,Number(field.value)||0)};const updateDiscount=(original,finalValue)=>{const el=$("fqDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
- document.querySelectorAll("[data-fq-product]").forEach(b=>b.onclick=()=>{selectedId=b.dataset.fqProduct;document.querySelectorAll("[data-fq-product]").forEach(x=>x.style.outline=x===b?"3px solid var(--brown)":"none");update()});
+
+ const cart=[];
+ const productById=id=>products.find(p=>p.id===id)||data.products.find(p=>p.id===id);
+ const totalOriginal=()=>cart.reduce((sum,i)=>sum+Number(i.price||0)*Number(i.qty||0),0);
+ const discount=()=>Math.min(totalOriginal(),Math.max(0,numBR($("fqDiscountValue")?.value)));
+ const totalFinal=()=>Math.max(0,totalOriginal()-discount);
+
+ const drawCart=()=>{
+   const box=$("fqCart"),empty=$("fqCartEmpty");
+   if(!cart.length){box.innerHTML="";empty.style.display="block";}
+   else{
+     empty.style.display="none";
+     box.innerHTML=cart.map((i,idx)=>`<div class="item" style="padding:10px">
+       <div class="avatar">🍫</div>
+       <div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)} = ${money(i.qty*i.price)}</small></div>
+       <div class="item-right"><b>${money(i.qty*i.price)}</b><button type="button" class="secondary" data-remove-cart="${idx}" style="padding:6px 8px;font-size:10px;margin-top:5px">✕ Remover</button></div>
+     </div>`).join("");
+   }
+   $("fqGrandTotal").textContent=money(totalOriginal());
+   $("fqFinalTotal").textContent="Total líquido: "+money(totalFinal());
+   box.querySelectorAll("[data-remove-cart]").forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.removeCart),1);drawCart()});
+ };
+ const addProduct=()=>{
+   const id=$("fqProduct").value,q=Math.floor(numBR($("fqQty").value)||0),p=productById(id);
+   if(!p)return toast("Selecione um produto.");
+   if(q<1)return toast("Informe uma quantidade válida.");
+   const existing=cart.find(i=>i.productId===id);
+   const already=existing?existing.qty:0;
+   if(already+q>Number(p.stock||0))return toast(`Estoque insuficiente para ${p.name}. Disponível: ${p.stock} un.`);
+   if(existing)existing.qty+=q;
+   else cart.push({productId:p.id,name:p.name,qty:q,price:Number(p.price||0),originalPrice:Number(p.price||0),cost:Number(p.cost||0)});
+   $("fqQty").value=1;drawCart();
+ };
+ $("fqAddProduct").onclick=addProduct;
+ $("fqQty").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addProduct()}});
+ $("fqDiscountValue").addEventListener("input",drawCart);
+ $("cancelQuickSale").onclick=closeModal;
+
  const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");
  const drawClients=()=>{const q=search.value.trim().toLowerCase();const m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result" data-fq-client="${c.id}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';results.classList.remove("hidden")};
  search.addEventListener("focus",drawClients);search.addEventListener("input",()=>{hidden.value="";drawClients()});
  results.addEventListener("click",e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}});
- $("fqQty").oninput=update;$("fqTotal").oninput=()=>{const p=selected(),q=Math.max(1,Number($("fqQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("fqTotal").value)||0);updateDiscount(original,val)};$("cancelModal").onclick=closeModal;update();
- document.querySelector(`[data-fq-product="${selectedId}"]`)?.style.setProperty("outline","3px solid var(--brown)");
+ drawCart();
+
  $("fqConfirm").onclick=async()=>{
- const btn=$("fqConfirm");if(!btn||btn.dataset.busy==="1")return;btn.dataset.busy="1";
- const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Registrando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);
- try{
-  const p=data.products.find(x=>x.id===selectedId),q=Math.max(1,Number($("fqQty").value)||1),total=Math.max(0,Number($("fqTotal").value)||0),clientId=$("fqClient").value||"";
-  if(!p)throw Error("Selecione um produto.");
-  if(total<=0)throw Error("Informe o valor da venda.");
-  if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
-  const c=data.clients.find(x=>x.id===clientId),originalTotal=Number(p.price||0)*q,discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
-  const saleRef=doc(col("sales"));
-  await Promise.all([
-   setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
-   updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q}),
-   logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`)
-  ]);
-  closeModal();render();go("home");
-  overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';
-  setTimeout(()=>overlay.remove(),550);
- }catch(e){console.error(e);overlay.remove();toast(e.message||"Não foi possível registrar a venda.")}finally{btn.dataset.busy="0"}
-};
+   const btn=$("fqConfirm");if(!btn||btn.dataset.busy==="1")return;
+   if(!cart.length)return toast("Adicione pelo menos um produto.");
+   const clientId=hidden.value||"",c=data.clients.find(x=>x.id===clientId);
+   const originalTotal=totalOriginal(),discountAmount=discount(),total=totalFinal();
+   if(total<=0)return toast("O total da venda precisa ser maior que zero.");
+   for(const item of cart){
+     const fresh=data.products.find(p=>p.id===item.productId);
+     if(!fresh||Number(fresh.stock||0)<item.qty)return toast(`Estoque insuficiente para ${item.name}.`);
+   }
+   btn.dataset.busy="1";btn.disabled=true;btn.textContent="Registrando...";
+   const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Registrando venda...</b><small>Salvando produtos e estoque...</small></div>';document.body.appendChild(overlay);
+   try{
+     const saleRef=doc(col("sales"));
+     const discountRatio=originalTotal>0?discountAmount/originalTotal:0;
+     const saleItems=cart.map(i=>({...i,price:Math.round((i.price*(1-discountRatio))*100)/100}));
+     const batch=writeBatch(db);
+     batch.set(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:saleItems,originalTotal,total,discountAmount,discountPct:originalTotal>0?discountAmount/originalTotal*100:0,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+     cart.forEach(item=>{
+       const p=data.products.find(x=>x.id===item.productId);
+       batch.update(doc(col("products"),item.productId),{stock:Number(p.stock||0)-item.qty});
+     });
+     await batch.commit();
+     await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${cart.map(i=>`${i.name} x${i.qty}`).join(", ")} • ${money(total)}`);
+     closeModal();render();go("home");
+     overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b><small>'+cart.length+' produto(s)</small></div>';
+     setTimeout(()=>overlay.remove(),650);
+   }catch(e){
+     console.error("Erro na venda rápida",e);overlay.remove();btn.disabled=false;btn.dataset.busy="0";btn.textContent="Confirmar venda";
+     toast(e.message||"Não foi possível registrar a venda.");
+   }
+ };
 }
 function openSale(){
  const products=data.products.filter(p=>Number(p.stock||0)>0);
@@ -658,54 +724,75 @@ function openProduct(p=null){
  const currentStock=Number(p?.stock||0);
  const currentCost=Number(p?.cost||0);
  openModal(p?"Editar produto":"Novo produto",`<div class="form">
-  <div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}" placeholder="Nome do doce"></div>
+  <div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}" placeholder="Nome do doce" autocomplete="off"></div>
   <div class="field"><label>Fornecedor (opcional)</label><input id="pSupplier" value="${esc(p?.supplier||"")}" placeholder="Nome do fornecedor"></div>
-  <div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" min="0" inputmode="decimal" value="${p?.price||""}"></div>
-  <div style="margin-top:4px;padding:13px;border-radius:15px;background:#fff8ef;border:1px solid #ecd9c3">
-   <b style="display:block;margin-bottom:8px">📦 Registrar compra / entrada de estoque</b>
-   <div class="row"><div class="field"><label>Quantidade comprada</label><input id="pPurchaseQty" type="number" min="0" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total da compra</label><input id="pPurchaseTotal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 17,99"></div></div>
-   <div id="pUnitPreview" style="font-size:13px;color:var(--muted);margin-top:3px">Informe quantidade e valor total para calcular o custo unitário automaticamente.</div>
+  <div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" min="0" inputmode="decimal" value="${p?.price||""}" placeholder="Ex.: 10,00"></div>
+  <div class="purchase-box" style="margin-top:4px;padding:14px;border-radius:16px;background:#fff8ef;border:1px solid #ecd9c3">
+   <b style="display:block;margin-bottom:10px">📦 ${p?"Adicionar estoque / nova compra":"Estoque inicial / primeira compra"}</b>
+   <div class="row">
+    <div class="field"><label>Quantidade comprada</label><input id="pPurchaseQty" type="number" min="0" step="1" inputmode="numeric" placeholder="Ex.: 50"></div>
+    <div class="field"><label>Valor total da compra</label><input id="pPurchaseTotal" type="text" inputmode="decimal" placeholder="Ex.: 17,99"></div>
+   </div>
+   <div id="pUnitPreview" style="margin-top:8px;padding:11px 12px;border-radius:12px;background:#f0e5d8;border:1px solid #dfcdb9;font-size:14px;font-weight:800;color:#5c4636">
+     💰 Custo unitário: informe quantidade e valor total.
+   </div>
   </div>
-  <div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div>
-  <div class="actions"><button class="secondary" id="cancelModal-dup6">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div>
+  <div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock??2}"></div>
+  <div class="actions"><button type="button" class="secondary" id="cancelProductForm">Cancelar</button><button type="button" class="primary" id="saveProduct">Salvar produto</button></div>
  </div>`);
- $("cancelModal").onclick=closeModal;
+ $("cancelProductForm").onclick=closeModal;
+
  const updatePurchasePreview=()=>{
-  const qty=Number($("pPurchaseQty")?.value)||0, total=Number($("pPurchaseTotal")?.value)||0;
-  const preview=$("pUnitPreview");
-  if(qty>0&&total>0){preview.textContent=`Custo unitário calculado: ${money(Math.round((total/qty)*100)/100)} por doce.`;preview.style.color="var(--green,#2f8f68)";}
-  else {preview.textContent="Informe quantidade e valor total para calcular o custo unitário automaticamente.";preview.style.color="var(--muted)";}
- };
- $("pPurchaseQty").oninput=updatePurchasePreview;$("pPurchaseTotal").oninput=updatePurchasePreview;
- $("saveProduct").onclick=async()=>{
-  const name=$("pName").value.trim();
-  const supplier=$("pSupplier").value.trim();
-  const price=Number($("pPrice").value)||0;
-  const purchaseQty=Number($("pPurchaseQty").value)||0;
-  const purchaseTotal=Number($("pPurchaseTotal").value)||0;
-  const minStock=Number($("pMin").value)||0;
-  if(!name||price<=0)return toast("Preencha nome e preço.");
-  if(purchaseQty<0||purchaseTotal<0)return toast("Os valores da compra não podem ser negativos.");
-  if((purchaseQty>0&&purchaseTotal<=0)||(purchaseTotal>0&&purchaseQty<=0))return toast("Informe a quantidade e o valor total da compra.");
-  let stock=currentStock;
-  let cost=currentCost;
-  if(purchaseQty>0){
-    cost=Math.round((purchaseTotal/purchaseQty)*100)/100;
-    stock=currentStock+purchaseQty;
-  }
-  const obj={name,price,cost,stock,minStock,supplier};
-  try{
-   if(p){
-    await updateDoc(doc(col("products"),p.id),obj);
-    if(purchaseQty>0) await addDoc(col("purchases"),{productId:p.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-    await logAction(purchaseQty>0?"Entrada de estoque":"Produto alterado",purchaseQty>0?`${name} • +${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • preço ${money(price)} • estoque ${stock}`);
+   const qty=Math.floor(numBR($("pPurchaseQty")?.value)||0);
+   const total=numBR($("pPurchaseTotal")?.value);
+   const preview=$("pUnitPreview");
+   if(qty>0&&total>0){
+     const unit=Math.round((total/qty)*100)/100;
+     preview.innerHTML=`💰 <b>Custo unitário: ${money(unit)}</b> <span style="font-weight:500">(${qty} un. por ${money(total)})</span>`;
+     preview.style.color="var(--green,#2f8f68)";
+     preview.style.background="#eaf7ef";
+     preview.style.borderColor="#b9dfc8";
    }else{
-    const productRef=await addDoc(col("products"),{...obj,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-    if(purchaseQty>0) await addDoc(col("purchases"),{productId:productRef.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-    await logAction(purchaseQty>0?"Entrada de estoque":"Produto adicionado",purchaseQty>0?`${name} • ${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • estoque ${stock}`);
+     preview.textContent="💰 Custo unitário: informe quantidade e valor total.";
+     preview.style.color="var(--muted)";
+     preview.style.background="var(--cream2,#f7f1eb)";
+     preview.style.borderColor="var(--line,#e8ddd5)";
    }
-   closeModal();toast("Produto salvo!");
-  }catch(e){console.error(e);toast("Erro ao salvar produto: "+(e.code||"verifique a conexão."));}
+ };
+ $("pPurchaseQty").addEventListener("input",updatePurchasePreview);
+ $("pPurchaseTotal").addEventListener("input",updatePurchasePreview);
+
+ $("saveProduct").onclick=async()=>{
+   const btn=$("saveProduct");if(!btn||btn.dataset.busy==="1")return;
+   const name=$("pName").value.trim();
+   const supplier=$("pSupplier").value.trim();
+   const price=numBR($("pPrice").value);
+   const purchaseQty=Math.floor(numBR($("pPurchaseQty").value));
+   const purchaseTotal=numBR($("pPurchaseTotal").value);
+   const minStock=Math.max(0,Math.floor(numBR($("pMin").value)));
+   if(!name||price<=0)return toast("Preencha o nome e o preço de venda.");
+   if(purchaseQty<0||purchaseTotal<0)return toast("Os valores da compra não podem ser negativos.");
+   if((purchaseQty>0&&purchaseTotal<=0)||(purchaseTotal>0&&purchaseQty<=0))return toast("Informe a quantidade e o valor total da compra.");
+   btn.dataset.busy="1";btn.disabled=true;btn.textContent="Salvando...";
+   let stock=currentStock,cost=currentCost;
+   if(purchaseQty>0){cost=Math.round((purchaseTotal/purchaseQty)*100)/100;stock=currentStock+purchaseQty;}
+   const obj={name,price,cost,stock,minStock,supplier};
+   try{
+     if(p){
+       await updateDoc(doc(col("products"),p.id),obj);
+       if(purchaseQty>0)await addDoc(col("purchases"),{productId:p.id,productName:name,quantity:purchaseQty,total:purchaseTotal,unitCost:cost,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+       await logAction(purchaseQty>0?"Entrada de estoque":"Produto alterado",purchaseQty>0?`${name} • +${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • preço ${money(price)} • estoque ${stock}`);
+     }else{
+       const productRef=await addDoc(col("products"),{...obj,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+       if(purchaseQty>0)await addDoc(col("purchases"),{productId:productRef.id,productName:name,quantity:purchaseQty,total:purchaseTotal,unitCost:cost,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+       await logAction(purchaseQty>0?"Entrada de estoque":"Produto adicionado",purchaseQty>0?`${name} • ${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • estoque ${stock}`);
+     }
+     closeModal();toast(p?"Produto atualizado!":"Produto cadastrado!");
+   }catch(e){
+     console.error("Erro ao salvar produto",e);
+     toast("Erro ao salvar produto: "+(e.code||"verifique a conexão/permissão."));
+     btn.disabled=false;btn.dataset.busy="0";btn.textContent="Salvar produto";
+   }
  };
  updatePurchasePreview();
 }
