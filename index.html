@@ -710,8 +710,28 @@ function openProduct(p=null){
  updatePurchasePreview();
 }
 function openClientForm(){
- openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal-dup7">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
- $("cancelModal").onclick=closeModal;$("saveClient").onclick=async()=>{let name=$("cName").value.trim();if(!name)return toast("Digite o nome.");try{await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),createdAt:serverTimestamp()});logAction("Cliente cadastrado",name);closeModal();toast("Cliente cadastrado!")}catch(e){console.error("Erro ao salvar cliente",e);toast("Erro ao salvar cliente: "+(e.code==="permission-denied"?"sem permissão no Firebase.":e.code||"verifique a conexão."))}}
+ openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente" autocomplete="name"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999" autocomplete="tel"></div><div class="actions"><button class="secondary" id="cancelClientForm">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
+ $("cancelClientForm").onclick=closeModal;
+ $("saveClient").onclick=async()=>{
+   const name=$("cName").value.trim();
+   const phone=$("cPhone").value.trim();
+   if(!name){toast("Digite o nome.");$("cName").focus();return}
+   const btn=$("saveClient");
+   if(btn.disabled)return;
+   btn.disabled=true;
+   btn.textContent="Salvando...";
+   try{
+     const ref=await addDoc(col("clients"),{name,phone,createdAt:serverTimestamp(),createdByUid:uid,createdByName:currentUserName});
+     await logAction("Cliente cadastrado",name);
+     closeModal();
+     toast("Cliente cadastrado!");
+   }catch(e){
+     console.error("Erro ao salvar cliente",e);
+     btn.disabled=false;
+     btn.textContent="Salvar";
+     toast("Erro ao salvar cliente: "+(e.code==="permission-denied"?"sem permissão no Firebase.":e.code||"verifique a conexão."));
+   }
+ };
 }
 
 function openAnalysis(){
@@ -973,76 +993,8 @@ window.addEventListener("load",()=>{
   setTimeout(()=>s.remove(),700);
 });
 </script>
-<script>
-document.addEventListener("click",function(e){
- const b=e.target.closest("#newClient"); if(!b)return;
- e.preventDefault();
- if(typeof openClientModal==="function")return openClientModal();
- if(typeof openNewClient==="function")return openNewClient();
- if(typeof newClient==="function")return newClient();
-});
-</script>
-<script>
-(function(){
-  function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-  function openV20NewClient(){
-    const existing=document.getElementById("v20ClientModal");
-    if(existing) existing.remove();
-    const bg=document.createElement("div");
-    bg.id="v20ClientModal";
-    bg.className="modal-bg";
-    bg.style.cssText="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.65)";
-    bg.innerHTML=`<div class="modal" style="width:min(460px,100%);padding:20px;border-radius:20px;background:#fff;color:#17181a">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
-       <h2 style="margin:0">Cadastrar cliente</h2>
-       <button type="button" id="v20CloseClient" class="secondary">✕</button>
-      </div>
-      <label style="display:block;font-weight:800;margin:8px 0 5px">Nome *</label>
-      <input id="v20ClientName" type="text" autocomplete="name" placeholder="Nome do cliente" style="width:100%;box-sizing:border-box;padding:13px;border:1px solid #ddd;border-radius:12px">
-      <label style="display:block;font-weight:800;margin:12px 0 5px">Telefone</label>
-      <input id="v20ClientPhone" type="tel" autocomplete="tel" placeholder="(00) 00000-0000" style="width:100%;box-sizing:border-box;padding:13px;border:1px solid #ddd;border-radius:12px">
-      <label style="display:block;font-weight:800;margin:12px 0 5px">Observação</label>
-      <textarea id="v20ClientNote" placeholder="Opcional" style="width:100%;box-sizing:border-box;padding:13px;border:1px solid #ddd;border-radius:12px;min-height:75px"></textarea>
-      <button type="button" id="v20SaveClient" class="primary" style="width:100%;margin-top:15px;padding:13px">Cadastrar cliente</button>
-    </div>`;
-    document.body.appendChild(bg);
-    if(document.documentElement.classList.contains("v20-dark")){
-      const card=bg.querySelector(".modal");
-      card.style.background="#151518";card.style.color="#fff";
-      bg.querySelectorAll("input,textarea").forEach(x=>{x.style.background="#202024";x.style.color="#fff";x.style.borderColor="#3b3b43"});
-    }
-    document.getElementById("v20ClientName").focus();
-    document.getElementById("v20CloseClient").onclick=()=>bg.remove();
-    bg.addEventListener("click",e=>{if(e.target===bg)bg.remove()});
-    document.getElementById("v20SaveClient").onclick=function(){
-      const name=document.getElementById("v20ClientName").value.trim();
-      if(!name){alert("Digite o nome do cliente.");document.getElementById("v20ClientName").focus();return}
-      if(!window.data || !Array.isArray(window.data.clients)){
-        alert("Não foi possível acessar a lista de clientes.");
-        return;
-      }
-      const client={id:"c_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),name,
-        phone:document.getElementById("v20ClientPhone").value.trim(),
-        note:document.getElementById("v20ClientNote").value.trim(),purchases:[],total:0};
-      window.data.clients.push(client);
-      try{localStorage.setItem("doces_do_vitu_data",JSON.stringify(window.data))}catch(e){}
-      bg.remove();
-      if(typeof bindPage==="function")bindPage();
-      else if(typeof render==="function")render();
-      else if(typeof renderApp==="function")renderApp();
-      else location.reload();
-    };
-  }
-  window.v20OpenNewClient=openV20NewClient;
 
-  document.addEventListener("click",function(e){
-    const b=e.target.closest("#newClient");
-    if(!b)return;
-    e.preventDefault();e.stopImmediatePropagation();
-    openV20NewClient();
-  },true);
-})();
-</script>
+
 
 <script>
 document.addEventListener("DOMContentLoaded",function(){
