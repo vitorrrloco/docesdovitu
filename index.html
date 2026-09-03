@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.20</title>
+<title>DOCES DO VITU 1.2.19</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -112,55 +112,27 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 .boot-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px;opacity:1;transition:opacity .18s ease,visibility .18s ease}.boot-loader.done{opacity:0;visibility:hidden;pointer-events:none}.boot-card{width:min(330px,88vw);text-align:center;padding:26px 22px;border-radius:22px;background:var(--white);box-shadow:0 14px 45px rgba(74,40,25,.14);display:flex;flex-direction:column;align-items:center;gap:8px}.boot-logo{font-size:42px;line-height:1}.boot-card b{font-size:19px;color:var(--dark)}.boot-card small{color:var(--muted);margin-bottom:8px}.boot-track{width:100%;height:7px;border-radius:99px;background:var(--cream2);overflow:hidden}.boot-bar{height:100%;width:0%;border-radius:99px;background:var(--brown);transition:width .12s ease}.boot-card strong{font-size:13px;color:var(--brown);min-height:18px}
 @media(prefers-reduced-motion:reduce){.boot-loader,.boot-bar{transition:none!important}}
 
-/* ===== V1.2.20 DARK MODE ===== */
-html.v20-dark,html.v20-dark body{background:#09090b!important;color:#f5f5f5!important}
-html.v20-dark #login{background:#09090b!important}
-html.v20-dark .login-card,.v20-dark .top,.v20-dark .nav,.v20-dark .stat,.v20-dark .item,
-.v20-dark .form,.v20-dark .analysis-card,.v20-dark .finance-card,.v20-dark .more button,
-.v20-dark .table-wrap,.v20-dark .search,.v20-dark .field input,.v20-dark .field select,
-.v20-dark .field textarea,.v20-dark .client-results,.v20-dark .quick button,
-.v20-dark .fast-product,.v20-dark .client-result,.v20-dark .modal{
- background:#151517!important;color:#f5f5f5!important;border-color:#29292e!important
-}
-.v20-dark .field input,.v20-dark .field select,.v20-dark .field textarea,.v20-dark .search{
- background:#1d1d21!important;color:#f5f5f5!important
-}
-.v20-dark input::placeholder,.v20-dark textarea::placeholder{color:#8f929a!important}
-.v20-dark .head p,.v20-dark .item-main small,.v20-dark .field label,.v20-dark .stat small,
-.v20-dark .finance-card small,.v20-dark .finance-card p,.v20-dark .more small,
-.v20-dark .fast-product small,.v20-dark .client-result small,.v20-dark .analysis-card small,
-.v20-dark .section-title span{color:#a4a6ad!important}
-.v20-dark h1,.v20-dark h2,.v20-dark h3,.v20-dark h4,.v20-dark p,.v20-dark label,
-.v20-dark span,.v20-dark b,.v20-dark strong,.v20-dark td,.v20-dark th{color:#f5f5f5}
-.v20-dark .secondary,.v20-dark .top-action,.v20-dark .tabs button,.v20-dark .link{
- background:#222225!important;color:#f5f5f5!important;border-color:#35353b!important
-}
-.v20-dark .tabs button.active{background:#4a2819!important;color:#fff!important}
-.v20-dark th{background:#202023!important;color:#fff!important}
-.v20-dark td{background:#151517!important;color:#f5f5f5!important;border-color:#29292e!important}
-.v20-dark .quick-launch{background:#4a2819!important;color:#fff!important}
-.v20-dark .brand-mark{background:#2a1a12!important}
-.v20-dark .avatar{background:#242429!important}
-.v20-dark .modal-bg{background:rgba(0,0,0,.82)!important}
-.v20-dark .boot-loader{background:#09090b!important}
-.v20-dark .boot-card{background:#151517!important;color:#f5f5f5!important}
-.v20-dark .boot-card b,.v20-dark .boot-card small,.v20-dark .boot-card strong{color:#f5f5f5!important}
-.v20-dark .chart-tooltip{background:#f5f5f5!important;color:#111!important}
-.v20-dark .status.paid,.v20-dark .paid{color:#57c98d!important}
-.v20-dark .status.pending,.v20-dark .pending{color:#ff8279!important}
-.v20-dark .partial{color:#eab46a!important}
-
-.v20-theme-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
-.v20-theme-row button{min-height:52px;border-radius:13px;border:1px solid var(--line);background:#fff;color:#222;font-weight:800}
-.v20-theme-row button.active{box-shadow:0 0 0 3px #b77a4e33;border-color:#b77a4e}
-html.v20-dark .v20-theme-row button{background:#222225;color:#f5f5f5;border-color:#35353b}
-
-.v20-dark .table-wrap{background:#151517!important;border-color:#29292e!important}
-.v20-dark table{background:#151517!important;color:#f5f5f5!important}
-.v20-dark .chart{background:transparent!important}
-.v20-dark .chart text{fill:#f5f5f5!important}
-.v20-dark .line{stroke:#d7b08a!important}
-.v20-dark .dot{fill:#b77a4e!important;stroke:#151517!important}
+/* V1.2.20 PROFESSIONAL DARK */
+html.v20-dark,html.v20-dark body,html.v20-dark .app,html.v20-dark .view{background:#070708!important;color:#f7f7f8!important}
+html.v20-dark .top,html.v20-dark .nav{background:#101012!important;color:#fff!important;border-color:#28282d!important}
+html.v20-dark .page,html.v20-dark .stat,html.v20-dark .item,html.v20-dark .finance-card,html.v20-dark .analysis-card,html.v20-dark .form,html.v20-dark .table-wrap,html.v20-dark .modal,html.v20-dark .more button,html.v20-dark .quick button,html.v20-dark .fast-product,html.v20-dark .client-result{background:#151518!important;color:#f7f7f8!important;border-color:#2d2d33!important}
+html.v20-dark .field input,html.v20-dark .field select,html.v20-dark .field textarea,html.v20-dark .search{background:#202024!important;color:#fff!important;border-color:#3b3b43!important}
+html.v20-dark input::placeholder,html.v20-dark textarea::placeholder{color:#9699a2!important}
+html.v20-dark h1,html.v20-dark h2,html.v20-dark h3,html.v20-dark h4,html.v20-dark h5,html.v20-dark p,html.v20-dark label,html.v20-dark span,html.v20-dark b,html.v20-dark strong,html.v20-dark small,html.v20-dark td,html.v20-dark th{color:#f7f7f8!important}
+html.v20-dark .head p,html.v20-dark .item-main small,html.v20-dark .field label,html.v20-dark .stat small,html.v20-dark .finance-card small,html.v20-dark .finance-card p,html.v20-dark .more small{color:#b4b5bd!important}
+html.v20-dark .secondary,html.v20-dark .top-action,html.v20-dark .more button,html.v20-dark .quick button,html.v20-dark .tabs button{background:#3b3b42!important;color:#fff!important;border:1px solid #585861!important}
+html.v20-dark .secondary:hover,html.v20-dark .top-action:hover,html.v20-dark .more button:hover,html.v20-dark .quick button:hover{background:#4b4b53!important}
+html.v20-dark .primary,html.v20-dark .tabs button.active{background:#8b5a3c!important;color:#fff!important}
+html.v20-dark .nav button{color:#c9c9cf!important}.v20-dark .nav .active{background:#39393f!important;color:#fff!important}
+html.v20-dark table,html.v20-dark th,html.v20-dark td{background:#151518!important;color:#f7f7f8!important;border-color:#2d2d33!important}
+html.v20-dark th{background:#242429!important}
+html.v20-dark .empty{background:#151518!important;color:#b4b5bd!important;border-color:#3b3b43!important}
+html.v20-dark .modal-bg{background:rgba(0,0,0,.84)!important}
+html.v20-dark .boot-loader{background:#070708!important}.v20-dark .boot-card{background:#151518!important;color:#fff!important}
+html.v20-dark .chart{background:transparent!important}html.v20-dark .chart text{fill:#fff!important}
+.v20-theme-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.v20-theme-row button{min-height:52px;border-radius:13px;border:1px solid var(--line);background:#fff;color:#222;font-weight:800}.v20-theme-row button.active{border-color:#8b5a3c;box-shadow:0 0 0 3px #8b5a3c2b}
+html.v20-dark .v20-theme-row button{background:#3b3b42;color:#fff;border-color:#585861}
+html.v20-dark .v20-theme-row button.active{background:#8b5a3c;color:#fff}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -203,15 +175,12 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 .chart-tooltip{position:fixed;z-index:99999;pointer-events:none;display:none;background:var(--dark,#24150f);color:#fff;padding:8px 10px;border-radius:10px;font-size:12px;font-weight:800;box-shadow:0 8px 24px #0003;white-space:nowrap;transform:translate(-50%,-120%)}.chart-tooltip.show{display:block}
 </style><script>
 (function(){
- const KEY="doces_do_vitu_theme";
- function getTheme(){try{return localStorage.getItem(KEY)||"light"}catch(e){return"light"}}
- function applyTheme(mode){
-   document.documentElement.classList.toggle("v20-dark",mode==="dark");
-   document.querySelectorAll("[data-v20-theme]").forEach(b=>b.classList.toggle("active",b.dataset.v20Theme===mode));
- }
- window.v20SetTheme=function(mode){try{localStorage.setItem(KEY,mode)}catch(e){}applyTheme(mode);};
- applyTheme(getTheme());
- window.v20SyncTheme=function(){applyTheme(getTheme());};
+ const K="doces_do_vitu_theme";
+ function get(){try{return localStorage.getItem(K)||"light"}catch(e){return"light"}}
+ function apply(m){document.documentElement.classList.toggle("v20-dark",m==="dark");document.querySelectorAll("[data-v20-theme]").forEach(b=>b.classList.toggle("active",b.dataset.v20Theme===m))}
+ window.v20SetTheme=function(m){try{localStorage.setItem(K,m)}catch(e){}apply(m)};
+ window.v20SyncTheme=function(){apply(get())};
+ apply(get());
 })();
 </script></head>
 <body>
@@ -240,7 +209,7 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
  </header>
  <main class="view" id="view"></main>
  <nav class="nav">
-  <button data-page="home" class="active"><span class="ni">⌂</span><small>Início</small></button>
+  <button data-page="home" class="active"><span class="ni">🏠</span><small>Início</small></button>
   <button data-page="sales"><span class="ni">🛒</span><small>Vendas</small></button>
   <button data-page="clients"><span class="ni">👥</span><small>Clientes</small></button>
   <button data-page="stock"><span class="ni">📦</span><small>Estoque</small></button>
@@ -397,8 +366,8 @@ function clients(){
  <div class="list" id="clientList">${clientRows(sorted)}</div></div>`
 }
 function sortClients(list,mode="az"){
- const arr=[...(Array.isArray(list)?list:[])].sort((a,b)=>String(a.name||"").trim().localeCompare(String(b.name||"").trim(),"pt-BR",{sensitivity:"base"}));
- return mode==="za"?arr.reverse():arr;
+ const a=[...(Array.isArray(list)?list:[])].sort((x,y)=>String(x.name||"").localeCompare(String(y.name||""),"pt-BR",{sensitivity:"base"}));
+ return mode==="za"?a.reverse():a;
 }
 function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
@@ -897,19 +866,10 @@ async function resetActivityLog(){
  }
 }
 
-function v20SyncThemeButtons(){if(window.v20SyncTheme)window.v20SyncTheme();}
 function openAccount(){
  openModal("Conta",`<div class="form">
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
-  <button class="secondary" id="activityLog" style="width:100%;margin-top:10px">📋 Log de atividades</button>
-  <div class="v20-setting-card" style="margin-top:12px;padding:13px;border-radius:15px;border:1px solid var(--line);background:var(--white)">
-   <b style="display:block;margin-bottom:3px">🎨 Aparência</b>
-   <small style="color:var(--muted)">Escolha o tema do sistema.</small>
-   <div class="v20-theme-row">
-    <button type="button" data-v20-theme="light" onclick="v20SetTheme('light')">☀️ Modo claro</button>
-    <button type="button" data-v20-theme="dark" onclick="v20SetTheme('dark')">🌙 Modo escuro</button>
-   </div>
-  </div>
+  <button class="secondary" id="activityLog" style="width:100%;margin-top:10px">📋 Log de atividades</button><div class="v20-setting-card" style="margin-top:12px;padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--white)"><b>🎨 Aparência</b><small style="display:block;color:var(--muted);margin-top:3px">Escolha o tema do sistema.</small><div class="v20-theme-row"><button type="button" data-v20-theme="light" onclick="v20SetTheme('light')">☀️ Modo claro</button><button type="button" data-v20-theme="dark" onclick="v20SetTheme('dark')">🌙 Modo escuro</button></div></div>
   <details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
    <summary style="cursor:pointer;color:var(--muted);font-weight:800;font-size:13px">Configurações avançadas</summary>
    <div style="margin-top:12px;padding:12px;border-radius:14px;background:#fff4f2;border:1px solid #efd2cc">
@@ -920,7 +880,7 @@ function openAccount(){
    </div>
   </details>
  </div>`);
- $("activityLog").onclick=openActivityLog;v20SyncThemeButtons();
+ $("activityLog").onclick=openActivityLog;
  $("resetBusiness").onclick=()=>{
   openModal("Resetar dados?",`<div class="form">
    <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga os dados do negócio.</b><br><small>Produtos, estoque, clientes, vendas e pagamentos serão excluídos. O login e o PIX não serão apagados. Essa ação não pode ser desfeita.</small></div>
@@ -976,5 +936,13 @@ window.addEventListener("load",()=>{
   setTimeout(()=>s.remove(),700);
 });
 </script>
-</body>
+<script>
+document.addEventListener("click",function(e){
+ const b=e.target.closest("#newClient"); if(!b)return;
+ e.preventDefault();
+ if(typeof openClientModal==="function")return openClientModal();
+ if(typeof openNewClient==="function")return openNewClient();
+ if(typeof newClient==="function")return newClient();
+});
+</script></body>
 </html>
