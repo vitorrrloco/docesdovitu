@@ -225,7 +225,27 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
  window.v20SyncTheme=function(){apply(get())};
  apply(get());
 })();
-</script></head>
+</script>
+<style id="quick-sale-fix">
+/* V1.2.20: carrinho da venda rápida responsivo para celular e desktop */
+.quick-cart-item{width:100%;box-sizing:border-box;display:grid!important;grid-template-columns:48px minmax(0,1fr) minmax(105px,auto);align-items:center;gap:10px;padding:10px!important;overflow:hidden}
+.quick-cart-item .avatar{grid-column:1;width:43px}
+.quick-cart-item .item-main{grid-column:2;min-width:0;overflow:hidden}
+.quick-cart-item .item-main b,.quick-cart-item .item-main small{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.quick-cart-right{grid-column:3;min-width:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
+.quick-cart-right b{font-size:15px;white-space:nowrap}
+.quick-remove{white-space:nowrap!important;width:auto!important;min-width:0!important;padding:8px 11px!important;font-size:12px!important;line-height:1.1!important;border-radius:12px!important}
+@media(max-width:520px){
+ .quick-cart-item{grid-template-columns:44px minmax(0,1fr) auto;gap:7px;padding:8px!important}
+ .quick-cart-item .avatar{width:40px;height:40px;flex-basis:40px}
+ .quick-cart-right{min-width:76px}
+ .quick-cart-right b{font-size:13px}
+ .quick-remove{padding:7px 8px!important;font-size:11px!important}
+ .quick-cart-item .item-main b{font-size:13px}
+ .quick-cart-item .item-main small{font-size:10px}
+}
+</style>
+</head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
@@ -490,14 +510,22 @@ function openQuickSale(){
  </div>`);
  const cart=[];
  const productById=id=>products.find(p=>p.id===id)||data.products.find(p=>p.id===id);
- const totalOriginal=()=>cart.reduce((sum,i)=>sum+numBR(i.price)*numBR(i.qty),0);
- const discount=()=>Math.min(totalOriginal(),Math.max(0,numBR($("fqDiscountValue")?.value)));
+ const parseMoneyBR=v=>{
+   let s=String(v??"").trim().replace(/R\$|\s/g,"");
+   if(s.includes(",")&&s.includes("."))s=s.replace(/\./g,"").replace(",",".");
+   else if(s.includes(","))s=s.replace(",",".");
+   const n=Number(s);return Number.isFinite(n)?n:0;
+ };
+ const totalOriginal=()=>cart.reduce((sum,i)=>sum+(parseMoneyBR(i.price)*parseMoneyBR(i.qty)),0);
+ const discount=()=>Math.min(totalOriginal(),Math.max(0,parseMoneyBR($("fqDiscountValue")?.value)));
  const totalFinal=()=>Math.max(0,totalOriginal()-discount);
  const drawCart=()=>{
    const box=$("fqCart"),empty=$("fqCartEmpty");
    if(!cart.length){box.innerHTML="";empty.style.display="block";}
-   else{empty.style.display="none";box.innerHTML=cart.map((i,idx)=>{const line=numBR(i.price)*numBR(i.qty);return `<div class="item" style="padding:10px"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${numBR(i.qty)} × ${money(numBR(i.price))} = ${money(line)}</small></div><div class="item-right"><b>${money(line)}</b><button type="button" class="secondary" data-remove-cart="${idx}">✕ Remover</button></div></div>`}).join("");}
-   $("fqGrandTotal").textContent=money(totalOriginal());$("fqFinalTotal").textContent="Total líquido: "+money(totalFinal());
+   else{empty.style.display="none";box.innerHTML=cart.map((i,idx)=>{const line=numBR(i.price)*numBR(i.qty);return `<div class="item quick-cart-item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${numBR(i.qty)} × ${money(numBR(i.price))} = ${money(line)}</small></div><div class="item-right quick-cart-right"><b>${money(line)}</b><button type="button" class="secondary quick-remove" data-remove-cart="${idx}">✕ Remover</button></div></div>`}).join("");}
+   const gross=totalOriginal(),disc=discount(),net=Math.max(0,gross-disc);
+   $("fqGrandTotal").textContent=money(gross);
+   $("fqFinalTotal").textContent="Total líquido: "+money(net);
    box.querySelectorAll("[data-remove-cart]").forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.removeCart),1);drawCart()});
  };
  const addProduct=()=>{
@@ -531,6 +559,7 @@ function openQuickSale(){
    }catch(e){console.error(e);toast(e.message||"Não foi possível registrar a venda.");btn.disabled=false;btn.dataset.busy="0";btn.textContent="Confirmar venda";}
  };
 }
+
 function openSale(){
  const products=data.products.filter(p=>Number(p.stock||0)>0);
  if(!products.length){toast("Cadastre um produto com estoque primeiro.");return}
