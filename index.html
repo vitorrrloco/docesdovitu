@@ -133,6 +133,43 @@ html.v20-dark .chart{background:transparent!important}html.v20-dark .chart text{
 .v20-theme-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.v20-theme-row button{min-height:52px;border-radius:13px;border:1px solid var(--line);background:#fff;color:#222;font-weight:800}.v20-theme-row button.active{border-color:#8b5a3c;box-shadow:0 0 0 3px #8b5a3c2b}
 html.v20-dark .v20-theme-row button{background:#3b3b42;color:#fff;border-color:#585861}
 html.v20-dark .v20-theme-row button.active{background:#8b5a3c;color:#fff}
+
+/* V1.2.20 - contraste da marca e usuário no modo escuro */
+html.v20-dark .brand,
+html.v20-dark .brand *,
+html.v20-dark .brand b,
+html.v20-dark .brand strong,
+html.v20-dark .brand span,
+html.v20-dark .brand small{
+  color:#ffffff!important;
+  opacity:1!important;
+  text-shadow:0 0 10px rgba(255,255,255,.08);
+}
+html.v20-dark .head h1,
+html.v20-dark .top h1,
+html.v20-dark .top .brand-title,
+html.v20-dark .top .brand-name{
+  color:#ffffff!important;
+  opacity:1!important;
+}
+html.v20-dark .user,
+html.v20-dark .user *,
+html.v20-dark .user-name,
+html.v20-dark .username,
+html.v20-dark .profile-name,
+html.v20-dark .account-name,
+html.v20-dark .login-user,
+html.v20-dark .logged-user{
+  color:#ffffff!important;
+  opacity:1!important;
+}
+html.v20-dark .user small,
+html.v20-dark .user span,
+html.v20-dark .user-name small,
+html.v20-dark .profile-name small{
+  color:#e6e6e9!important;
+  opacity:1!important;
+}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -944,5 +981,87 @@ document.addEventListener("click",function(e){
  if(typeof openNewClient==="function")return openNewClient();
  if(typeof newClient==="function")return newClient();
 });
+</script>
+<script>
+(function(){
+  function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+  function openV20NewClient(){
+    const existing=document.getElementById("v20ClientModal");
+    if(existing) existing.remove();
+    const bg=document.createElement("div");
+    bg.id="v20ClientModal";
+    bg.className="modal-bg";
+    bg.style.cssText="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.65)";
+    bg.innerHTML=`<div class="modal" style="width:min(460px,100%);padding:20px;border-radius:20px;background:#fff;color:#17181a">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+       <h2 style="margin:0">Cadastrar cliente</h2>
+       <button type="button" id="v20CloseClient" class="secondary">✕</button>
+      </div>
+      <label style="display:block;font-weight:800;margin:8px 0 5px">Nome *</label>
+      <input id="v20ClientName" type="text" autocomplete="name" placeholder="Nome do cliente" style="width:100%;box-sizing:border-box;padding:13px;border:1px solid #ddd;border-radius:12px">
+      <label style="display:block;font-weight:800;margin:12px 0 5px">Telefone</label>
+      <input id="v20ClientPhone" type="tel" autocomplete="tel" placeholder="(00) 00000-0000" style="width:100%;box-sizing:border-box;padding:13px;border:1px solid #ddd;border-radius:12px">
+      <label style="display:block;font-weight:800;margin:12px 0 5px">Observação</label>
+      <textarea id="v20ClientNote" placeholder="Opcional" style="width:100%;box-sizing:border-box;padding:13px;border:1px solid #ddd;border-radius:12px;min-height:75px"></textarea>
+      <button type="button" id="v20SaveClient" class="primary" style="width:100%;margin-top:15px;padding:13px">Cadastrar cliente</button>
+    </div>`;
+    document.body.appendChild(bg);
+    if(document.documentElement.classList.contains("v20-dark")){
+      const card=bg.querySelector(".modal");
+      card.style.background="#151518";card.style.color="#fff";
+      bg.querySelectorAll("input,textarea").forEach(x=>{x.style.background="#202024";x.style.color="#fff";x.style.borderColor="#3b3b43"});
+    }
+    document.getElementById("v20ClientName").focus();
+    document.getElementById("v20CloseClient").onclick=()=>bg.remove();
+    bg.addEventListener("click",e=>{if(e.target===bg)bg.remove()});
+    document.getElementById("v20SaveClient").onclick=function(){
+      const name=document.getElementById("v20ClientName").value.trim();
+      if(!name){alert("Digite o nome do cliente.");document.getElementById("v20ClientName").focus();return}
+      if(!window.data || !Array.isArray(window.data.clients)){
+        alert("Não foi possível acessar a lista de clientes.");
+        return;
+      }
+      const client={id:"c_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),name,
+        phone:document.getElementById("v20ClientPhone").value.trim(),
+        note:document.getElementById("v20ClientNote").value.trim(),purchases:[],total:0};
+      window.data.clients.push(client);
+      try{localStorage.setItem("doces_do_vitu_data",JSON.stringify(window.data))}catch(e){}
+      bg.remove();
+      if(typeof bindPage==="function")bindPage();
+      else if(typeof render==="function")render();
+      else if(typeof renderApp==="function")renderApp();
+      else location.reload();
+    };
+  }
+  window.v20OpenNewClient=openV20NewClient;
+
+  document.addEventListener("click",function(e){
+    const b=e.target.closest("#newClient");
+    if(!b)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    openV20NewClient();
+  },true);
+})();
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+  try{
+    if(typeof data!=="undefined") window.data=data;
+  }catch(e){}
+});
+</script>
+<script>
+(function(){
+  function sync(){
+    if(!document.documentElement.classList.contains("v20-dark")) return;
+    document.querySelectorAll(".brand,.brand b,.brand strong,.brand span,.brand small,.user,.user-name,.username,.profile-name,.account-name,.logged-user").forEach(function(el){
+      el.style.setProperty("color","#fff","important");
+      el.style.setProperty("opacity","1","important");
+    });
+  }
+  document.addEventListener("DOMContentLoaded",sync);
+  new MutationObserver(sync).observe(document.body,{subtree:true,childList:true});
+})();
 </script></body>
 </html>
