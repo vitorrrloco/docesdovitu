@@ -86,7 +86,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .nav:before{display:none}
 }
 
-/* V1.2.31 FINAL - Financeiro compacto e centralizado no celular */
+/* V1.2.32 FINAL - Financeiro compacto e centralizado no celular */
 .finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
 .finance-duo .analysis-card{min-width:0;padding:13px}
 .finance-duo .section-title b{font-size:15px}
@@ -128,7 +128,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 </style>
 
 <style id="professional-motion">
-/* V1.2.31: single-tap motion system, without duplicate click effects */
+/* V1.2.32: single-tap motion system, without duplicate click effects */
 .page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
 @keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .modal-bg{animation:modalFade .16s ease-out both}
@@ -215,7 +215,7 @@ body.dark .customer-status-select{
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.31</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.32</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -475,7 +475,7 @@ function openSale(){
  <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Valor líquido</label><input id="mTotalValue" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div></div><div id="mDiscount" style="font-size:12px;min-height:18px;margin-top:-5px"></div><div class="field"><label>Pago agora</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div>
  <div class="field"><label>Pagamento</label><select id="mMethod"><option>Pagamento no salário</option><option>Dinheiro</option><option>Cartão</option><option>PIX</option></select></div>
  <div id="mTotal" style="font-size:20px;font-weight:900;margin-top:8px"></div>
- <div class="actions"><button type="button" class="secondary" id="cancelModal-dup2">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
+ <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
  const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,c=data.clients.find(x=>x.id===$("mClient").value),autoDiscount=String(c?.status||"normal").toLowerCase()==="otimo"?0.10:0;const field=$("mTotalValue");if(autoDiscount>0){field.value=(original*(1-autoDiscount)).toFixed(2);field.readOnly=true;field.title="Desconto automático de 10% para cliente Ótimo";}else{field.readOnly=false;if(document.activeElement!==field)field.value=original.toFixed(2);field.title="";}$("mTotal").textContent="Total líquido: "+money(Number(field.value)||0);updateSaleDiscount(original,Number(field.value)||0)};const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
  const clientSearch=$("mClientSearch"),clientHidden=$("mClient"),clientResults=$("mClientResults");
  let activeIndex=-1;
@@ -605,7 +605,7 @@ function openAddStock(p){
 function openRemoveStock(p){
  if(!p)return;
  const current=numBR(p.stock||0);
- openModal("Remover do estoque",`<div class="form"><div class="section-title"><b>📦 ${esc(p.name)}</b><span>${current} un.</span></div><div class="field"><label>Quantidade a remover</label><input id="removeQty" type="number" min="1" max="${current}" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="field"><label>Motivo (opcional)</label><input id="removeReason" placeholder="Ex.: produto danificado"></div><div class="actions"><button class="secondary" id="cancelModal-dup4">Cancelar</button><button class="primary" id="confirmRemoveStock">Remover</button></div></div>`);
+ openModal("Remover do estoque",`<div class="form"><div class="section-title"><b>📦 ${esc(p.name)}</b><span>${current} un.</span></div><div class="field"><label>Quantidade a remover</label><input id="removeQty" type="number" min="1" max="${current}" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="field"><label>Motivo (opcional)</label><input id="removeReason" placeholder="Ex.: produto danificado"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmRemoveStock">Remover</button></div></div>`);
  $("cancelModal").onclick=closeModal;
  $("confirmRemoveStock").onclick=async()=>{
   const qty=Math.floor(Number($("removeQty").value)||0),reason=$("removeReason").value.trim();
@@ -616,7 +616,7 @@ function openRemoveStock(p){
 }
 async function deleteProductConfirm(p){
  if(!p)return;
- openModal("Excluir produto",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Excluir ${esc(p.name)}?</b><br><small>O produto e o estoque atual serão removidos do cadastro. As vendas antigas e o histórico do Log não serão apagados.</small></div><div class="actions"><button class="secondary" id="cancelModal-dup5">Cancelar</button><button class="primary" id="confirmDeleteProduct" style="background:#b5483f">Excluir produto</button></div></div>`);
+ openModal("Excluir produto",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Excluir ${esc(p.name)}?</b><br><small>O produto e o estoque atual serão removidos do cadastro. As vendas antigas e o histórico do Log não serão apagados.</small></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmDeleteProduct" style="background:#b5483f">Excluir produto</button></div></div>`);
  $("cancelModal").onclick=closeModal;
  $("confirmDeleteProduct").onclick=async()=>{try{await logAction("Produto excluído",`${p.name} • estoque anterior ${numBR(p.stock||0)} un.`);await deleteDoc(doc(col("products"),p.id));closeModal();toast("Produto excluído!");}catch(e){console.error(e);toast("Erro ao excluir produto: "+(e.code||"verifique a conexão."));}};
 }
@@ -634,7 +634,7 @@ function openProduct(p=null){
    <div id="pUnitPreview" style="font-size:13px;color:var(--muted);margin-top:3px">Informe quantidade e valor total para calcular o custo unitário automaticamente.</div>
   </div>
   <div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div>
-  <div class="actions"><button class="secondary" id="cancelModal-dup6">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div>
+  <div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div>
  </div>`);
  $("cancelModal").onclick=closeModal;
  const updatePurchasePreview=()=>{
@@ -677,22 +677,25 @@ function openProduct(p=null){
  updatePurchasePreview();
 }
 function openClientForm(){
- openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal-dup7">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
- $("cancelModal").onclick=closeModal;
- $("saveClient").onclick=async()=>{
-  const btn=$("saveClient"),name=$("cName").value.trim();
+ openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" autocomplete="name" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" autocomplete="tel" placeholder="(47) 99999-9999"></div><div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="saveClient">Salvar</button></div></div>`);
+ const cancel=$("cancelModal"),btn=$("saveClient");
+ if(cancel)cancel.onclick=closeModal;
+ if(btn)btn.onclick=async()=>{
+  const name=$("cName")?.value.trim()||"";
   if(!name)return toast("Digite o nome.");
   if(btn.dataset.busy==="1")return;
   btn.dataset.busy="1";btn.disabled=true;
   try{
-   await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),status:"normal",createdAt:serverTimestamp()});
+   const phone=$("cPhone")?.value.trim()||"";
+   const ref=await addDoc(col("clients"),{name,phone,status:"normal",createdAt:serverTimestamp()});
    await logAction("Cliente cadastrado",name);
-   closeModal();toast("Cliente cadastrado!");
+   closeModal();
+   toast("Cliente cadastrado!");
   }catch(e){
-   console.error("Erro ao salvar cliente",e);
-   toast(e.code==="permission-denied"?"Firebase recusou o cadastro. Verifique as regras de acesso.":"Não foi possível cadastrar o cliente. Verifique a conexão.");
+   console.error("Erro ao salvar cliente no Firebase:",e);
+   toast(e.code==="permission-denied"?"Firebase recusou o cadastro. Verifique as regras de acesso.":e.code==="unavailable"?"Firebase indisponível. Tente novamente.":"Não foi possível cadastrar o cliente. Verifique a conexão.");
   }finally{btn.disabled=false;btn.dataset.busy="0";}
- }
+ };
 }
 
 function openAnalysis(){
