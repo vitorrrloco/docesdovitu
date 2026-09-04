@@ -300,8 +300,8 @@ const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
 let uid=null,currentUserName="Vitor",currentUserEmail="",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[]},page="home";
 
-const money=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const numBR=v=>{let s=String(v??"").trim().replace(/\s/g,"");if(s.includes(",")&&s.includes("."))s=s.replace(/\./g,"").replace(",",".");else if(s.includes(","))s=s.replace(",",".");const n=Number(s);return Number.isFinite(n)?n:0};
+const money=n=>numBR(n).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const dt=v=>{let d=v?.toDate?v.toDate():new Date(v);return isNaN(d)?null:d};
 const dateTime=v=>{let d=dt(v);return d?d.toLocaleDateString("pt-BR")+" • "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"};
@@ -325,7 +325,7 @@ onAuthStateChanged(auth,async user=>{
  unsubs.forEach(u=>u());unsubs=[];bootSet(0);
  if(!user){uid=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('bootLoader').classList.add('done');return}
  uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentUserEmail==='viitorcontas@gmail.com'?'Vitor':'Vitor';$('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');
- try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
+ try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(90);await repairBrokenSaleTotals();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
 
 function col(name){return collection(db,"businesses","docesDoVitu",name)}
 function oldCol(name){return collection(db,"users",uid,name)}
@@ -369,6 +369,17 @@ function subscribeReady(){
  });
 }
 function subscribe(){return subscribeReady()}
+async function repairBrokenSaleTotals(){
+ const broken=(data.sales||[]).filter(s=>numBR(s.total)<=0&&Array.isArray(s.items)&&s.items.length);
+ if(!broken.length)return;
+ for(const s of broken){
+  const gross=s.items.reduce((sum,i)=>sum+numBR(i.price)*numBR(i.qty),0);
+  const discount=numBR(s.discountAmount);
+  const net=Math.max(0,gross-discount);
+  if(net<=0)continue;
+  try{await updateDoc(doc(col("sales"),s.id),{originalTotal:numBR(s.originalTotal)>0?numBR(s.originalTotal):gross,total:net,discountAmount:discount,discountPct:gross>0?discount/gross*100:0});console.info("Venda corrigida automaticamente",s.id,net)}catch(e){console.warn("Não foi possível corrigir venda",s.id,e)}
+ }
+}
 
 function go(p){
  page=p;
@@ -384,13 +395,13 @@ $("quickSale").onclick=()=>openSale();
 function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="finance")v.innerHTML=finance();bindPage()}
 function totals(){
  const today=now();let sold=0,received=0,pending=0;
- data.sales.forEach(s=>{sold+=Number(s.total||0);pending+=Math.max(0,Number(s.total||0)-Number(s.paid||0))});
- data.payments.forEach(p=>received+=Number(p.amount||0));
- const todaySales=data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===today.toDateString()}).reduce((a,s)=>a+Number(s.total||0),0);
+ data.sales.forEach(s=>{sold+=numBR(s.total);pending+=Math.max(0,numBR(s.total)-numBR(s.paid))});
+ data.payments.forEach(p=>received+=numBR(p.amount));
+ const todaySales=data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===today.toDateString()}).reduce((a,s)=>a+numBR(s.total),0);
  return {sold,received,pending,todaySales}
 }
 function home(){
- const t=totals(),low=data.products.filter(p=>Number(p.stock||0)<=Number(p.minStock||2));
+ const t=totals(),low=data.products.filter(p=>numBR(p.stock)<=numBR(p.minStock||2));
  return `<div class="page">
  <div class="head"><div><h1>Olá! 🍫</h1><p>Seu resumo de hoje</p></div></div>
  <div class="hero"><div><small>VENDAS HOJE</small><h2>${money(t.todaySales)}</h2><p>${data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===now().toDateString()}).length} vendas registradas hoje</p></div><div class="emoji">🍬</div></div>
@@ -420,7 +431,7 @@ function sales(){
  <div class="tabs"><button class="active" data-sales-filter="all">Todas</button><button data-sales-filter="paid">Pagas</button><button data-sales-filter="partial">Parciais</button><button data-sales-filter="pending">Pendentes</button></div>
  <div class="table-wrap"><table><thead><tr><th>Data</th><th>Horário</th><th>Cliente</th><th>Produto</th><th>Qtd.</th><th>Total</th><th>Status</th></tr></thead><tbody id="salesBody">${rows.map(s=>saleRow(s)).join("")||'<tr><td colspan="7">Nenhuma venda.</td></tr>'}</tbody></table></div></div>`
 }
-function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==="Parcial"?"partial":"pending",d=dt(s.createdAt);return `<tr data-status="${filter}" data-sale="${s.id}"><td>${d?d.toLocaleDateString("pt-BR"):"-"}</td><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(s.clientName||"Balcão")}</td><td>${esc(s.items?.map(i=>i.name).join(", ")||"-")}</td><td>${s.items?.reduce((a,i)=>a+Number(i.qty||0),0)||0}</td><td>${money(s.total)}</td><td class="${statusClass(st)}">${st}</td></tr>`}
+function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==="Parcial"?"partial":"pending",d=dt(s.createdAt);return `<tr data-status="${filter}" data-sale="${s.id}"><td>${d?d.toLocaleDateString("pt-BR"):"-"}</td><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(s.clientName||"Balcão")}</td><td>${esc(s.items?.map(i=>i.name).join(", ")||"-")}</td><td>${s.items?.reduce((a,i)=>a+numBR(i.qty),0)||0}</td><td>${money(s.total)}</td><td class="${statusClass(st)}">${st}</td></tr>`}
 
 function clients(){
  const sort=(()=>{try{return localStorage.getItem("doces_do_vitu_client_sort")||"az"}catch(e){return"az"}})();
@@ -433,14 +444,14 @@ function sortClients(list,mode="az"){
  const a=[...(Array.isArray(list)?list:[])].sort((x,y)=>String(x.name||"").localeCompare(String(y.name||""),"pt-BR",{sensitivity:"base"}));
  return mode==="za"?a.reverse():a;
 }
-function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+numBR(s.total),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><button class="top-action" id="newProduct">＋</button></div>
  <input class="search" id="stockSearch" placeholder="🔎 Procurar produto">
  <div class="list" id="stockList">${productRows(data.products)}</div></div>`
 }
-function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}${p.supplier?` • ${esc(p.supplier)}`:""}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${Number(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small><div style="display:flex;gap:5px;margin-top:7px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="secondary stock-add-btn" data-add-stock="${p.id}" style="padding:7px 8px;font-size:10px">➕ Adicionar</button><button type="button" class="secondary stock-remove-btn" data-remove-stock="${p.id}" style="padding:7px 8px;font-size:10px">➖ Remover</button><button type="button" class="secondary stock-delete-btn" data-delete-product="${p.id}" style="padding:7px 8px;font-size:10px;color:#a43f37">🗑️</button></div></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
+function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}${p.supplier?` • ${esc(p.supplier)}`:""}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${numBR(p.stock)<=numBR(p.minStock||2)?"⚠️ baixo":"estoque"}</small><div style="display:flex;gap:5px;margin-top:7px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="secondary stock-add-btn" data-add-stock="${p.id}" style="padding:7px 8px;font-size:10px">➕ Adicionar</button><button type="button" class="secondary stock-remove-btn" data-remove-stock="${p.id}" style="padding:7px 8px;font-size:10px">➖ Remover</button><button type="button" class="secondary stock-delete-btn" data-delete-product="${p.id}" style="padding:7px 8px;font-size:10px;color:#a43f37">🗑️</button></div></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
 
 function finance(){
  const sales=data.sales||[], payments=data.payments||[], products=data.products||[], purchases=data.purchases||[], nowD=now();
@@ -448,21 +459,21 @@ function finance(){
  const nextMonth=new Date(nowD.getFullYear(),nowD.getMonth()+1,1);nextMonth.setHours(0,0,0,0);
  const monthSales=sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=monthStart&&d<nextMonth});
  const monthPayments=payments.filter(p=>{const d=dt(p.createdAt);return d&&d>=monthStart&&d<nextMonth});
- const revenue=monthSales.reduce((a,s)=>a+Number(s.total||0),0);
- const received=monthPayments.reduce((a,p)=>a+Number(p.amount||0),0);
- const pending=monthSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- const soldCost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0),0);
+ const revenue=monthSales.reduce((a,s)=>a+numBR(s.total),0);
+ const received=monthPayments.reduce((a,p)=>a+numBR(p.amount),0);
+ const pending=monthSales.reduce((a,s)=>a+Math.max(0,numBR(s.total)-numBR(s.paid)),0);
+ const soldCost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?numBR(i.cost):numBR(prod?.cost);return x+numBR(i.qty)*unitCost},0),0);
  const baseProductCost=115.27;
  const cost=baseProductCost;
  const profit=revenue-soldCost;
  const margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
- const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+Number(i.qty||0),0),0);
- const allReceived=payments.reduce((a,p)=>a+Number(p.amount||0),0);
- const allPurchases=purchases.reduce((a,p)=>a+Number(p.total||0),0);
+ const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+numBR(i.qty),0),0);
+ const allReceived=payments.reduce((a,p)=>a+numBR(p.amount),0);
+ const allPurchases=purchases.reduce((a,p)=>a+numBR(p.total),0);
  const cash=allReceived-allPurchases;
- const byMethod={};monthPayments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+Number(p.amount||0)});
- const top={};monthSales.forEach(s=>(s.items||[]).forEach(i=>{top[i.name]=(top[i.name]||0)+Number(i.qty||0)}));
+ const byMethod={};monthPayments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+numBR(p.amount)});
+ const top={};monthSales.forEach(s=>(s.items||[]).forEach(i=>{top[i.name]=(top[i.name]||0)+numBR(i.qty)}));
  const topRows=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name,q])=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(name)}</b><small>${q} unidade(s) vendida(s)</small></div></div>`).join("")||'<div class="empty">Ainda não há vendas neste mês.</div>';
  const methods=Object.entries(byMethod).sort((a,b)=>b[1]-a[1]).map(([m,v])=>`<div class="section-title"><span>${esc(m)}</span><b>${money(v)}</b></div>`).join("")||'<div class="empty">Nenhum recebimento neste mês.</div>';
  return `<div class="page"><div class="head"><div><h1>Financeiro</h1><p>Visão completa do seu negócio • ${nowD.toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}</p></div></div>
@@ -561,7 +572,7 @@ function openQuickSale(){
 }
 
 function openSale(){
- const products=data.products.filter(p=>Number(p.stock||0)>0);
+ const products=data.products.filter(p=>numBR(p.stock)>0);
  if(!products.length){toast("Cadastre um produto com estoque primeiro.");return}
  const clients=data.clients;
  openModal("Nova venda",`<div class="form">
@@ -571,7 +582,7 @@ function openSale(){
  <div class="field"><label>Pagamento</label><select id="mMethod"><option>Pagamento no salário</option><option>Dinheiro</option><option>Cartão</option><option>PIX</option></select></div>
  <div id="mTotal" style="font-size:20px;font-weight:900;margin-top:8px"></div>
  <div class="actions"><button type="button" class="secondary" id="cancelModal-dup2">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
- const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q;const field=$("mTotalValue");if(document.activeElement!==field)field.value=original.toFixed(2);$("mTotal").textContent="Total líquido: "+money(Number(field.value)||0);updateSaleDiscount(original,Number(field.value)||0)};const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
+ const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,numBR($("mQty").value)||1),original=numBR(p?.price)*q;const field=$("mTotalValue");if(document.activeElement!==field)field.value=original.toFixed(2);$("mTotal").textContent="Total líquido: "+money(Number(field.value)||0);updateSaleDiscount(original,Number(field.value)||0)};const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
  const clientSearch=$("mClientSearch"),clientHidden=$("mClient"),clientResults=$("mClientResults");
  let activeIndex=-1;
  const showClientResults=(term="")=>{const q=term.trim().toLowerCase();const matches=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,12);clientResults.innerHTML=matches.map((c,i)=>`<button type="button" class="client-result" data-pick-client="${c.id}" data-index="${i}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';activeIndex=-1;clientResults.classList.remove("hidden")};
@@ -590,20 +601,20 @@ function openSale(){
  clientResults.addEventListener("mousedown",e=>e.preventDefault());
  clientResults.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const b=e.target.closest("[data-pick-client]");if(b)pickClient(b.dataset.pickClient)});
  document.addEventListener("mousedown",function closeClientDropdown(e){if(!clientSearch.contains(e.target)&&!clientResults.contains(e.target)){clientResults.classList.add("hidden")}}, {once:true});
- $("mProduct").onchange=update;$("mQty").oninput=update;$("mTotalValue").oninput=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("mTotalValue").value)||0);$("mTotal").textContent="Total líquido: "+money(val);updateSaleDiscount(original,val)};update();
+ $("mProduct").onchange=update;$("mQty").oninput=update;$("mTotalValue").oninput=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,numBR($("mTotalValue").value)||0);$("mTotal").textContent="Total líquido: "+money(val);updateSaleDiscount(original,val)};update();
  $("cancelModal").onclick=closeModal;$("confirmSale").onclick=async()=>{
  const btn=$("confirmSale");if(!btn||btn.dataset.busy==="1")return;btn.dataset.busy="1";
  const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Registrando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);
  try{
-  const p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),total=Math.max(0,Number($("mTotalValue").value)||0),clientId=$("mClient").value||"";
+  const p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,numBR($("mQty").value)||1),total=Math.max(0,numBR($("mTotalValue").value)||0),clientId=$("mClient").value||"";
   if(!p)throw Error("Selecione um produto.");
   if(total<=0)throw Error("Informe o valor da venda.");
-  if(q>Number(p.stock||0))throw Error("Estoque insuficiente.");
-  const c=data.clients.find(x=>x.id===clientId),paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),originalTotal=Number(p.price||0)*q,discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
+  if(q>numBR(p.stock))throw Error("Estoque insuficiente.");
+  const c=data.clients.find(x=>x.id===clientId),paid=Math.max(0,Math.min(total,numBR($("mPaid").value)||0)),originalTotal=numBR(p.price)*q,discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
   const saleRef=doc(col("sales"));
   await Promise.all([
-   setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:Number(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
-   updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)-q}),
+   setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:numBR(p.price),cost:numBR(p.cost)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
+   updateDoc(doc(col("products"),p.id),{stock:numBR(p.stock)-q}),
    logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`)
   ]);
   if(paid>0)await addDoc(col("payments"),{saleId:saleRef.id,clientId,clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
@@ -614,13 +625,13 @@ function openSale(){
 };
 }
 function clientPending(c){
- const salesPending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
- return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))+salesPending;
+ const salesPending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,numBR(s.total)-numBR(s.paid)),0);
+ return Math.max(0,numBR(c.initialDebt)-numBR(c.initialDebtPaid))+salesPending;
 }
-function clientInitialPending(c){return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))}
+function clientInitialPending(c){return Math.max(0,numBR(c.initialDebt)-numBR(c.initialDebtPaid))}
 function openClient(c){
- const ss=data.sales.filter(s=>s.clientId===c.id).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
- const total=ss.reduce((a,s)=>a+Number(s.total||0),0),pending=clientPending(c);
+ const ss=data.sales.filter(s=>s.clientId===c.id).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0);
+ const total=ss.reduce((a,s)=>a+numBR(s.total),0),pending=clientPending(c);
  openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div>${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:12px">💸 Cobrar ${money(pending)}</button>`:""}<button class="secondary" id="editClientBtn" style="width:100%;margin-bottom:12px">✏️ Editar cliente</button><div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
  $("registerFromClient").onclick=()=>openPaymentForClient(c);
  if($("chargeClientModal"))$("chargeClientModal").onclick=()=>chargeClient(c);
@@ -655,9 +666,9 @@ function openCharge(c){
  $("sendCharge").onclick=()=>window.open("https://wa.me/?text="+encodeURIComponent($("chargeText").value),"_blank");
 }
 function openPaymentForClient(c){
- const pendingSales=data.sales.filter(s=>s.clientId===c.id&&Number(s.total||0)>Number(s.paid||0));
+ const pendingSales=data.sales.filter(s=>s.clientId===c.id&&numBR(s.total)>numBR(s.paid));
  const initialPending=clientInitialPending(c);
- const totalPending=initialPending+pendingSales.reduce((a,s)=>a+Math.max(0,Number(s.total||0)-Number(s.paid||0)),0);
+ const totalPending=initialPending+pendingSales.reduce((a,s)=>a+Math.max(0,numBR(s.total)-numBR(s.paid)),0);
  if(totalPending<=0){toast("Esse cliente não possui valor pendente.");return}
  openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${totalPending.toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
  $("savePay").onclick=async()=>{
@@ -665,11 +676,11 @@ function openPaymentForClient(c){
   try{
    let remaining=amount;
    const useInitial=Math.min(initialPending,remaining);
-   if(useInitial>0){await updateDoc(doc(col("clients"),c.id),{initialDebtPaid:Number(c.initialDebtPaid||0)+useInitial});remaining-=useInitial;}
+   if(useInitial>0){await updateDoc(doc(col("clients"),c.id),{initialDebtPaid:numBR(c.initialDebtPaid)+useInitial});remaining-=useInitial;}
    for(const s of pendingSales){
     if(remaining<=0)break;
-    const open=Math.max(0,Number(s.total)-Number(s.paid||0)),use=Math.min(open,remaining);
-    await updateDoc(doc(col("sales"),s.id),{paid:Number(s.paid||0)+use});
+    const open=Math.max(0,Number(s.total)-numBR(s.paid)),use=Math.min(open,remaining);
+    await updateDoc(doc(col("sales"),s.id),{paid:numBR(s.paid)+use});
     remaining-=use;
    }
    await addDoc(col("payments"),{clientId:c.id,clientName:c.name,amount,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("payMethod").value});
@@ -680,7 +691,7 @@ function openPaymentForClient(c){
 }
 function openAddStock(p){
  if(!p)return;
- const current=Number(p.stock||0);
+ const current=numBR(p.stock);
  openModal("Adicionar estoque",`<div class="form"><div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} unidade(s)</small></div></div><div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="Ex.: 26,49"></div><div id="addStockPreview" style="font-size:12px;color:var(--muted)">O custo unitário será calculado automaticamente. O valor desta compra também será somado ao custo acumulado.</div><div class="actions"><button class="secondary" id="cancelModal-dup3">Cancelar</button><button class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
  const preview=()=>{const q=Number($("addStockQty")?.value)||0,t=Number($("addStockTotal")?.value)||0;if($("addStockPreview"))$("addStockPreview").textContent=q>0&&t>0?`Custo unitário desta compra: ${money(Math.round(t/q*100)/100)} • ${money(t)} será somado ao custo acumulado.`:"O custo unitário será calculado automaticamente. O valor desta compra também será somado ao custo acumulado."};
  $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$("cancelModal").onclick=closeModal;
@@ -689,7 +700,7 @@ function openAddStock(p){
 }
 function openRemoveStock(p){
  if(!p)return;
- const current=Number(p.stock||0);
+ const current=numBR(p.stock);
  openModal("Remover do estoque",`<div class="form"><div class="section-title"><b>📦 ${esc(p.name)}</b><span>${current} un.</span></div><div class="field"><label>Quantidade a remover</label><input id="removeQty" type="number" min="1" max="${current}" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="field"><label>Motivo (opcional)</label><input id="removeReason" placeholder="Ex.: produto danificado"></div><div class="actions"><button class="secondary" id="cancelModal-dup4">Cancelar</button><button class="primary" id="confirmRemoveStock">Remover</button></div></div>`);
  $("cancelModal").onclick=closeModal;
  $("confirmRemoveStock").onclick=async()=>{
@@ -703,7 +714,7 @@ async function deleteProductConfirm(p){
  if(!p)return;
  openModal("Excluir produto",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Excluir ${esc(p.name)}?</b><br><small>O produto e o estoque atual serão removidos do cadastro. As vendas antigas e o histórico do Log não serão apagados.</small></div><div class="actions"><button class="secondary" id="cancelModal-dup5">Cancelar</button><button class="primary" id="confirmDeleteProduct" style="background:#b5483f">Excluir produto</button></div></div>`);
  $("cancelModal").onclick=closeModal;
- $("confirmDeleteProduct").onclick=async()=>{try{await logAction("Produto excluído",`${p.name} • estoque anterior ${Number(p.stock||0)} un.`);await deleteDoc(doc(col("products"),p.id));closeModal();toast("Produto excluído!");}catch(e){console.error(e);toast("Erro ao excluir produto: "+(e.code||"verifique a conexão."));}};
+ $("confirmDeleteProduct").onclick=async()=>{try{await logAction("Produto excluído",`${p.name} • estoque anterior ${numBR(p.stock)} un.`);await deleteDoc(doc(col("products"),p.id));closeModal();toast("Produto excluído!");}catch(e){console.error(e);toast("Erro ao excluir produto: "+(e.code||"verifique a conexão."));}};
 }
 
 function openProduct(p=null){
@@ -813,7 +824,7 @@ function openAnalysis(){
  const renderA=kind=>{document.querySelectorAll("#analysisTabs button").forEach(b=>b.classList.toggle("active",b.dataset.a===kind));$("analysisContent").innerHTML=analysisHtml(kind,periods[kind]);bindChartTooltip();bindChartTooltip()};
  document.querySelectorAll("#analysisTabs button").forEach(b=>b.onclick=()=>renderA(b.dataset.a));renderA("hour");
 }
-function saleValueInRange(start,end){return data.sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=start&&d<end}).reduce((a,s)=>a+Number(s.total||0),0)}
+function saleValueInRange(start,end){return data.sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=start&&d<end}).reduce((a,s)=>a+numBR(s.total),0)}
 
 function bindChartTooltip(){
  const chart=document.querySelector("#analysisContent .chart");
@@ -845,7 +856,7 @@ function bindChartTooltip(){
 function analysisHtml(kind){
  const periods={hour:"Hoje por horário",day:"Últimos 7 dias",week:"Últimas 8 semanas",month:"Este mês"};
  const sales=data.sales||[], nowD=now(), points=[];
- const sumBetween=(s,e)=>sales.filter(v=>{const x=dt(v.createdAt);return x&&x>=s&&x<=e}).reduce((a,v)=>a+Number(v.total||0),0);
+ const sumBetween=(s,e)=>sales.filter(v=>{const x=dt(v.createdAt);return x&&x>=s&&x<=e}).reduce((a,v)=>a+numBR(v.total),0);
  if(kind==="hour")for(let h=0;h<24;h++){let s=new Date(nowD);s.setHours(h,0,0,0);let e=new Date(s);e.setHours(h,59,59,999);points.push({label:String(h).padStart(2,"0")+"h",value:sumBetween(s,e)})}
  if(kind==="day")for(let i=6;i>=0;i--){let s=new Date(nowD);s.setHours(0,0,0,0);s.setDate(s.getDate()-i);let e=new Date(s);e.setHours(23,59,59,999);points.push({label:s.toLocaleDateString("pt-BR",{weekday:"short"}).replace(".",""),value:sumBetween(s,e)})}
  if(kind==="week"){let base=new Date(nowD);base.setHours(0,0,0,0);base.setDate(base.getDate()-((base.getDay()+6)%7));for(let i=7;i>=0;i--){let s=new Date(base);s.setDate(s.getDate()-i*7);let e=new Date(s);e.setDate(e.getDate()+6);e.setHours(23,59,59,999);points.push({label:s.getDate()+"/"+(s.getMonth()+1),value:sumBetween(s,e)})}}
@@ -926,10 +937,10 @@ $("clientSortOrder")?.addEventListener("change",e=>{
 }
 function openSaleDetail(s){
  if(!s)return;
- const pending=Math.max(0,Number(s.total||0)-Number(s.paid||0));
+ const pending=Math.max(0,numBR(s.total)-numBR(s.paid));
  openModal("Venda",`<div class="form">
   <div class="section-title"><b>${esc(s.clientName||"Venda balcão")}</b><span>${dateTime(s.createdAt)}</span></div>
-  ${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(Number(i.qty||0)*Number(i.price||0))}</b></div></div>`).join("")}
+  ${(s.items||[]).map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(numBR(i.qty)*numBR(i.price))}</b></div></div>`).join("")}
   <div class="section-title"><b>Total</b><b>${money(s.total)}</b></div>
   <div class="section-title"><span>Pago</span><b class="paid">${money(s.paid)}</b></div>
   <div class="section-title"><span>A receber</span><b class="${pending>0?'pending':'paid'}">${money(pending)}</b></div>
@@ -970,7 +981,7 @@ function confirmDeleteSale(s){
  $("delSaleText").oninput=e=>$("delDo").disabled=e.target.value.trim().toUpperCase()!=="EXCLUIR";
  $("delDo").onclick=async()=>{
   const btn=$("delDo");if(btn.dataset.busy)return;btn.dataset.busy="1";
-  try{const ops=[];for(const i of(s.items||[])){const p=data.products.find(x=>x.id===i.productId);if(p)ops.push(updateDoc(doc(col("products"),p.id),{stock:Number(p.stock||0)+Number(i.qty||0)}));}const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));ops.push(deleteDoc(doc(col("sales"),s.id)));ops.push(logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`));await Promise.all(ops);closeModal();render();toast("Venda excluída com sucesso!");}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy=""}
+  try{const ops=[];for(const i of(s.items||[])){const p=data.products.find(x=>x.id===i.productId);if(p)ops.push(updateDoc(doc(col("products"),p.id),{stock:numBR(p.stock)+numBR(i.qty)}));}const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));ops.push(deleteDoc(doc(col("sales"),s.id)));ops.push(logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`));await Promise.all(ops);closeModal();render();toast("Venda excluída com sucesso!");}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy=""}
  };
 }
 
@@ -1042,7 +1053,7 @@ async function openActivityLog(){
   console.error(e);
   toast("Não foi possível carregar o log. Verifique as permissões do Firebase.");
  }
- rows=rows.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
+ rows=rows.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0);
  const types=[...new Set(rows.map(x=>x.action).filter(Boolean))];
  openModal("Log de atividades",`<div class="form">
   <div class="row"><div class="field"><label>Usuário</label><select id="logUser"><option value="all">Todos</option>${[...new Set(rows.map(x=>x.createdByName||"Desconhecido"))].map(n=>`<option>${esc(n)}</option>`).join("")}</select></div><div class="field"><label>Ação</label><select id="logAction"><option value="all">Todas</option>${types.map(n=>`<option>${esc(n)}</option>`).join("")}</select></div></div>
