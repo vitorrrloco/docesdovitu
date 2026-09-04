@@ -883,14 +883,6 @@ window.addEventListener("load",()=>{
 });
 </script>
 
-<script id="FINANCE_NAV_BASE_REPAIR">
-document.addEventListener("click",function(e){
-  const target=e.target.closest('[data-page="finance"],[data-nav="finance"]');
-  if(!target)return;
-  e.preventDefault();
-  e.stopPropagation();
-  if(typeof go==="function") go("finance");
-},true);
-</script>
+
 </body>
 </html>
