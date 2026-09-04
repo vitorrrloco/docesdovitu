@@ -208,7 +208,10 @@ body.dark #customerStatusGroup small{color:#aaa}
 function dvCustomerStatusDiscount(status){return String(status||'').toLowerCase()==='otimo'?0.10:0}
 function dvCustomerStatusPrice(total,status){const t=Number(total)||0,d=dvCustomerStatusDiscount(status);return {subtotal:t,discount:t*d,total:t*(1-d),rate:d}}
 </script>
-</head>
+<style id="DV_V1224_STATUS_STYLE">
+.client-status-label{display:block;font-size:11px;line-height:1.2;margin-top:2px;color:#2e9b4b;font-weight:600}
+body.dark .client-status-label{color:#63d477}
+</style></head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
@@ -394,7 +397,6 @@ function clients(){
 <option value="bom">Bom</option>
 <option value="otimo">Ótimo</option>
 </select>
-<small>Somente clientes com status Ótimo recebem 10% de desconto.</small>
 </div>
 
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
@@ -487,7 +489,7 @@ function openQuickSale(){
  $("fqQty").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("fqAddProduct").click()}};
  $("fqDiscountValue").oninput=draw;$("cancelModal").onclick=closeModal;draw();selectProduct(products[0].id);
  $("fqConfirm").onclick=async()=>{const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;if(!cart.length)return toast("Adicione pelo menos um produto.");const clientId=$("fqClient").value||"",c=data.clients.find(x=>x.id===clientId),originalTotal=totalOriginal(),discountAmount=discount(),total=totalFinal();if(total<=0)return toast("O total da venda precisa ser maior que zero.");for(const i of cart){const p=data.products.find(x=>x.id===i.productId);if(!p||numBR(p.stock)<numBR(i.qty))return toast(`Estoque insuficiente para ${i.name}.`)}btn.dataset.busy="1";btn.disabled=true;try{const ratio=originalTotal?discountAmount/originalTotal:0,items=cart.map(i=>({...i,price:Math.round(numBR(i.price)*(1-ratio)*100)/100})),saleRef=doc(col("sales"));await setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await Promise.all(cart.map(i=>{const p=data.products.find(x=>x.id===i.productId);return updateDoc(doc(col("products"),i.productId),{stock:numBR(p.stock)-numBR(i.qty)})}));closeModal();render();go("home");toast("Venda registrada!")}catch(e){console.error(e);toast(e.message||"Erro ao registrar venda");btn.disabled=false;btn.dataset.busy="0"}};
- const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");search.oninput=()=>{const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result client-result-separated" data-fq-client="${c.id}">${esc(c.name)}</button>`).join("");results.classList.remove("hidden")};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}};
+ const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");search.oninput=()=>{const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result client-result-separated" data-fq-client="${c.id}">${esc(c.name)}<span class="client-status-label">${dvClientStatusLabel(c.status)}</span></button>`).join("");results.classList.remove("hidden")};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}};
 }
 function openSale(){
  const products=data.products.filter(p=>numBR(p.stock||0)>0);
@@ -950,5 +952,7 @@ window.addEventListener("load",()=>{
 </script>
 
 
-</body>
+<script id="DV_V1224_STATUS_HELPER">
+function dvClientStatusLabel(status){return String(status||'').trim().toLowerCase()==='otimo'?'Ótimo':''}
+</script></body>
 </html>
