@@ -1035,5 +1035,15 @@ window.addEventListener("load",()=>{
   setTimeout(()=>s.remove(),700);
 });
 </script>
+
+<script id="finance-nav-repair-v1220">
+document.addEventListener("click",function(e){
+  var el=e.target.closest('[data-page="finance"],[data-nav="finance"],#navFinance,.nav-finance');
+  if(!el)return;
+  try{
+    if(typeof go==="function"){e.preventDefault();go("finance");}
+  }catch(err){console.error("Finance navigation error",err);}
+},true);
+</script>
 </body>
 </html>
