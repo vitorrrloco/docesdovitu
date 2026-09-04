@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.19</title>
+<title>DOCES DO VITU 1.2.20</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -322,10 +322,35 @@ function bootSet(p){bootProgress=Math.max(0,Math.min(100,p));if($("bootBar")){$(
 function bootFinish(){bootSet(100);requestAnimationFrame(()=>setTimeout(()=>{$("bootLoader")?.classList.add("done")},80))}
 
 onAuthStateChanged(auth,async user=>{
- unsubs.forEach(u=>u());unsubs=[];bootSet(0);
- if(!user){uid=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('bootLoader').classList.add('done');return}
- uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentUserEmail==='viitorcontas@gmail.com'?'Vitor':'Vitor';$('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');
- try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(90);await repairBrokenSaleTotals();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
+ unsubs.forEach(u=>u());unsubs=[];bootSet(5);
+ if(!user){uid=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');bootFinish();return}
+ uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentUserEmail==='viitorcontas@gmail.com'?'Vitor':'Vitor';$('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');$('app').classList.remove('hidden');
+ try{
+  bootSet(20);
+  // These maintenance jobs must never block the application from opening.
+  migrateOwnDataToShared().catch(e=>console.warn('Migração não concluída',e));
+  seedImportedDebts().catch(e=>console.warn('Importação de pendências não concluída',e));
+  bootSet(35);
+  await subscribeReady();
+  bootSet(85);
+  repairBrokenSaleTotals().catch(e=>console.warn('Reparo de vendas não concluído',e));
+  go('home');
+  bootFinish();
+  logAction('Login','Entrou no sistema');
+ }catch(e){
+  console.error('Inicialização do sistema',e);
+  go('home');
+  bootFinish();
+ }
+});
+// Safety net: a slow/offline Firebase connection must not leave the splash frozen at 0%.
+setTimeout(()=>{
+ const loader=$('bootLoader');
+ if(loader && !loader.classList.contains('done')){
+  bootSet(100);
+  loader.classList.add('done');
+ }
+},8000);
 
 function col(name){return collection(db,"businesses","docesDoVitu",name)}
 function oldCol(name){return collection(db,"users",uid,name)}
@@ -358,12 +383,14 @@ async function seedImportedDebts(){
 }
 function subscribeReady(){
  return new Promise(resolve=>{
-  const names=['products','clients','sales','payments','purchases']; let ready=0;
+  const names=['products','clients','sales','payments','purchases']; let ready=0,finished=false;
   const seen=new Set();
+  const done=()=>{if(finished)return;finished=true;resolve();};
+  const timer=setTimeout(done,7000);
   names.forEach(name=>{
    const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render();
-    if(!seen.has(name)){seen.add(name);ready++;bootSet(30+ready*13);if(ready===names.length)resolve();}
-   },()=>{if(!seen.has(name)){seen.add(name);ready++;if(ready===names.length)resolve();}toast('Não foi possível sincronizar '+name+'.')});
+    if(!seen.has(name)){seen.add(name);ready++;bootSet(35+ready*10);if(ready===names.length){clearTimeout(timer);done();}}
+   },err=>{console.warn('Sincronização '+name,err);if(!seen.has(name)){seen.add(name);ready++;if(ready===names.length){clearTimeout(timer);done();}}});
    unsubs.push(u);
   });
  });
