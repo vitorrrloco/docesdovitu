@@ -151,7 +151,16 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 .sale-processing-card b{display:block;font-size:17px}.sale-processing-card small{display:block;color:var(--muted,#777);margin-top:5px}
 @keyframes svSpin{to{transform:rotate(360deg)}}@keyframes svCheck{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
 .chart-tooltip{position:fixed;z-index:99999;pointer-events:none;display:none;background:var(--dark,#24150f);color:#fff;padding:8px 10px;border-radius:10px;font-size:12px;font-weight:800;box-shadow:0 8px 24px #0003;white-space:nowrap;transform:translate(-50%,-120%)}.chart-tooltip.show{display:block}
-</style><style id="V1220_FINAL_CSS">.fq-selected-label{margin:7px 0;padding:9px 11px;border-radius:12px;border:1px solid var(--line,#ddd);background:var(--white,#fff);font-size:12px}.fast-product.active{outline:2px solid currentColor}.fq-cart-item{min-width:0;display:flex;align-items:center;gap:10px}.fq-cart-item .item-main{min-width:0;flex:1}.fq-cart-item .item-main b,.fq-cart-item .item-main small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fq-cart-right{min-width:90px;display:flex;flex-direction:column;align-items:flex-end;gap:5px}@media(max-width:430px){.fq-cart-item{gap:7px;padding:8px!important}.fq-cart-right{min-width:78px}.fq-cart-right button{font-size:11px!important;padding:7px 8px!important}}</style></head>
+</style><style id="V1220_FINAL_CSS">.fq-selected-label{margin:7px 0;padding:9px 11px;border-radius:12px;border:1px solid var(--line,#ddd);background:var(--white,#fff);font-size:12px}.fast-product.active{outline:2px solid currentColor}.fq-cart-item{min-width:0;display:flex;align-items:center;gap:10px}.fq-cart-item .item-main{min-width:0;flex:1}.fq-cart-item .item-main b,.fq-cart-item .item-main small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fq-cart-right{min-width:90px;display:flex;flex-direction:column;align-items:flex-end;gap:5px}@media(max-width:430px){.fq-cart-item{gap:7px;padding:8px!important}.fq-cart-right{min-width:78px}.fq-cart-right button{font-size:11px!important;padding:7px 8px!important}}</style>
+<style id="DV_CLIENT_PICKER_FINAL">
+#fqClientResults{position:relative;margin-top:6px;z-index:10000;max-height:240px;overflow:auto}
+#fqClientResults.hidden{display:none}
+#fqClientResults .client-result{display:flex;flex-direction:column;align-items:flex-start;width:100%;box-sizing:border-box;background:var(--white);color:var(--text);padding:11px 12px;border:0;border-radius:11px;text-align:left;font:inherit;cursor:pointer;text-decoration:none}
+#fqClientResults .client-result:hover,#fqClientResults .client-result:focus,#fqClientResults .client-result.active{background:var(--cream2);color:var(--text);outline:none}
+body.dark #fqClientResults .client-result{background:#242424;color:#fff}
+body.dark #fqClientResults .client-result:hover,body.dark #fqClientResults .client-result:focus{background:#333;color:#fff}
+</style>
+</head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
@@ -350,10 +359,9 @@ function finance(){
  const revenue=monthSales.reduce((a,s)=>a+numBR(s.total||0),0);
  const received=monthPayments.reduce((a,p)=>a+Number(p.amount||0),0);
  const pending=monthSales.reduce((a,s)=>a+Math.max(0,numBR(s.total||0)-Number(s.paid||0)),0);
- const soldCost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?Number(i.cost):Number(prod?.cost||0);return x+Number(i.qty||0)*unitCost},0),0);
- const baseProductCost=115.27;
- const cost=baseProductCost;
- const profit=revenue-soldCost;
+ const soldCost=monthSales.reduce((sum,s)=>sum+(Array.isArray(s.items)?s.items:[]).reduce((acc,i)=>{const qty=numBR(i.qty??i.quantity??0);const stored=numBR(i.cost??i.unitCost??i.productCost??0);const prod=products.find(p=>p.id===(i.productId??i.id));const unit=stored>0?stored:numBR(prod?.cost??0);return acc+(qty*unit)},0),0);
+const cost=soldCost;
+const profit=revenue-soldCost;
  const margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
  const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+Number(i.qty||0),0),0);
@@ -421,7 +429,7 @@ function openQuickSale(){
  $("fqQty").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("fqAddProduct").click()}};
  $("fqDiscountValue").oninput=draw;$("cancelModal").onclick=closeModal;draw();selectProduct(products[0].id);
  $("fqConfirm").onclick=async()=>{const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;if(!cart.length)return toast("Adicione pelo menos um produto.");const clientId=$("fqClient").value||"",c=data.clients.find(x=>x.id===clientId),originalTotal=totalOriginal(),discountAmount=discount(),total=totalFinal();if(total<=0)return toast("O total da venda precisa ser maior que zero.");for(const i of cart){const p=data.products.find(x=>x.id===i.productId);if(!p||numBR(p.stock)<numBR(i.qty))return toast(`Estoque insuficiente para ${i.name}.`)}btn.dataset.busy="1";btn.disabled=true;try{const ratio=originalTotal?discountAmount/originalTotal:0,items=cart.map(i=>({...i,price:Math.round(numBR(i.price)*(1-ratio)*100)/100})),saleRef=doc(col("sales"));await setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await Promise.all(cart.map(i=>{const p=data.products.find(x=>x.id===i.productId);return updateDoc(doc(col("products"),i.productId),{stock:numBR(p.stock)-numBR(i.qty)})}));closeModal();render();go("home");toast("Venda registrada!")}catch(e){console.error(e);toast(e.message||"Erro ao registrar venda");btn.disabled=false;btn.dataset.busy="0"}};
- const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");search.oninput=()=>{const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" data-fq-client="${c.id}">${esc(c.name)}</button>`).join("");results.classList.remove("hidden")};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}};
+ const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");search.oninput=()=>{const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result" data-fq-client="${c.id}">${esc(c.name)}</button>`).join("");results.classList.remove("hidden")};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}};
 }
 function openSale(){
  const products=data.products.filter(p=>numBR(p.stock||0)>0);
