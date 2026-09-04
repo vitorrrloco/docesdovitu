@@ -633,7 +633,7 @@ function openEditClient(c){
 }
 function pixPayload(amount){
  const value=Number(amount||0).toFixed(2);
- const payload=`00020126480014br.gov.bcb.pix0126vitorbernardo015@gmail.com5204000053039865404${value}5802BR5901N6001C62070503***6304`;
+ const payload=`00020126330014br.gov.bcb.pix0111139938819315204000053039865404${value}5802BR5901N6001C62070503***6304`;
  let crc=0xFFFF;
  for(let i=0;i<payload.length;i++){
    crc^=payload.charCodeAt(i)<<8;
@@ -646,7 +646,7 @@ function openCharge(c){
  const pending=clientPending(c);
  if(pending<=0){toast("Esse cliente não possui valor pendente.");return}
  const pix=pixPayload(pending);
- const text=`Opa, ${c.name}, os doces ficaram ${money(pending)}\nPix: vitorbernardo015@gmail.com\n\nOu pode copiar:\n\`${pix}\``;
+ const text=`Opa, ${c.name}, os doces ficaram ${money(pending)}\nPix: 13993881931\n\nOu pode copiar:\n\`${pix}\``;
  openModal("Cobrar",`<div class="form"><div class="item"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>Valor pendente</small></div><div class="item-right"><b class="pending">${money(pending)}</b></div></div><div class="field" style="margin-top:12px"><label>Mensagem de cobrança</label><textarea id="chargeText" style="width:100%;min-height:135px;border:1px solid var(--line);border-radius:15px;padding:12px;resize:none;background:#fff;color:var(--text)">${esc(text)}</textarea></div><button class="secondary" id="copyPixQuick" style="width:100%;margin:4px 0 10px">📋 Copiar código PIX</button><div class="field"><label>PIX Copia e Cola</label><textarea id="pixCode" readonly style="width:100%;min-height:105px;border:1px solid var(--line);border-radius:15px;padding:12px;resize:none;background:#fff;color:var(--text);font-size:11px">${pix}</textarea></div><div class="actions"><button class="secondary" id="copyPix">Copiar PIX</button><button class="secondary" id="copyCharge">Copiar mensagem</button></div><button class="primary" id="sendCharge" style="margin-top:8px">Abrir WhatsApp</button></div>`);
  const copyPixCode=async()=>{try{await navigator.clipboard.writeText(pix);toast("PIX copiado!")}catch(e){$("pixCode").select();document.execCommand("copy");toast("PIX copiado!")}};
  $("copyPix").onclick=copyPixCode;
