@@ -208,7 +208,9 @@ body.dark #customerStatusGroup small{color:#aaa}
 function dvCustomerStatusDiscount(status){return String(status||'').toLowerCase()==='otimo'?0.10:0}
 function dvCustomerStatusPrice(total,status){const t=Number(total)||0,d=dvCustomerStatusDiscount(status);return {subtotal:t,discount:t*d,total:t*(1-d),rate:d}}
 </script>
-<style id="DV_V1224_STATUS_STYLE">
+<style id="DV_V1225_STATUS_STYLE">
+#customerStatus{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line,#ddd);border-radius:10px;background:var(--white,#fff);color:var(--text,#222);font:inherit}
+body.dark #customerStatus{background:#242424;color:#fff;border-color:#444}
 .client-status-label{display:block;font-size:11px;line-height:1.2;margin-top:2px;color:#2e9b4b;font-weight:600}
 body.dark .client-status-label{color:#63d477}
 </style></head>
@@ -369,7 +371,15 @@ function home(){
   <button class="quick-launch" id="qQuickSale"><span>⚡️</span><b>Lançamentos rápidos</b></button>
   <button id="qSale"><span>🛒</span><b>Nova venda</b></button>
   <button id="qClient"><span>👤</span><b>Novo cliente</b></button>
-  <button id="qProduct"><span>📦</span><b>Novo produto</b></button>
+  <div id="DV_V1225_customer_status" class="form-group" style="margin-top:10px">
+<label for="customerStatus">Status</label>
+<select id="customerStatus" name="status">
+<option value="normal">Normal</option>
+<option value="bom">Bom</option>
+<option value="otimo">Ótimo</option>
+</select>
+</div>
+<button id="qProduct"><span>📦</span><b>Novo produto</b></button>
   <button id="qAnalysis"><span>📈</span><b>Analisar vendas</b></button>
  </div>
  <div class="section"><div class="section-title"><b>Últimas vendas</b><button class="link" id="seeSales">Ver todas</button></div>
@@ -390,14 +400,7 @@ function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==
 function clients(){
  return `<div class="page"><div class="head"><div><h1>Clientes</h1><p>Compras e valores de cada pessoa</p></div><button class="top-action" id="newClient">＋</button></div>
  <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
-<div id="customerStatusGroup" class="form-group">
-<label for="customerStatus">Status</label>
-<select id="customerStatus">
-<option value="normal">Normal</option>
-<option value="bom">Bom</option>
-<option value="otimo">Ótimo</option>
-</select>
-</div>
+
 
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
@@ -952,7 +955,10 @@ window.addEventListener("load",()=>{
 </script>
 
 
-<script id="DV_V1224_STATUS_HELPER">
-function dvClientStatusLabel(status){return String(status||'').trim().toLowerCase()==='otimo'?'Ótimo':''}
+<script id="DV_V1225_STATUS_HELPER">
+function dvCustomerStatusValue(){const e=document.getElementById('customerStatus');return e?String(e.value||'normal'):'normal'}
+function dvSetCustomerStatus(status){const e=document.getElementById('customerStatus');if(e)e.value=(status==='otimo'||status==='bom'||status==='normal')?status:'normal'}
+function dvCustomerStatusDiscount(status){return String(status||'').toLowerCase()==='otimo'?0.10:0}
+function dvCustomerStatusLabel(status){return String(status||'').trim().toLowerCase()==='otimo'?'Ótimo':''}
 </script></body>
 </html>
