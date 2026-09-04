@@ -197,23 +197,7 @@ body.dark #fqClientResults .client-result-separated:focus{
 }
 </style>
 
-<style id="DV_V1222_STATUS">
-#customerStatusGroup{margin-top:10px}
-#customerStatus{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line,#ddd);border-radius:10px;background:var(--white,#fff);color:var(--text,#222);font:inherit}
-#customerStatusGroup small{display:block;margin-top:5px;color:var(--muted,#777);font-size:12px}
-body.dark #customerStatus{background:#242424;color:#fff;border-color:#444}
-body.dark #customerStatusGroup small{color:#aaa}
-</style>
-<script id="DV_V1222_STATUS">
-function dvCustomerStatusDiscount(status){return String(status||'').toLowerCase()==='otimo'?0.10:0}
-function dvCustomerStatusPrice(total,status){const t=Number(total)||0,d=dvCustomerStatusDiscount(status);return {subtotal:t,discount:t*d,total:t*(1-d),rate:d}}
-</script>
-<style id="DV_V1225_STATUS_STYLE">
-#customerStatus{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line,#ddd);border-radius:10px;background:var(--white,#fff);color:var(--text,#222);font:inherit}
-body.dark #customerStatus{background:#242424;color:#fff;border-color:#444}
-.client-status-label{display:block;font-size:11px;line-height:1.2;margin-top:2px;color:#2e9b4b;font-weight:600}
-body.dark .client-status-label{color:#63d477}
-</style></head>
+<style id="DV_V1226_STATUS_STYLE">.client-status-label{display:block;font-size:11px;line-height:1.2;margin-top:3px;color:#2e9b4b;font-weight:700}.client-status-setting{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.client-status-setting:last-child{border-bottom:0}.client-setting-name{flex:1;min-width:0}.client-setting-name b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.client-status-setting select{width:125px;flex:0 0 125px;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--white);color:var(--text);font:inherit}body.dark .client-status-label{color:#63d477}body.dark .client-status-setting select{background:#242424;color:#fff;border-color:#444}</style></head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
@@ -371,15 +355,7 @@ function home(){
   <button class="quick-launch" id="qQuickSale"><span>⚡️</span><b>Lançamentos rápidos</b></button>
   <button id="qSale"><span>🛒</span><b>Nova venda</b></button>
   <button id="qClient"><span>👤</span><b>Novo cliente</b></button>
-  <div id="DV_V1225_customer_status" class="form-group" style="margin-top:10px">
-<label for="customerStatus">Status</label>
-<select id="customerStatus" name="status">
-<option value="normal">Normal</option>
-<option value="bom">Bom</option>
-<option value="otimo">Ótimo</option>
-</select>
-</div>
-<button id="qProduct"><span>📦</span><b>Novo produto</b></button>
+  <button id="qProduct"><span>📦</span><b>Novo produto</b></button>
   <button id="qAnalysis"><span>📈</span><b>Analisar vendas</b></button>
  </div>
  <div class="section"><div class="section-title"><b>Últimas vendas</b><button class="link" id="seeSales">Ver todas</button></div>
@@ -404,8 +380,7 @@ function clients(){
 
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
-function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+numBR(s.total||0),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
-
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),pending=clientPending(c),label=dvCustomerStatusLabel(c.status);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b>${label?`<span class="client-status-label">${label}</span>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><button class="top-action" id="newProduct">＋</button></div>
  <input class="search" id="stockSearch" placeholder="🔎 Procurar produto">
@@ -884,40 +859,17 @@ async function resetActivityLog(){
 }
 
 function openAccount(){
- openModal("Conta",`<div class="form">
+ const rows=(data.clients||[]).slice().sort((a,b)=>a.name.localeCompare(b.name,"pt-BR")).map(c=>`<div class="client-status-setting"><div class="client-setting-name"><b>${esc(c.name)}</b><small>Status atual: ${c.status==="otimo"?"Ótimo":c.status==="bom"?"Bom":"Normal"}</small></div><select data-client-status="${c.id}"><option value="normal" ${c.status==="bom"||c.status==="otimo"?"":"selected"}>Normal</option><option value="bom" ${c.status==="bom"?"selected":""}>Bom</option><option value="otimo" ${c.status==="otimo"?"selected":""}>Ótimo</option></select></div>`).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>';
+ openModal("Configurações",`<div class="form">
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
-  <button class="secondary" id="activityLog" style="width:100%;margin-top:10px">📋 Log de atividades</button>
-  <details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
-   <summary style="cursor:pointer;color:var(--muted);font-weight:800;font-size:13px">Configurações avançadas</summary>
-   <div style="margin-top:12px;padding:12px;border-radius:14px;background:#fff4f2;border:1px solid #efd2cc">
-    <b style="color:#a9463b">Zona de dados</b>
-    <p style="margin:5px 0 12px;color:var(--muted);font-size:12px;line-height:1.45">Apaga produtos, estoque, clientes, vendas e pagamentos desta conta. O login e a configuração do PIX permanecem.</p>
-    <button class="secondary" id="resetBusiness" style="width:100%;color:#a9463b;border-color:#e6bdb7">🗑️ Resetar dados do negócio</button>
-    <button class="secondary" id="resetLog" style="width:100%;margin-top:8px;color:#a9463b;border-color:#e6bdb7">📋 Resetar log de atividades</button>
-   </div>
-  </details>
+  <div style="margin-top:14px"><div class="section-title"><b>Status dos clientes</b></div><p style="margin:5px 0 10px;color:var(--muted);font-size:12px;line-height:1.45">Escolha Normal, Bom ou Ótimo para cada cliente.</p><div class="list" style="max-height:45vh;overflow:auto">${rows}</div></div>
+  <button class="secondary" id="activityLog" style="width:100%;margin-top:14px">📋 Log de atividades</button>
+  <details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px"><summary style="cursor:pointer;color:var(--muted);font-weight:800;font-size:13px">Configurações avançadas</summary><div style="margin-top:12px;padding:12px;border-radius:14px;background:#fff4f2;border:1px solid #efd2cc"><b style="color:#a9463b">Zona de dados</b><p style="margin:5px 0 12px;color:var(--muted);font-size:12px;line-height:1.45">Apaga produtos, estoque, clientes, vendas e pagamentos desta conta. O login e a configuração do PIX permanecem.</p><button class="secondary" id="resetBusiness" style="width:100%;color:#a9463b;border-color:#e6bdb7">🗑️ Resetar dados do negócio</button><button class="secondary" id="resetLog" style="width:100%;margin-top:8px;color:#a9463b;border-color:#e6bdb7">📋 Resetar log de atividades</button></div></details>
  </div>`);
+ document.querySelectorAll("[data-client-status]").forEach(sel=>sel.onchange=async()=>{const id=sel.dataset.clientStatus,value=sel.value,c=data.clients.find(x=>x.id===id);if(!c)return;const old=c.status||"normal";try{await updateDoc(doc(col("clients"),id),{status:value});c.status=value;toast(`Status de ${c.name} atualizado!`);openAccount()}catch(e){sel.value=old;console.error(e);toast("Não foi possível atualizar o status do cliente.")}});
  $("activityLog").onclick=openActivityLog;
- $("resetBusiness").onclick=()=>{
-  openModal("Resetar dados?",`<div class="form">
-   <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga os dados do negócio.</b><br><small>Produtos, estoque, clientes, vendas e pagamentos serão excluídos. O login e o PIX não serão apagados. Essa ação não pode ser desfeita.</small></div>
-   <div class="field"><label>Digite RESETAR para confirmar</label><input id="resetConfirm" autocomplete="off" placeholder="RESETAR"></div>
-   <div class="actions"><button class="secondary" id="cancelReset">Cancelar</button><button class="primary" id="confirmReset" disabled>Apagar dados</button></div>
-  </div>`);
-  $("cancelReset").onclick=closeModal;
-  $("resetConfirm").oninput=e=>$("confirmReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR";
-  $("confirmReset").onclick=resetBusinessData;
- };
- $("resetLog").onclick=()=>{
-  openModal("Resetar log?",`<div class="form">
-   <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga todo o histórico.</b><br><small>Vendas, estoque e clientes não serão apagados. Somente o Log de atividades será excluído.</small></div>
-   <div class="field"><label>Digite RESETAR LOG para confirmar</label><input id="resetLogConfirm" autocomplete="off" placeholder="RESETAR LOG"></div>
-   <div class="actions"><button class="secondary" id="cancelLogReset">Cancelar</button><button class="primary" id="confirmLogReset" disabled>Apagar log</button></div>
-  </div>`);
-  $("cancelLogReset").onclick=closeModal;
-  $("resetLogConfirm").oninput=e=>$("confirmLogReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR LOG";
-  $("confirmLogReset").onclick=resetActivityLog;
- };
+ $("resetBusiness").onclick=()=>{openModal("Resetar dados?",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga os dados do negócio.</b><br><small>Produtos, estoque, clientes, vendas e pagamentos serão excluídos. O login e o PIX não serão apagados. Essa ação não pode ser desfeita.</small></div><div class="field"><label>Digite RESETAR para confirmar</label><input id="resetConfirm" autocomplete="off" placeholder="RESETAR"></div><div class="actions"><button class="secondary" id="cancelReset">Cancelar</button><button class="primary" id="confirmReset" disabled>Apagar dados</button></div></div>`);$("cancelReset").onclick=closeModal;$("resetConfirm").oninput=e=>$("confirmReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR";$("confirmReset").onclick=resetBusinessData};
+ $("resetLog").onclick=()=>{openModal("Resetar log?",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga todo o histórico.</b><br><small>Vendas, estoque e clientes não serão apagados. Somente o Log de atividades será excluído.</small></div><div class="field"><label>Digite RESETAR LOG para confirmar</label><input id="resetLogConfirm" autocomplete="off" placeholder="RESETAR LOG"></div><div class="actions"><button class="secondary" id="cancelLogReset">Cancelar</button><button class="primary" id="confirmLogReset" disabled>Apagar log</button></div></div>`);$("cancelLogReset").onclick=closeModal;$("resetLogConfirm").oninput=e=>$("confirmLogReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR LOG";$("confirmLogReset").onclick=resetActivityLog};
 }
 async function openActivityLog(){
  let rows=[];
@@ -955,10 +907,5 @@ window.addEventListener("load",()=>{
 </script>
 
 
-<script id="DV_V1225_STATUS_HELPER">
-function dvCustomerStatusValue(){const e=document.getElementById('customerStatus');return e?String(e.value||'normal'):'normal'}
-function dvSetCustomerStatus(status){const e=document.getElementById('customerStatus');if(e)e.value=(status==='otimo'||status==='bom'||status==='normal')?status:'normal'}
-function dvCustomerStatusDiscount(status){return String(status||'').toLowerCase()==='otimo'?0.10:0}
-function dvCustomerStatusLabel(status){return String(status||'').trim().toLowerCase()==='otimo'?'Ótimo':''}
-</script></body>
+<script id="DV_V1226_STATUS_HELPER">function dvCustomerStatusDiscount(status){return String(status||'').toLowerCase()==='otimo'?0.10:0}function dvCustomerStatusLabel(status){return String(status||'').trim().toLowerCase()==='otimo'?'Ótimo':''}</script></body>
 </html>
