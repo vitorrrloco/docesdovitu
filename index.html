@@ -86,7 +86,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .nav:before{display:none}
 }
 
-/* V1.2.30 FINAL - Financeiro compacto e centralizado no celular */
+/* V1.2.31 FINAL - Financeiro compacto e centralizado no celular */
 .finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
 .finance-duo .analysis-card{min-width:0;padding:13px}
 .finance-duo .section-title b{font-size:15px}
@@ -128,7 +128,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 </style>
 
 <style id="professional-motion">
-/* V1.2.30: single-tap motion system, without duplicate click effects */
+/* V1.2.31: single-tap motion system, without duplicate click effects */
 .page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
 @keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .modal-bg{animation:modalFade .16s ease-out both}
@@ -215,7 +215,7 @@ body.dark .customer-status-select{
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.30</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.31</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -498,7 +498,7 @@ function openSale(){
  $("mProduct").onchange=update;$("mQty").oninput=update;$("mTotalValue").oninput=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("mTotalValue").value)||0);$("mTotal").textContent="Total líquido: "+money(val);updateSaleDiscount(original,val)};update();
  $("cancelModal").onclick=closeModal;$("confirmSale").onclick=async()=>{
  const btn=$("confirmSale");if(!btn||btn.dataset.busy==="1")return;btn.dataset.busy="1";
- const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Registrando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);
+ const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Confirmando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);
  try{
   const p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),total=Math.max(0,Number($("mTotalValue").value)||0),clientId=$("mClient").value||"";
   if(!p)throw Error("Selecione um produto.");
@@ -537,14 +537,15 @@ function openEditClient(c){
  $("saveEditClient").onclick=async()=>{const name=$("editClientName").value.trim();if(!name)return toast("Digite o nome.");try{await updateDoc(doc(col("clients"),c.id),{name,phone:$("editClientPhone").value.trim()});await logAction("Cliente editado",`${c.name} → ${name}`);closeModal();toast("Cliente atualizado!")}catch(e){toast("Não foi possível editar o cliente.")}};
 }
 function pixPayload(amount){
- const value=Number(amount||0).toFixed(2);
- const payload=`00020126480014br.gov.bcb.pix0126139938819315204000053039865404${value}5802BR5901N6001C62070503***6304`;
+ const value=Number(amount||0),key="13993881931",merchant="DOCES DO VITU",city="JOINVILLE";
+ const field=(id,val)=>String(id).padStart(2,"0")+String(val.length).padStart(2,"0")+val;
+ const mai=field("00","BR.GOV.BCB.PIX")+field("01",key);
+ let payload="000201"+field("26",mai)+"520400005303986";
+ if(value>0)payload+=field("54",value.toFixed(2));
+ payload+=field("58","BR")+field("59",merchant)+field("60",city)+field("62",field("05","***"))+"6304";
  let crc=0xFFFF;
- for(let i=0;i<payload.length;i++){
-   crc^=payload.charCodeAt(i)<<8;
-   for(let j=0;j<8;j++) crc=(crc&0x8000)?((crc<<1)^0x1021)&0xFFFF:(crc<<1)&0xFFFF;
- }
- return payload+crc.toString(16).toUpperCase().padStart(4,'0');
+ for(let i=0;i<payload.length;i++){crc^=payload.charCodeAt(i)<<8;for(let j=0;j<8;j++)crc=(crc&0x8000)?((crc<<1)^0x1021)&0xFFFF:(crc<<1)&0xFFFF;}
+ return payload+crc.toString(16).toUpperCase().padStart(4,"0");
 }
 function chargeClient(c){openCharge(c)}
 function openCharge(c){
@@ -564,23 +565,29 @@ function openPaymentForClient(c){
  const initialPending=clientInitialPending(c);
  const totalPending=initialPending+pendingSales.reduce((a,s)=>a+Math.max(0,numBR(s.total||0)-Number(s.paid||0)),0);
  if(totalPending<=0){toast("Esse cliente não possui valor pendente.");return}
- openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${totalPending.toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
+ openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${totalPending.toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>PIX</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
  $("savePay").onclick=async()=>{
-  let amount=Number($("payValue").value)||0;if(amount<=0)return toast("Digite um valor.");
+  const btn=$("savePay"),amount=Number($("payValue").value)||0;
+  if(amount<=0)return toast("Digite um valor.");
+  if(btn.dataset.busy==="1")return;
+  btn.dataset.busy="1";btn.disabled=true;
+  const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Efetuando pagamento...</b><small>Aguarde enquanto o pagamento é registrado no Firebase.</small></div>';document.body.appendChild(overlay);
   try{
    let remaining=amount;
    const useInitial=Math.min(initialPending,remaining);
    if(useInitial>0){await updateDoc(doc(col("clients"),c.id),{initialDebtPaid:Number(c.initialDebtPaid||0)+useInitial});remaining-=useInitial;}
-   for(const s of pendingSales){
+   for(const sale of pendingSales){
     if(remaining<=0)break;
-    const open=Math.max(0,Number(s.total)-Number(s.paid||0)),use=Math.min(open,remaining);
-    await updateDoc(doc(col("sales"),s.id),{paid:Number(s.paid||0)+use});
-    remaining-=use;
+    const open=Math.max(0,Number(sale.total)-Number(sale.paid||0)),use=Math.min(open,remaining);
+    await updateDoc(doc(col("sales"),sale.id),{paid:Number(sale.paid||0)+use});remaining-=use;
    }
    await addDoc(col("payments"),{clientId:c.id,clientName:c.name,amount,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("payMethod").value});
    await logAction("Pagamento",`${c.name} • ${money(amount)} • ${$("payMethod").value}`);
-   closeModal();toast("Pagamento registrado!");
-  }catch(e){toast("Não foi possível registrar o pagamento.")}
+   overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Pagamento confirmado</b><small>Pagamento registrado no Firebase.</small></div>';
+   await new Promise(r=>setTimeout(r,700));
+   closeModal();render();go("home");toast("Pagamento registrado!");
+  }catch(e){console.error("Erro ao registrar pagamento",e);overlay.remove();toast(e.code==="permission-denied"?"Firebase recusou o pagamento.":"Não foi possível registrar o pagamento.");}
+  finally{if(overlay.isConnected)overlay.remove();btn.disabled=false;btn.dataset.busy="0";}
  }
 }
 function openAddStock(p){
@@ -671,7 +678,21 @@ function openProduct(p=null){
 }
 function openClientForm(){
  openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal-dup7">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
- $("cancelModal").onclick=closeModal;$("saveClient").onclick=async()=>{let name=$("cName").value.trim();if(!name)return toast("Digite o nome.");try{await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),status:"normal",createdAt:serverTimestamp()});logAction("Cliente cadastrado",name);closeModal();toast("Cliente cadastrado!")}catch(e){console.error("Erro ao salvar cliente",e);toast("Erro ao salvar cliente: "+(e.code==="permission-denied"?"sem permissão no Firebase.":e.code||"verifique a conexão."))}}
+ $("cancelModal").onclick=closeModal;
+ $("saveClient").onclick=async()=>{
+  const btn=$("saveClient"),name=$("cName").value.trim();
+  if(!name)return toast("Digite o nome.");
+  if(btn.dataset.busy==="1")return;
+  btn.dataset.busy="1";btn.disabled=true;
+  try{
+   await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),status:"normal",createdAt:serverTimestamp()});
+   await logAction("Cliente cadastrado",name);
+   closeModal();toast("Cliente cadastrado!");
+  }catch(e){
+   console.error("Erro ao salvar cliente",e);
+   toast(e.code==="permission-denied"?"Firebase recusou o cadastro. Verifique as regras de acesso.":"Não foi possível cadastrar o cliente. Verifique a conexão.");
+  }finally{btn.disabled=false;btn.dataset.busy="0";}
+ }
 }
 
 function openAnalysis(){
