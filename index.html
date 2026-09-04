@@ -160,6 +160,54 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 body.dark #fqClientResults .client-result{background:#242424;color:#fff}
 body.dark #fqClientResults .client-result:hover,body.dark #fqClientResults .client-result:focus{background:#333;color:#fff}
 </style>
+
+<style id="DV_V1221_CLIENT_SEPARATOR">
+#fqClientResults .client-result-separated{
+  display:flex;
+  width:100%;
+  box-sizing:border-box;
+  margin:0;
+  padding:11px 12px;
+  border-bottom:1px solid var(--line,#ddd);
+  border-radius:0;
+  background:var(--white,#fff);
+  color:var(--text,#222);
+  text-align:left;
+  font:inherit;
+  cursor:pointer;
+  text-decoration:none;
+}
+#fqClientResults .client-result-separated:first-child{border-top:1px solid var(--line,#ddd);border-radius:11px 11px 0 0}
+#fqClientResults .client-result-separated:last-child{border-radius:0 0 11px 11px}
+#fqClientResults .client-result-separated:hover,
+#fqClientResults .client-result-separated:focus{
+  background:var(--cream2,#f3f3f3);
+  color:var(--text,#222);
+  outline:none;
+}
+body.dark #fqClientResults .client-result-separated{
+  background:#242424;
+  color:#fff;
+  border-color:#444;
+}
+body.dark #fqClientResults .client-result-separated:hover,
+body.dark #fqClientResults .client-result-separated:focus{
+  background:#333;
+  color:#fff;
+}
+</style>
+
+<style id="DV_V1222_STATUS">
+#customerStatusGroup{margin-top:10px}
+#customerStatus{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line,#ddd);border-radius:10px;background:var(--white,#fff);color:var(--text,#222);font:inherit}
+#customerStatusGroup small{display:block;margin-top:5px;color:var(--muted,#777);font-size:12px}
+body.dark #customerStatus{background:#242424;color:#fff;border-color:#444}
+body.dark #customerStatusGroup small{color:#aaa}
+</style>
+<script id="DV_V1222_STATUS">
+function dvCustomerStatusDiscount(status){return String(status||'').toLowerCase()==='otimo'?0.10:0}
+function dvCustomerStatusPrice(total,status){const t=Number(total)||0,d=dvCustomerStatusDiscount(status);return {subtotal:t,discount:t*d,total:t*(1-d),rate:d}}
+</script>
 </head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
@@ -339,6 +387,16 @@ function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==
 function clients(){
  return `<div class="page"><div class="head"><div><h1>Clientes</h1><p>Compras e valores de cada pessoa</p></div><button class="top-action" id="newClient">＋</button></div>
  <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
+<div id="customerStatusGroup" class="form-group">
+<label for="customerStatus">Status</label>
+<select id="customerStatus">
+<option value="normal">Normal</option>
+<option value="bom">Bom</option>
+<option value="otimo">Ótimo</option>
+</select>
+<small>Somente clientes com status Ótimo recebem 10% de desconto.</small>
+</div>
+
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
 function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),total=ss.reduce((a,s)=>a+numBR(s.total||0),0),pending=clientPending(c);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b><small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
@@ -429,7 +487,7 @@ function openQuickSale(){
  $("fqQty").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("fqAddProduct").click()}};
  $("fqDiscountValue").oninput=draw;$("cancelModal").onclick=closeModal;draw();selectProduct(products[0].id);
  $("fqConfirm").onclick=async()=>{const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;if(!cart.length)return toast("Adicione pelo menos um produto.");const clientId=$("fqClient").value||"",c=data.clients.find(x=>x.id===clientId),originalTotal=totalOriginal(),discountAmount=discount(),total=totalFinal();if(total<=0)return toast("O total da venda precisa ser maior que zero.");for(const i of cart){const p=data.products.find(x=>x.id===i.productId);if(!p||numBR(p.stock)<numBR(i.qty))return toast(`Estoque insuficiente para ${i.name}.`)}btn.dataset.busy="1";btn.disabled=true;try{const ratio=originalTotal?discountAmount/originalTotal:0,items=cart.map(i=>({...i,price:Math.round(numBR(i.price)*(1-ratio)*100)/100})),saleRef=doc(col("sales"));await setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await Promise.all(cart.map(i=>{const p=data.products.find(x=>x.id===i.productId);return updateDoc(doc(col("products"),i.productId),{stock:numBR(p.stock)-numBR(i.qty)})}));closeModal();render();go("home");toast("Venda registrada!")}catch(e){console.error(e);toast(e.message||"Erro ao registrar venda");btn.disabled=false;btn.dataset.busy="0"}};
- const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");search.oninput=()=>{const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result" data-fq-client="${c.id}">${esc(c.name)}</button>`).join("");results.classList.remove("hidden")};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}};
+ const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");search.oninput=()=>{const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result client-result-separated" data-fq-client="${c.id}">${esc(c.name)}</button>`).join("");results.classList.remove("hidden")};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}};
 }
 function openSale(){
  const products=data.products.filter(p=>numBR(p.stock||0)>0);
