@@ -86,7 +86,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .nav:before{display:none}
 }
 
-/* V1.2.20 FINAL - Financeiro compacto e centralizado no celular */
+/* V1.2.30 FINAL - Financeiro compacto e centralizado no celular */
 .finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
 .finance-duo .analysis-card{min-width:0;padding:13px}
 .finance-duo .section-title b{font-size:15px}
@@ -128,7 +128,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 </style>
 
 <style id="professional-motion">
-/* V1.2.20: single-tap motion system, without duplicate click effects */
+/* V1.2.30: single-tap motion system, without duplicate click effects */
 .page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
 @keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .modal-bg{animation:modalFade .16s ease-out both}
@@ -161,43 +161,39 @@ body.dark #fqClientResults .client-result{background:#242424;color:#fff}
 body.dark #fqClientResults .client-result:hover,body.dark #fqClientResults .client-result:focus{background:#333;color:#fff}
 </style>
 
-<style id="DV_V1221_CLIENT_SEPARATOR">
-#fqClientResults .client-result-separated{
-  display:flex;
-  width:100%;
-  box-sizing:border-box;
-  margin:0;
-  padding:11px 12px;
-  border-bottom:1px solid var(--line,#ddd);
-  border-radius:0;
-  background:var(--white,#fff);
-  color:var(--text,#222);
-  text-align:left;
-  font:inherit;
-  cursor:pointer;
-  text-decoration:none;
+<style id="DV_V1230_STATUS_CSS">
+.client-status-otimo{
+  display:block;
+  margin-top:2px;
+  margin-bottom:2px;
+  font-size:11px;
+  line-height:1.15;
+  font-weight:800;
+  color:#2f8f55;
 }
-#fqClientResults .client-result-separated:first-child{border-top:1px solid var(--line,#ddd);border-radius:11px 11px 0 0}
-#fqClientResults .client-result-separated:last-child{border-radius:0 0 11px 11px}
-#fqClientResults .client-result-separated:hover,
-#fqClientResults .client-result-separated:focus{
-  background:var(--cream2,#f3f3f3);
-  color:var(--text,#222);
-  outline:none;
-}
-body.dark #fqClientResults .client-result-separated{
-  background:#242424;
-  color:#fff;
-  border-color:#444;
-}
-body.dark #fqClientResults .client-result-separated:hover,
-body.dark #fqClientResults .client-result-separated:focus{
-  background:#333;
-  color:#fff;
-}
+body.dark .client-status-otimo{color:#6edb83}
 </style>
 
-<style id="DV_V1226_STATUS_STYLE">.client-status-label{display:block;font-size:11px;line-height:1.2;margin-top:3px;color:#2e9b4b;font-weight:700}.client-status-setting{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.client-status-setting:last-child{border-bottom:0}.client-setting-name{flex:1;min-width:0}.client-setting-name b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.client-status-setting select{width:125px;flex:0 0 125px;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--white);color:var(--text);font:inherit}body.dark .client-status-label{color:#63d477}body.dark .client-status-setting select{background:#242424;color:#fff;border-color:#444}</style></head>
+<style id="DV_V1230_STATUS_SELECT_CSS">
+.customer-status-select{
+  width:115px;
+  max-width:100%;
+  padding:9px 8px;
+  border:1px solid var(--line,#ddd);
+  border-radius:10px;
+  background:var(--white,#fff);
+  color:var(--text,#222);
+  font:inherit;
+  font-size:12px;
+}
+body.dark .customer-status-select{
+  background:#242424;
+  color:#fff;
+  border-color:#4a4a4a;
+}
+#mTotalValue[readonly]{opacity:.92}
+</style>
+</head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
@@ -219,7 +215,7 @@ body.dark #fqClientResults .client-result-separated:focus{
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.20</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.30</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -376,11 +372,10 @@ function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==
 function clients(){
  return `<div class="page"><div class="head"><div><h1>Clientes</h1><p>Compras e valores de cada pessoa</p></div><button class="top-action" id="newClient">＋</button></div>
  <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
-
-
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
-function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),pending=clientPending(c),label=dvCustomerStatusLabel(c.status);return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b>${label?`<span class="client-status-label">${label}</span>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),pending=clientPending(c),isOtimo=String(c.status||"normal").toLowerCase()==="otimo";return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b>${isOtimo?`<small class="client-status-otimo">Ótimo</small>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><button class="top-action" id="newProduct">＋</button></div>
  <input class="search" id="stockSearch" placeholder="🔎 Procurar produto">
@@ -434,7 +429,7 @@ function more(){
   <button id="analysis"><span class="mi">📈</span><b>Análise de vendas</b><small>Horário, dia, semana e mês</small></button>
   <button id="receivables"><span class="mi">💰</span><b>A receber</b><small>Quem ainda precisa pagar</small></button>
   <button id="payments"><span class="mi">💵</span><b>Pagamentos</b><small>Registrar recebimentos</small></button>
-  <button id="account"><span class="mi">⚙️</span><b>Conta</b><small>${esc(auth.currentUser?.email||"")}</small></button>
+  <button id="account"><span class="mi">⚙️</span><b>Configurações</b><small>Conta e clientes</small></button>
  </div>
  <button class="secondary" id="logout-dup2" style="width:100%;margin-top:12px">Sair da conta</button></div>`
 }
@@ -458,7 +453,8 @@ function openQuickSale(){
  let selectedId=products[0].id,cart=[];
  const selected=()=>products.find(p=>p.id===selectedId);
  const totalOriginal=()=>cart.reduce((a,i)=>a+numBR(i.price)*numBR(i.qty),0);
- const discount=()=>Math.min(totalOriginal(),Math.max(0,numBR($("fqDiscountValue")?.value)));
+ const selectedClient=()=>clients.find(c=>c.id===($("fqClient")?.value||""));
+ const discount=()=>{const c=selectedClient();if(String(c?.status||"normal").toLowerCase()==="otimo")return Math.round(totalOriginal()*0.10*100)/100;return Math.min(totalOriginal(),Math.max(0,numBR($("fqDiscountValue")?.value)))};
  const totalFinal=()=>Math.max(0,totalOriginal()-discount());
  const selectProduct=id=>{selectedId=id;document.querySelectorAll("[data-fq-product]").forEach(x=>x.classList.toggle("active",x.dataset.fqProduct===id));const p=selected();if(p)$("fqSelectedLabel").innerHTML=`Produto selecionado: <b>${esc(p.name)}</b> • ${money(p.price)}`};
  const draw=()=>{const box=$("fqCart"),empty=$("fqCartEmpty");if(!cart.length){box.innerHTML="";empty.style.display="block"}else{empty.style.display="none";box.innerHTML=cart.map((i,idx)=>`<div class="item fq-cart-item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${numBR(i.qty)} × ${money(i.price)} = ${money(numBR(i.qty)*numBR(i.price))}</small></div><div class="fq-cart-right"><b>${money(numBR(i.qty)*numBR(i.price))}</b><button type="button" class="secondary" data-remove-cart="${idx}">✕ Remover</button></div></div>`).join("")}$("fqGrandTotal").textContent=money(totalOriginal());$("fqFinalTotal").textContent="Total líquido: "+money(totalFinal());box.querySelectorAll("[data-remove-cart]").forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.removeCart),1);draw()})};
@@ -467,7 +463,7 @@ function openQuickSale(){
  $("fqQty").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("fqAddProduct").click()}};
  $("fqDiscountValue").oninput=draw;$("cancelModal").onclick=closeModal;draw();selectProduct(products[0].id);
  $("fqConfirm").onclick=async()=>{const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;if(!cart.length)return toast("Adicione pelo menos um produto.");const clientId=$("fqClient").value||"",c=data.clients.find(x=>x.id===clientId),originalTotal=totalOriginal(),discountAmount=discount(),total=totalFinal();if(total<=0)return toast("O total da venda precisa ser maior que zero.");for(const i of cart){const p=data.products.find(x=>x.id===i.productId);if(!p||numBR(p.stock)<numBR(i.qty))return toast(`Estoque insuficiente para ${i.name}.`)}btn.dataset.busy="1";btn.disabled=true;try{const ratio=originalTotal?discountAmount/originalTotal:0,items=cart.map(i=>({...i,price:Math.round(numBR(i.price)*(1-ratio)*100)/100})),saleRef=doc(col("sales"));await setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await Promise.all(cart.map(i=>{const p=data.products.find(x=>x.id===i.productId);return updateDoc(doc(col("products"),i.productId),{stock:numBR(p.stock)-numBR(i.qty)})}));closeModal();render();go("home");toast("Venda registrada!")}catch(e){console.error(e);toast(e.message||"Erro ao registrar venda");btn.disabled=false;btn.dataset.busy="0"}};
- const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");search.oninput=()=>{const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result client-result-separated" data-fq-client="${c.id}">${esc(c.name)}<span class="client-status-label">${dvClientStatusLabel(c.status)}</span></button>`).join("");results.classList.remove("hidden")};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}};
+ const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");search.oninput=()=>{hidden.value="";$("fqDiscountValue").readOnly=false;$("fqDiscountValue").value="0,00";const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result" data-fq-client="${c.id}">${esc(c.name)}</button>`).join("");results.classList.remove("hidden");draw()};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden");const auto=String(c.status||"normal").toLowerCase()==="otimo";$("fqDiscountValue").value=auto?(totalOriginal()*0.10).toFixed(2).replace(".",","):"0,00";$("fqDiscountValue").readOnly=auto;draw()}};
 }
 function openSale(){
  const products=data.products.filter(p=>numBR(p.stock||0)>0);
@@ -480,12 +476,12 @@ function openSale(){
  <div class="field"><label>Pagamento</label><select id="mMethod"><option>Pagamento no salário</option><option>Dinheiro</option><option>Cartão</option><option>PIX</option></select></div>
  <div id="mTotal" style="font-size:20px;font-weight:900;margin-top:8px"></div>
  <div class="actions"><button type="button" class="secondary" id="cancelModal-dup2">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
- const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q;const field=$("mTotalValue");if(document.activeElement!==field)field.value=original.toFixed(2);$("mTotal").textContent="Total líquido: "+money(Number(field.value)||0);updateSaleDiscount(original,Number(field.value)||0)};const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
+ const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,c=data.clients.find(x=>x.id===$("mClient").value),autoDiscount=String(c?.status||"normal").toLowerCase()==="otimo"?0.10:0;const field=$("mTotalValue");if(autoDiscount>0){field.value=(original*(1-autoDiscount)).toFixed(2);field.readOnly=true;field.title="Desconto automático de 10% para cliente Ótimo";}else{field.readOnly=false;if(document.activeElement!==field)field.value=original.toFixed(2);field.title="";}$("mTotal").textContent="Total líquido: "+money(Number(field.value)||0);updateSaleDiscount(original,Number(field.value)||0)};const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
  const clientSearch=$("mClientSearch"),clientHidden=$("mClient"),clientResults=$("mClientResults");
  let activeIndex=-1;
  const showClientResults=(term="")=>{const q=term.trim().toLowerCase();const matches=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,12);clientResults.innerHTML=matches.map((c,i)=>`<button type="button" class="client-result" data-pick-client="${c.id}" data-index="${i}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';activeIndex=-1;clientResults.classList.remove("hidden")};
  const setActive=idx=>{const items=[...clientResults.querySelectorAll("[data-pick-client]")];if(!items.length)return;activeIndex=(idx+items.length)%items.length;items.forEach((b,i)=>b.classList.toggle("active",i===activeIndex));items[activeIndex]?.scrollIntoView({block:"nearest"})};
- const pickClient=id=>{const c=clients.find(x=>x.id===id);if(c){clientHidden.value=c.id;clientSearch.value=c.name;clientResults.classList.add("hidden");clientSearch.blur()}};
+ const pickClient=id=>{const c=clients.find(x=>x.id===id);if(c){clientHidden.value=c.id;clientSearch.value=c.name;clientResults.classList.add("hidden");clientSearch.blur();update()}};
  clientSearch.addEventListener("focus",()=>showClientResults(clientSearch.value));
  clientSearch.addEventListener("input",()=>{clientHidden.value="";showClientResults(clientSearch.value)});
  clientSearch.addEventListener("keydown",e=>{
@@ -675,7 +671,7 @@ function openProduct(p=null){
 }
 function openClientForm(){
  openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelModal-dup7">Cancelar</button><button class="primary" id="saveClient">Salvar</button></div></div>`);
- $("cancelModal").onclick=closeModal;$("saveClient").onclick=async()=>{let name=$("cName").value.trim();if(!name)return toast("Digite o nome.");try{await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),createdAt:serverTimestamp()});logAction("Cliente cadastrado",name);closeModal();toast("Cliente cadastrado!")}catch(e){console.error("Erro ao salvar cliente",e);toast("Erro ao salvar cliente: "+(e.code==="permission-denied"?"sem permissão no Firebase.":e.code||"verifique a conexão."))}}
+ $("cancelModal").onclick=closeModal;$("saveClient").onclick=async()=>{let name=$("cName").value.trim();if(!name)return toast("Digite o nome.");try{await addDoc(col("clients"),{name,phone:$("cPhone").value.trim(),status:"normal",createdAt:serverTimestamp()});logAction("Cliente cadastrado",name);closeModal();toast("Cliente cadastrado!")}catch(e){console.error("Erro ao salvar cliente",e);toast("Erro ao salvar cliente: "+(e.code==="permission-denied"?"sem permissão no Firebase.":e.code||"verifique a conexão."))}}
 }
 
 function openAnalysis(){
@@ -858,18 +854,91 @@ async function resetActivityLog(){
  }
 }
 
+
+async function openCustomerStatuses(){
+ const clients=data.clients.slice().sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"pt-BR"));
+ openModal("Status dos clientes",`<div class="form">
+   <div style="padding:12px;border-radius:14px;background:var(--soft,#f7efe5);border:1px solid var(--line);margin-bottom:10px">
+    <b>Escolha o status de cada cliente</b>
+    <small style="display:block;color:var(--muted);margin-top:4px">Clientes com status Ótimo recebem 10% de desconto nas vendas.</small>
+   </div>
+   <div id="customerStatusList" class="list" style="max-height:60vh;overflow:auto">
+    ${clients.map(c=>`<div class="item customer-status-row" data-client-status-row="${c.id}">
+      <div class="avatar">👤</div>
+      <div class="item-main"><b>${esc(c.name)}</b><small>${c.phone?esc(c.phone):"sem telefone"}</small></div>
+      <div class="item-right" style="min-width:115px">
+       <select class="customer-status-select" data-client-status="${c.id}" aria-label="Status de ${esc(c.name)}">
+        <option value="normal" ${String(c.status||"normal").toLowerCase()==="normal"?"selected":""}>Normal</option>
+        <option value="bom" ${String(c.status||"").toLowerCase()==="bom"?"selected":""}>Bom</option>
+        <option value="otimo" ${String(c.status||"").toLowerCase()==="otimo"?"selected":""}>Ótimo</option>
+       </select>
+      </div>
+    </div>`).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+   </div>
+ </div>`);
+ document.querySelectorAll("[data-client-status]").forEach(sel=>{
+   sel.onchange=async()=>{
+     const clientId=sel.dataset.clientStatus;
+     const status=sel.value;
+     const old= data.clients.find(c=>c.id===clientId)?.status || "normal";
+     sel.disabled=true;
+     try{
+       await updateDoc(doc(col("clients"),clientId),{
+         status,
+         statusUpdatedAt:serverTimestamp(),
+         statusUpdatedByUid:uid,
+         statusUpdatedByName:currentUserName
+       });
+       await logAction("Status de cliente",`${data.clients.find(c=>c.id===clientId)?.name||"Cliente"} → ${status==="otimo"?"Ótimo":status==="bom"?"Bom":"Normal"}`);
+       toast("Status atualizado!");
+     }catch(e){
+       console.error("Erro ao atualizar status do cliente",e);
+       sel.value=old;
+       toast(e.code==="permission-denied"?"Sem permissão no Firebase para alterar o cliente.":"Não foi possível atualizar o status.");
+     }finally{
+       sel.disabled=false;
+     }
+   };
+ });
+}
+
 function openAccount(){
- const rows=(data.clients||[]).slice().sort((a,b)=>a.name.localeCompare(b.name,"pt-BR")).map(c=>`<div class="client-status-setting"><div class="client-setting-name"><b>${esc(c.name)}</b><small>Status atual: ${c.status==="otimo"?"Ótimo":c.status==="bom"?"Bom":"Normal"}</small></div><select data-client-status="${c.id}"><option value="normal" ${c.status==="bom"||c.status==="otimo"?"":"selected"}>Normal</option><option value="bom" ${c.status==="bom"?"selected":""}>Bom</option><option value="otimo" ${c.status==="otimo"?"selected":""}>Ótimo</option></select></div>`).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>';
  openModal("Configurações",`<div class="form">
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
-  <div style="margin-top:14px"><div class="section-title"><b>Status dos clientes</b></div><p style="margin:5px 0 10px;color:var(--muted);font-size:12px;line-height:1.45">Escolha Normal, Bom ou Ótimo para cada cliente.</p><div class="list" style="max-height:45vh;overflow:auto">${rows}</div></div>
-  <button class="secondary" id="activityLog" style="width:100%;margin-top:14px">📋 Log de atividades</button>
-  <details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px"><summary style="cursor:pointer;color:var(--muted);font-weight:800;font-size:13px">Configurações avançadas</summary><div style="margin-top:12px;padding:12px;border-radius:14px;background:#fff4f2;border:1px solid #efd2cc"><b style="color:#a9463b">Zona de dados</b><p style="margin:5px 0 12px;color:var(--muted);font-size:12px;line-height:1.45">Apaga produtos, estoque, clientes, vendas e pagamentos desta conta. O login e a configuração do PIX permanecem.</p><button class="secondary" id="resetBusiness" style="width:100%;color:#a9463b;border-color:#e6bdb7">🗑️ Resetar dados do negócio</button><button class="secondary" id="resetLog" style="width:100%;margin-top:8px;color:#a9463b;border-color:#e6bdb7">📋 Resetar log de atividades</button></div></details>
+  <button class="secondary" id="customerStatuses" style="width:100%;margin-top:10px">👥 Status dos clientes</button>
+  <button class="secondary" id="activityLog" style="width:100%;margin-top:10px">📋 Log de atividades</button>
+  <details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
+   <summary style="cursor:pointer;color:var(--muted);font-weight:800;font-size:13px">Configurações avançadas</summary>
+   <div style="margin-top:12px;padding:12px;border-radius:14px;background:#fff4f2;border:1px solid #efd2cc">
+    <b style="color:#a9463b">Zona de dados</b>
+    <p style="margin:5px 0 12px;color:var(--muted);font-size:12px;line-height:1.45">Apaga produtos, estoque, clientes, vendas e pagamentos desta conta. O login e a configuração do PIX permanecem.</p>
+    <button class="secondary" id="resetBusiness" style="width:100%;color:#a9463b;border-color:#e6bdb7">🗑️ Resetar dados do negócio</button>
+    <button class="secondary" id="resetLog" style="width:100%;margin-top:8px;color:#a9463b;border-color:#e6bdb7">📋 Resetar log de atividades</button>
+   </div>
+  </details>
  </div>`);
- document.querySelectorAll("[data-client-status]").forEach(sel=>sel.onchange=async()=>{const id=sel.dataset.clientStatus,value=sel.value,c=data.clients.find(x=>x.id===id);if(!c)return;const old=c.status||"normal";try{await updateDoc(doc(col("clients"),id),{status:value});c.status=value;toast(`Status de ${c.name} atualizado!`);openAccount()}catch(e){sel.value=old;console.error(e);toast("Não foi possível atualizar o status do cliente.")}});
+ $("customerStatuses").onclick=openCustomerStatuses;
  $("activityLog").onclick=openActivityLog;
- $("resetBusiness").onclick=()=>{openModal("Resetar dados?",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga os dados do negócio.</b><br><small>Produtos, estoque, clientes, vendas e pagamentos serão excluídos. O login e o PIX não serão apagados. Essa ação não pode ser desfeita.</small></div><div class="field"><label>Digite RESETAR para confirmar</label><input id="resetConfirm" autocomplete="off" placeholder="RESETAR"></div><div class="actions"><button class="secondary" id="cancelReset">Cancelar</button><button class="primary" id="confirmReset" disabled>Apagar dados</button></div></div>`);$("cancelReset").onclick=closeModal;$("resetConfirm").oninput=e=>$("confirmReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR";$("confirmReset").onclick=resetBusinessData};
- $("resetLog").onclick=()=>{openModal("Resetar log?",`<div class="form"><div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga todo o histórico.</b><br><small>Vendas, estoque e clientes não serão apagados. Somente o Log de atividades será excluído.</small></div><div class="field"><label>Digite RESETAR LOG para confirmar</label><input id="resetLogConfirm" autocomplete="off" placeholder="RESETAR LOG"></div><div class="actions"><button class="secondary" id="cancelLogReset">Cancelar</button><button class="primary" id="confirmLogReset" disabled>Apagar log</button></div></div>`);$("cancelLogReset").onclick=closeModal;$("resetLogConfirm").oninput=e=>$("confirmLogReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR LOG";$("confirmLogReset").onclick=resetActivityLog};
+ $("resetBusiness").onclick=()=>{
+  openModal("Resetar dados?",`<div class="form">
+   <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga os dados do negócio.</b><br><small>Produtos, estoque, clientes, vendas e pagamentos serão excluídos. O login e o PIX não serão apagados. Essa ação não pode ser desfeita.</small></div>
+   <div class="field"><label>Digite RESETAR para confirmar</label><input id="resetConfirm" autocomplete="off" placeholder="RESETAR"></div>
+   <div class="actions"><button class="secondary" id="cancelReset">Cancelar</button><button class="primary" id="confirmReset" disabled>Apagar dados</button></div>
+  </div>`);
+  $("cancelReset").onclick=closeModal;
+  $("resetConfirm").oninput=e=>$("confirmReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR";
+  $("confirmReset").onclick=resetBusinessData;
+ };
+ $("resetLog").onclick=()=>{
+  openModal("Resetar log?",`<div class="form">
+   <div style="padding:13px;border-radius:15px;background:#fff4f2;border:1px solid #efd2cc;color:#71352f;line-height:1.5"><b>⚠️ Esta ação apaga todo o histórico.</b><br><small>Vendas, estoque e clientes não serão apagados. Somente o Log de atividades será excluído.</small></div>
+   <div class="field"><label>Digite RESETAR LOG para confirmar</label><input id="resetLogConfirm" autocomplete="off" placeholder="RESETAR LOG"></div>
+   <div class="actions"><button class="secondary" id="cancelLogReset">Cancelar</button><button class="primary" id="confirmLogReset" disabled>Apagar log</button></div>
+  </div>`);
+  $("cancelLogReset").onclick=closeModal;
+  $("resetLogConfirm").oninput=e=>$("confirmLogReset").disabled=e.target.value.trim().toUpperCase()!=="RESETAR LOG";
+  $("confirmLogReset").onclick=resetActivityLog;
+ };
 }
 async function openActivityLog(){
  let rows=[];
@@ -907,5 +976,5 @@ window.addEventListener("load",()=>{
 </script>
 
 
-<script id="DV_V1226_STATUS_HELPER">function dvCustomerStatusDiscount(status){return String(status||'').toLowerCase()==='otimo'?0.10:0}function dvCustomerStatusLabel(status){return String(status||'').trim().toLowerCase()==='otimo'?'Ótimo':''}</script></body>
+</body>
 </html>
