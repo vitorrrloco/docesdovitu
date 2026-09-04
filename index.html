@@ -158,6 +158,22 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 .fq-cart-right{min-width:92px;max-width:42%;display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:0 0 auto}
 .fq-remove{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:430px){.fq-cart-item{gap:7px;padding:8px!important}.fq-cart-right{min-width:82px;max-width:38%}.fq-remove{font-size:11px!important;padding:7px 8px!important}.fq-cart-item .avatar{flex:0 0 42px}.fq-cart-item .item-main b{font-size:13px}.fq-cart-item .item-main small{font-size:11px}}
+</style><style id="v1220-stock-cart-fix">
+.fq-selected-label{margin:7px 0;padding:9px 11px;border-radius:12px;border:1px solid var(--border,#d8d3ce);background:var(--card,#fff);font-size:12px}
+.fast-product.active{outline:2px solid currentColor;transform:translateY(-1px)}
+.fq-cart-item{min-width:0;display:flex;align-items:center;gap:10px;box-sizing:border-box}
+.fq-cart-item .item-main{min-width:0;flex:1;overflow:hidden}
+.fq-cart-item .item-main b,.fq-cart-item .item-main small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fq-cart-right{min-width:92px;max-width:42%;display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:0 0 auto}
+.fq-remove{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:430px){
+ .fq-cart-item{gap:7px;padding:8px!important}
+ .fq-cart-right{min-width:82px;max-width:38%}
+ .fq-remove{font-size:11px!important;padding:7px 8px!important}
+ .fq-cart-item .avatar{flex:0 0 42px}
+ .fq-cart-item .item-main b{font-size:13px}
+ .fq-cart-item .item-main small{font-size:11px}
+}
 </style></head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
@@ -367,7 +383,8 @@ function finance(){
  const pending=monthSales.reduce((a,s)=>a+Math.max(0,numBR(s.total||0)-numBR(s.paid||0)),0);
  const soldCost=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>{const prod=products.find(p=>p.id===i.productId);const unitCost=i.cost!=null?numBR(i.cost):numBR(prod?.cost||0);return x+numBR(i.qty||0)*unitCost},0),0);
  const baseProductCost=115.27;
- const cost=baseProductCost;
+ const purchaseCosts=allPurchases;
+ const cost=baseProductCost+purchaseCosts;
  const profit=revenue-soldCost;
  const margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
@@ -414,66 +431,115 @@ function openQuickSale(){
  const clients=data.clients.slice().sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));
  openModal("⚡️ Lançamento rápido",`<div class="form">
   <div class="field"><label>Cliente</label><div style="position:relative"><input id="fqClientSearch" autocomplete="off" placeholder="🔎 Digite o nome ou deixe vazio para balcão"><input id="fqClient" type="hidden"><div id="fqClientResults" class="quick-client-results hidden"></div></div></div>
-  <div class="field"><label>Adicionar produto</label><div class="fast-products" id="fqProducts">${products.map(p=>`<button type="button" class="fast-product" data-fq-product="${p.id}"><b>${esc(p.name)}</b><small>${money(p.price)} • ${numBR(p.stock)} un.</small></button>`).join("")}</div></div>
+  <div class="field"><label>Adicionar produto</label>
+   <div id="fqSelectedLabel" class="fq-selected-label">Produto selecionado: <b>${esc(products[0].name)}</b></div>
+   <div class="fast-products" id="fqProducts">${products.map((p,i)=>`<button type="button" class="fast-product ${i===0?"active":""}" data-fq-product="${p.id}" aria-pressed="${i===0?"true":"false"}"><b>${esc(p.name)}</b><small>${money(p.price)} • ${numBR(p.stock)} un.</small></button>`).join("")}</div>
+  </div>
   <div class="row"><div class="field"><label>Quantidade</label><input id="fqQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div></div>
+  <button type="button" class="primary" id="fqAddProduct" style="width:100%;margin-top:2px">＋ Adicionar produto à venda</button>
   <div id="fqCart" class="list" style="margin-top:8px"></div><div id="fqCartEmpty" class="empty">Nenhum produto adicionado.</div>
   <div class="section-title" style="margin-top:10px"><span>Total da venda</span><b id="fqGrandTotal">R$ 0,00</b></div>
   <div class="field"><label>Desconto opcional</label><input id="fqDiscountValue" type="text" inputmode="decimal" value="0,00"></div>
   <div id="fqFinalTotal" style="font-size:20px;font-weight:900;margin-top:5px">Total líquido: R$ 0,00</div>
   <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="fqConfirm">Confirmar venda</button></div>
  </div>`);
+
  let selectedId=products[0].id;
  const cart=[];
  const selected=()=>products.find(p=>p.id===selectedId);
  const totalOriginal=()=>cart.reduce((a,i)=>a+numBR(i.price)*numBR(i.qty),0);
  const discount=()=>Math.min(totalOriginal(),Math.max(0,numBR($("fqDiscountValue")?.value)));
  const totalFinal=()=>Math.max(0,totalOriginal()-discount());
+
+ const selectProduct=(id)=>{
+   selectedId=id;
+   document.querySelectorAll("[data-fq-product]").forEach(x=>{
+     const active=x.dataset.fqProduct===id;
+     x.classList.toggle("active",active);
+     x.setAttribute("aria-pressed",active?"true":"false");
+   });
+   const p=selected();
+   if($("fqSelectedLabel")&&p)$("fqSelectedLabel").innerHTML=`Produto selecionado: <b>${esc(p.name)}</b> • ${money(p.price)}`;
+ };
+
  const draw=()=>{
   const box=$("fqCart"),empty=$("fqCartEmpty");
   if(!cart.length){box.innerHTML="";empty.style.display="block"}else{
    empty.style.display="none";
-   box.innerHTML=cart.map((i,idx)=>{const line=numBR(i.price)*numBR(i.qty);return `<div class="item fq-cart-item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${numBR(i.qty)} × ${money(i.price)} = ${money(line)}</small></div><div class="item-right fq-cart-right"><b>${money(line)}</b><button type="button" class="secondary fq-remove" data-remove-cart="${idx}">✕ Remover</button></div></div>`}).join("");
+   box.innerHTML=cart.map((i,idx)=>{
+    const line=numBR(i.price)*numBR(i.qty);
+    return `<div class="item fq-cart-item">
+      <div class="avatar">🍫</div>
+      <div class="item-main"><b>${esc(i.name)}</b><small>${numBR(i.qty)} × ${money(i.price)} = ${money(line)}</small></div>
+      <div class="item-right fq-cart-right"><b>${money(line)}</b><button type="button" class="secondary fq-remove" data-remove-cart="${idx}">✕ Remover</button></div>
+    </div>`
+   }).join("");
   }
   $("fqGrandTotal").textContent=money(totalOriginal());
   $("fqFinalTotal").textContent="Total líquido: "+money(totalFinal());
-  box.querySelectorAll("[data-remove-cart]").forEach(b=>b.onclick=()=>{cart.splice(numBR(b.dataset.removeCart),1);draw()});
+  box.querySelectorAll("[data-remove-cart]").forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.removeCart),1);draw()});
  };
- document.querySelectorAll("[data-fq-product]").forEach(b=>b.onclick=()=>{selectedId=b.dataset.fqProduct;document.querySelectorAll("[data-fq-product]").forEach(x=>x.classList.remove("active"));b.classList.add("active")});
+
+ document.querySelectorAll("[data-fq-product]").forEach(b=>b.onclick=()=>selectProduct(b.dataset.fqProduct));
+
  const add=()=>{
   const p=selected(),q=Math.floor(numBR($("fqQty").value)||0);
   if(!p)return toast("Selecione um produto.");
   if(q<1)return toast("Informe uma quantidade válida.");
   const existing=cart.find(i=>i.productId===p.id),already=existing?numBR(existing.qty):0;
   if(already+q>numBR(p.stock))return toast(`Estoque insuficiente para ${p.name}. Disponível: ${numBR(p.stock)} un.`);
-  if(existing)existing.qty=already+q;else cart.push({productId:p.id,name:p.name,qty:q,price:numBR(p.price),originalPrice:numBR(p.price),cost:numBR(p.cost)});
-  $("fqQty").value=1;draw();
+  if(existing)existing.qty=already+q;
+  else cart.push({productId:p.id,name:p.name,qty:q,price:numBR(p.price),originalPrice:numBR(p.price),cost:numBR(p.cost)});
+  $("fqQty").value=1;
+  draw();
  };
- document.querySelectorAll("[data-fq-product]").forEach(b=>b.ondblclick=add);
+
+ $("fqAddProduct").onclick=add;
  $("fqQty").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();add()}});
- // Single tap on a product selects it; a visible add control is injected below the selector.
- const addBtn=document.createElement("button");addBtn.type="button";addBtn.className="primary";addBtn.style.cssText="width:100%;margin-top:7px";addBtn.textContent="＋ Adicionar produto à venda";$("fqProducts").after(addBtn);addBtn.onclick=add;
  $("fqDiscountValue").addEventListener("input",draw);
  $("cancelModal").onclick=closeModal;
+
  const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");
- const show=()=>{const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,12);results.innerHTML=m.map(c=>`<button type="button" class="client-result" data-fq-client="${c.id}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';results.classList.remove("hidden")};
+ const show=()=>{
+   const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,12);
+   results.innerHTML=m.map(c=>`<button type="button" class="client-result" data-fq-client="${c.id}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';
+   results.classList.remove("hidden")
+ };
  search.addEventListener("focus",show);search.addEventListener("input",()=>{hidden.value="";show()});
- results.addEventListener("click",e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}});
+ results.addEventListener("click",e=>{
+   const b=e.target.closest("[data-fq-client]");if(!b)return;
+   const c=clients.find(x=>x.id===b.dataset.fqClient);
+   if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden")}
+ });
  draw();
+ selectProduct(products[0].id);
+
  $("fqConfirm").onclick=async()=>{
-  const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;if(!cart.length)return toast("Adicione pelo menos um produto.");
+  const btn=$("fqConfirm");
+  if(btn.dataset.busy==="1")return;
+  if(!cart.length)return toast("Adicione pelo menos um produto.");
   const clientId=hidden.value||"",c=data.clients.find(x=>x.id===clientId),originalTotal=totalOriginal(),discountAmount=discount(),total=totalFinal();
   if(total<=0)return toast("O total da venda precisa ser maior que zero.");
-  for(const i of cart){const p=data.products.find(x=>x.id===i.productId);if(!p||numBR(p.stock)<numBR(i.qty))return toast(`Estoque insuficiente para ${i.name}.`)}
+  for(const i of cart){
+    const p=data.products.find(x=>x.id===i.productId);
+    if(!p||numBR(p.stock)<numBR(i.qty))return toast(`Estoque insuficiente para ${i.name}.`);
+  }
   btn.dataset.busy="1";btn.disabled=true;btn.textContent="Registrando...";
   try{
    const ratio=originalTotal>0?discountAmount/originalTotal:0;
    const items=cart.map(i=>({...i,price:Math.round(numBR(i.price)*(1-ratio)*100)/100}));
    const saleRef=doc(col("sales"));
    await setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-   await Promise.all(cart.map(i=>{const p=data.products.find(x=>x.id===i.productId);return updateDoc(doc(col("products"),i.productId),{stock:numBR(p.stock)-numBR(i.qty)})}));
+   await Promise.all(cart.map(i=>{
+     const p=data.products.find(x=>x.id===i.productId);
+     return updateDoc(doc(col("products"),i.productId),{stock:numBR(p.stock)-numBR(i.qty)});
+   }));
    await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${cart.map(i=>`${i.name} x${i.qty}`).join(", ")} • ${money(total)}`);
    closeModal();render();go("home");toast("Venda registrada!");
-  }catch(e){console.error(e);toast(e.message||"Não foi possível registrar a venda.");btn.disabled=false;btn.dataset.busy="0";btn.textContent="Confirmar venda"}
+  }catch(e){
+   console.error(e);toast(e.message||"Não foi possível registrar a venda.");
+   btn.disabled=false;btn.dataset.busy="0";btn.textContent="Confirmar venda";
+  }
  };
 }
 function openSale(){
@@ -596,12 +662,49 @@ function openPaymentForClient(c){
 }
 function openAddStock(p){
  if(!p)return;
- const current=numBR(p.stock||0);
- openModal("Adicionar estoque",`<div class="form"><div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} unidade(s)</small></div></div><div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="Ex.: 26,49"></div><div id="addStockPreview" style="font-size:12px;color:var(--muted)">O custo unitário será calculado automaticamente. O valor desta compra também será somado ao custo acumulado.</div><div class="actions"><button class="secondary" id="cancelModal-dup3">Cancelar</button><button class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
- const preview=()=>{const q=numBR($("addStockQty")?.value)||0,t=numBR($("addStockTotal")?.value)||0;if($("addStockPreview"))$("addStockPreview").textContent=q>0&&t>0?`Custo unitário desta compra: ${money(Math.round(t/q*100)/100)} • ${money(t)} será somado ao custo acumulado.`:"O custo unitário será calculado automaticamente. O valor desta compra também será somado ao custo acumulado."};
- $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$("cancelModal").onclick=closeModal;
- $("confirmAddStock").onclick=async()=>{const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q<1)return toast("Informe a quantidade comprada.");if(t<=0)return toast("Informe o valor total pago.");const unit=Math.round(t/q*100)/100;try{await updateDoc(doc(col("products"),p.id),{stock:current+q,cost:unit});await addDoc(col("purchases"),{productId:p.id,productName:p.name,quantity:q,total:t,unitCost:unit,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction("Entrada de estoque",`${p.name} • +${q} un. • compra ${money(t)} • custo unitário ${money(unit)}`);closeModal();toast(`+${q} unidades adicionadas!`)}catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.code||"verifique a conexão."))}};
+ const current=numBR(p.stock||0),oldUnitCost=numBR(p.cost||0);
+ openModal("Adicionar estoque",`<div class="form">
+  <div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} unidade(s) • custo unitário atual: ${money(oldUnitCost)}</small></div></div>
+  <div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="text" inputmode="numeric" placeholder="Ex.: 50"></div>
+  <div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="text" inputmode="decimal" placeholder="Ex.: 26,49"></div>
+  <div id="addStockPreview" style="font-size:12px;color:var(--muted)">Informe quantidade e valor total. O custo unitário da compra será calculado e o custo médio do produto será atualizado.</div>
+  <div class="actions"><button type="button" class="secondary" id="cancelAddStock">Cancelar</button><button type="button" class="primary" id="confirmAddStock">Adicionar ao estoque</button></div>
+ </div>`);
+
+ const preview=()=>{
+   const q=Math.floor(numBR($("addStockQty")?.value)||0),t=numBR($("addStockTotal")?.value)||0;
+   if($("addStockPreview")){
+     if(q>0&&t>0){
+       const unit=t/q;
+       const newAvg=(oldUnitCost*current+t)/(current+q);
+       $("addStockPreview").textContent=`Custo desta compra: ${money(unit)} por unidade • novo custo médio: ${money(newAvg)} • compra registrada: ${money(t)}.`;
+     }else $("addStockPreview").textContent="Informe quantidade e valor total. O custo unitário da compra será calculado e o custo médio do produto será atualizado.";
+   }
+ };
+ $("addStockQty").oninput=preview;
+ $("addStockTotal").oninput=preview;
+ $("cancelAddStock").onclick=closeModal;
  preview();
+
+ $("confirmAddStock").onclick=async()=>{
+   const btn=$("confirmAddStock");
+   if(btn.dataset.busy==="1")return;
+   const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;
+   if(q<1)return toast("Informe a quantidade comprada.");
+   if(t<=0)return toast("Informe o valor total pago.");
+   const unit=Math.round((t/q)*100)/100;
+   const newAvg=Math.round(((oldUnitCost*current)+t)/(current+q)*100)/100;
+   btn.dataset.busy="1";btn.disabled=true;btn.textContent="Salvando...";
+   try{
+     await updateDoc(doc(col("products"),p.id),{stock:current+q,cost:newAvg});
+     await addDoc(col("purchases"),{productId:p.id,productName:p.name,quantity:q,total:t,unitCost:unit,previousUnitCost:oldUnitCost,newAverageCost:newAvg,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+     await logAction("Entrada de estoque",`${p.name} • +${q} un. • compra ${money(t)} • custo da compra ${money(unit)} • custo médio ${money(newAvg)}`);
+     closeModal();toast(`+${q} unidades adicionadas e compra registrada!`);
+   }catch(e){
+     console.error(e);toast("Erro ao registrar compra: "+(e.code||e.message||"verifique a conexão."));
+     btn.disabled=false;btn.dataset.busy="0";btn.textContent="Adicionar ao estoque";
+   }
+ };
 }
 function openRemoveStock(p){
  if(!p)return;
@@ -658,7 +761,7 @@ function openProduct(p=null){
   let stock=currentStock;
   let cost=currentCost;
   if(purchaseQty>0){
-    cost=Math.round((purchaseTotal/purchaseQty)*100)/100;
+    cost=Math.round((((currentCost*currentStock)+purchaseTotal)/(currentStock+purchaseQty))*100)/100;
     stock=currentStock+purchaseQty;
   }
   const obj={name,price,cost,stock,minStock,supplier};
@@ -780,9 +883,9 @@ function bindPage(){
  document.querySelectorAll("[data-charge]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.charge);if(c)openCharge(c)});
  document.querySelectorAll("[data-charge-client]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.chargeClient);if(c)chargeClient(c)});
  document.querySelectorAll("[data-product]").forEach(x=>x.onclick=e=>{if(e.target.closest("[data-remove-stock]")||e.target.closest("[data-delete-product]"))return;openProduct(data.products.find(p=>p.id===x.dataset.product))});
- document.querySelectorAll("[data-add-stock]").forEach(x=>x.onclick=e=>{e.stopPropagation();openAddStock(data.products.find(p=>p.id===x.dataset.addStock))});
-  document.querySelectorAll("[data-remove-stock]").forEach(x=>x.onclick=e=>{e.stopPropagation();openRemoveStock(data.products.find(p=>p.id===x.dataset.removeStock))});
- document.querySelectorAll("[data-delete-product]").forEach(x=>x.onclick=e=>{e.stopPropagation();deleteProductConfirm(data.products.find(p=>p.id===x.dataset.deleteProduct))});
+ document.querySelectorAll("[data-add-stock]").forEach(x=>x.onclick=e=>{e.preventDefault();e.stopPropagation();const p=data.products.find(p=>p.id===x.dataset.addStock);if(p)openAddStock(p)});
+  document.querySelectorAll("[data-remove-stock]").forEach(x=>x.onclick=e=>{e.preventDefault();e.stopPropagation();const p=data.products.find(p=>p.id===x.dataset.removeStock);if(p)openRemoveStock(p)});
+ document.querySelectorAll("[data-delete-product]").forEach(x=>x.onclick=e=>{e.preventDefault();e.stopPropagation();const p=data.products.find(p=>p.id===x.dataset.deleteProduct);if(p)deleteProductConfirm(p)});
  document.querySelectorAll("[data-sale]").forEach(x=>x.onclick=()=>openSaleDetail(data.sales.find(s=>s.id===x.dataset.sale)));
  document.querySelectorAll("[data-sales-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-sales-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll("#salesBody tr").forEach(r=>{let f=b.dataset.salesFilter; r.style.display=f==="all"||r.dataset.status===f?"":"none"})});
  $("payments")?.addEventListener("click",()=>openReceivables());
