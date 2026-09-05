@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.4.0</title>
+<title>DOCES DO VITU 1.3.0</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -86,7 +86,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .nav:before{display:none}
 }
 
-/* V1.3.0 FINAL - Financeiro compacto e centralizado no celular */
+/* V1.4.0 FINAL - Financeiro compacto e centralizado no celular */
 .finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
 .finance-duo .analysis-card{min-width:0;padding:13px}
 .finance-duo .section-title b{font-size:15px}
@@ -112,7 +112,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 .boot-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px;opacity:1;transition:opacity .18s ease,visibility .18s ease}.boot-loader.done{opacity:0;visibility:hidden;pointer-events:none}.boot-card{width:min(330px,88vw);text-align:center;padding:26px 22px;border-radius:22px;background:var(--white);box-shadow:0 14px 45px rgba(74,40,25,.14);display:flex;flex-direction:column;align-items:center;gap:8px}.boot-logo{font-size:42px;line-height:1}.boot-card b{font-size:19px;color:var(--dark)}.boot-card small{color:var(--muted);margin-bottom:8px}.boot-track{width:100%;height:7px;border-radius:99px;background:var(--cream2);overflow:hidden}.boot-bar{height:100%;width:0%;border-radius:99px;background:var(--brown);transition:width .12s ease}.boot-card strong{font-size:13px;color:var(--brown);min-height:18px}
 @media(prefers-reduced-motion:reduce){.boot-loader,.boot-bar{transition:none!important}}
 
-/* V1.3.0 - somente ajustes visuais de Sugestão de Compras e Financeiro */
+/* V1.4.0 - somente ajustes visuais de Sugestão de Compras e Financeiro */
 .purchase-selector-card{background:var(--white);border:1px solid var(--line);border-radius:21px;padding:17px;margin:12px 0;box-shadow:var(--shadow)}
 .purchase-selector-card label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
 .purchase-selector-card small{display:block;color:var(--muted);font-size:10px;margin-top:7px;line-height:1.35}
@@ -145,26 +145,6 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 
 </style>
 
-/* V1.4.0: somente Gestão de Caixa no topo, preservando a interface original */
-.top-actions{display:flex;align-items:center;gap:7px;min-width:0}
-.cash-top-btn{height:46px;min-width:145px;padding:0 13px;border:1px solid var(--line);border-radius:15px;background:var(--white);color:var(--dark);font-size:14px;font-weight:800;white-space:nowrap}
-@media(max-width:430px){
-  .top{padding-left:10px;padding-right:10px;gap:5px}
-  .brand{min-width:0;flex:1;gap:7px}
-  .brand-mark{width:43px;height:48px;flex:0 0 43px}
-  .brand b{font-size:15px;line-height:1.05;max-width:78px}
-  .brand small{font-size:10px}
-  .top-actions{gap:5px;flex:0 0 auto}
-  .user-badge{height:46px;width:70px;padding:0 7px;justify-content:center;font-size:11px}
-  .cash-top-btn{min-width:0;width:137px;padding:0 7px;font-size:12px}
-  .top-action{width:44px;height:46px;flex:0 0 44px}
-}
-@media(max-width:370px){
-  .cash-top-btn{width:119px;font-size:11px}
-  .user-badge{width:65px;font-size:10px}
-  .brand b{max-width:68px;font-size:14px}
-}
-
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -177,44 +157,10 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 #brandSplash img{width:min(72vw,360px);max-height:55vh;object-fit:contain;border-radius:24px}
 #brandSplash.hide{opacity:0;pointer-events:none}
 @media(min-width:900px){#brandSplash img{width:300px}}
-
-<style id="DV_V140_CASH_CSS">
-.cash-panel{display:grid;gap:12px}
-.cash-month{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:var(--cream2);border:1px solid var(--line);border-radius:14px}
-.cash-month b{font-size:13px}.cash-month small{color:var(--muted);font-size:10px}
-.cash-cards{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.cash-card{background:var(--cream);border:1px solid var(--line);border-radius:16px;padding:12px;min-width:0}
-.cash-card small{display:block;color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase}
-.cash-card strong{display:block;margin-top:4px;font-size:18px}
-.cash-card.green strong{color:var(--green)}
-.cash-card.red strong{color:var(--red)}
-.cash-section{background:var(--white);border:1px solid var(--line);border-radius:17px;padding:13px}
-.cash-section-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
-.cash-section-head b{font-size:14px}.cash-section-head small{color:var(--muted);font-size:9px}
-.cash-salary{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.cash-salary-person{border:1px solid var(--line);background:var(--cream);border-radius:14px;padding:11px}
-.cash-salary-person>div:first-child{display:flex;justify-content:space-between;gap:5px;font-weight:800;font-size:13px}
-.cash-salary-person .salary-value{font-size:16px;margin-top:3px}
-.cash-salary-person label{display:block;color:var(--muted);font-size:9px;font-weight:800;margin-top:9px;margin-bottom:4px}
-.cash-salary-person input{width:100%;height:40px;border:1px solid var(--line);border-radius:11px;background:var(--white);padding:0 9px;color:var(--text);font-size:14px!important}
-.cash-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.cash-actions button{min-height:45px}
-.cash-rule{font-size:10px;line-height:1.4;color:var(--muted);padding:10px 11px;border-radius:13px;background:var(--cream);border:1px solid var(--line)}
-.cash-history{display:grid;gap:7px}
-.cash-history-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11px}
-.cash-history-row:last-child{border-bottom:0}
-.cash-history-row small{display:block;color:var(--muted);margin-top:2px;font-size:9px}
-.cash-note-row{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:11px}
-.cash-note-row:last-child{border-bottom:0}
-.cash-note-row b{white-space:nowrap}
-.cash-note-row .out{color:var(--red)}.cash-note-row .in{color:var(--green)}
-@media(max-width:430px){.cash-salary{grid-template-columns:1fr}.cash-card strong{font-size:17px}}
-</style>
-
 </style>
 
 <style id="professional-motion">
-/* V1.3.0: single-tap motion system, without duplicate click effects */
+/* V1.4.0: single-tap motion system, without duplicate click effects */
 .page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
 @keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .modal-bg{animation:modalFade .16s ease-out both}
@@ -279,6 +225,102 @@ body.dark .customer-status-select{
 }
 #mTotalValue[readonly]{opacity:.92}
 </style>
+
+<style id="DV140_CASH_CSS">
+.dv140-top-actions{display:flex;align-items:center;gap:7px;min-width:0}
+.dv140-cash-top{
+  height:46px;min-width:144px;padding:0 13px;border:1px solid var(--line);
+  border-radius:15px;background:var(--white);color:var(--text);
+  font:inherit;font-size:12px;font-weight:800;white-space:nowrap;box-sizing:border-box
+}
+.dv140-cash-top:active{transform:scale(.985)}
+.dv140-cash-panel{display:grid;gap:12px}
+.dv140-month{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;border-radius:13px;background:var(--cream2);
+  border:1px solid var(--line)
+}
+.dv140-month b{display:block;font-size:13px}
+.dv140-month small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.dv140-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dv140-card{
+  background:var(--cream);border:1px solid var(--line);
+  border-radius:14px;padding:11px;min-width:0
+}
+.dv140-card small{
+  display:block;color:var(--muted);font-size:9px;
+  font-weight:800;text-transform:uppercase
+}
+.dv140-card strong{display:block;font-size:17px;margin-top:4px}
+.dv140-card.green strong{color:var(--green)}
+.dv140-section{
+  background:var(--white);border:1px solid var(--line);
+  border-radius:16px;padding:12px
+}
+.dv140-section-title{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;margin-bottom:9px
+}
+.dv140-section-title b{font-size:14px}
+.dv140-section-title small{font-size:9px;color:var(--muted)}
+.dv140-salaries{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dv140-salary{
+  border:1px solid var(--line);border-radius:13px;
+  background:var(--cream);padding:11px
+}
+.dv140-salary-head{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.dv140-salary-head b{font-size:13px}
+.dv140-salary-head strong{font-size:15px}
+.dv140-salary label{
+  display:block;color:var(--muted);font-size:9px;
+  font-weight:800;margin:9px 0 4px
+}
+.dv140-salary input{
+  width:100%;height:39px;box-sizing:border-box;
+  border:1px solid var(--line);border-radius:10px;
+  background:var(--white);color:var(--text);padding:0 9px;
+  font:inherit;font-size:13px
+}
+.dv140-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dv140-actions button{min-height:42px}
+.dv140-summary{display:grid;gap:6px}
+.dv140-summary-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:7px 0;border-bottom:1px solid var(--line);
+  font-size:11px
+}
+.dv140-summary-row:last-child{border-bottom:0}
+.dv140-summary-row span{color:var(--muted)}
+.dv140-rule{
+  padding:9px 10px;border-radius:11px;
+  background:var(--cream);border:1px solid var(--line);
+  color:var(--muted);font-size:10px;line-height:1.35
+}
+.dv140-move-list{display:grid;gap:0}
+.dv140-move{
+  display:flex;justify-content:space-between;gap:8px;
+  padding:8px 0;border-bottom:1px solid var(--line);font-size:10px
+}
+.dv140-move:last-child{border-bottom:0}
+.dv140-move small{display:block;color:var(--muted);margin-top:2px}
+.dv140-in{color:var(--green)} .dv140-out{color:var(--red)}
+body.dark .dv140-card,body.dark .dv140-salary{background:#202023}
+body.dark .dv140-section{background:#171719}
+body.dark .dv140-salary input{background:#202023}
+@media(max-width:520px){
+  .dv140-top-actions{gap:5px}
+  .dv140-cash-top{min-width:122px;width:122px;padding:0 8px;font-size:10px}
+  .dv140-top-actions .user-badge{width:70px;padding:0 7px;font-size:10px}
+}
+@media(max-width:390px){
+  .dv140-cash-top{min-width:108px;width:108px;font-size:9px}
+  .dv140-top-actions .user-badge{width:64px}
+}
+@media(max-width:420px){
+  .dv140-salaries{grid-template-columns:1fr}
+  .dv140-cards{grid-template-columns:1fr 1fr}
+}
+</style>
 </head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
@@ -302,7 +344,7 @@ body.dark .customer-status-select{
 <div id="app" class="app hidden">
  <header class="top">
   <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.4.0</small></div></div>
-  <div class="top-actions"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button type="button" id="openCashManagement" class="cash-top-btn" aria-label="Gestão de Caixa">💰 <span>Gestão de Caixa</span></button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
+  <div class="dv140-top-actions"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button type="button" id="dv140OpenCash" class="dv140-cash-top" aria-label="Abrir Gestão de Caixa">Gestão de Caixa</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
  <nav class="nav">
@@ -414,8 +456,6 @@ function go(p){
 }
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
-$("openCashManagement").onclick=()=>openCashManagement();
-maybeCreateMonthlyCash().catch(e=>console.warn("Caixa mensal não inicializado",e));
 
 function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="purchases")v.innerHTML=purchases();if(page==="finance")v.innerHTML=finance();bindPage()}
 function totals(){
@@ -926,195 +966,6 @@ function analysisHtml(kind){
  return `<div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">${periods[kind]}</small><div style="margin-top:3px">Total vendido</div></div><strong>${money(total)}</strong></div><div class="chart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline class="line" points="${pts}"/>${dots}${labels}</svg></div></div>`;
 }
 
-
-/* ===== V1.4.0: Gestão de Caixa, salários e ciclo mensal ===== */
-const CASH_OPENING=450;
-const CASH_SEPTEMBER={
-  opening:450,current:146.41,productCosts:221.60,
-  salaries:{vitor:189.09,eduardo:189.09},
-  paidDates:{vitor:"",eduardo:""}
-};
-const cashMonthKey=()=>{
-  const d=new Date();
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
-};
-const cashMonthLabel=key=>{
-  const [y,m]=String(key).split("-").map(Number);
-  return new Date(y,(m||1)-1,1).toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
-};
-function fifthBusinessDay(y,m){
-  let count=0;
-  for(let d=1;d<=7;d++){
-    const wd=new Date(y,m,d).getDay();
-    if(wd!==0 && wd!==6){count++;if(count===5)return d;}
-  }
-  return 7;
-}
-function cashBaseForMonth(key){
-  if(key==="2026-09") return JSON.parse(JSON.stringify(CASH_SEPTEMBER));
-  return {opening:CASH_OPENING,current:CASH_OPENING,productCosts:0,salaries:{vitor:0,eduardo:0},paidDates:{vitor:"",eduardo:""}};
-}
-async function getCashDoc(key=cashMonthKey()){
-  const ref=doc(col("cashControl"),key);
-  const snap=await getDoc(ref);
-  if(snap.exists()) return {ref,...snap.data()};
-  const base=cashBaseForMonth(key);
-  await setDoc(ref,{...base,month:key,updatedAt:serverTimestamp(),createdAt:serverTimestamp()});
-  return {ref,...base,month:key};
-}
-async function saveCashDoc(key,patch){
-  const ref=doc(col("cashControl"),key);
-  await setDoc(ref,{...patch,month:key,updatedAt:serverTimestamp()},{merge:true});
-  return getCashDoc(key);
-}
-function cashSalesForMonth(key){
-  const [y,m]=key.split("-").map(Number);
-  const start=new Date(y,m-1,1); const end=new Date(y,m,1);
-  return (data.sales||[]).filter(s=>{const d=dt(s.createdAt);return d&&d>=start&&d<end});
-}
-function cashProductCostForSales(sales){
-  return sales.reduce((sum,s)=>
-    sum+(Array.isArray(s.items)?s.items.reduce((a,i)=>{
-      const q=numBR(i.qty??i.quantity??0);
-      const stored=numBR(i.cost??i.unitCost??i.productCost??0);
-      const prod=data.products.find(p=>p.id===(i.productId??i.id));
-      return a+q*(stored>0?stored:numBR(prod?.cost??0));
-    },0):0),0);
-}
-function cashRevenue(sales){return sales.reduce((a,s)=>a+numBR(s.total||0),0)}
-function cashAvailableForSalary(c,key){
-  const sales=cashSalesForMonth(key);
-  const revenue=cashRevenue(sales);
-  const costs=numBR(c.productCosts)>0?numBR(c.productCosts):cashProductCostForSales(sales);
-  // Lucro após o caixa mínimo de R$450.
-  return Math.max(0,revenue-costs-numBR(c.opening||CASH_OPENING));
-}
-async function maybeCreateMonthlyCash(){
-  const key=cashMonthKey();
-  await getCashDoc(key);
-}
-function cashDateValue(v){
-  if(!v)return "";
-  const d=dt(v);
-  return d?d.toISOString().slice(0,10):String(v).slice(0,10);
-}
-async function openCashManagement(){
-  try{
-    const key=cashMonthKey();
-    const c=await getCashDoc(key);
-    const available=cashAvailableForSalary(c,key);
-    const autoV=available/2,autoE=available/2;
-    const vitorSalary=available>0?autoV:numBR(c.salaries?.vitor);
-    const eduardoSalary=available>0?autoE:numBR(c.salaries?.eduardo);
-    const sales=cashSalesForMonth(key);
-    const revenue=cashRevenue(sales);
-    const costs=numBR(c.productCosts)>0?numBR(c.productCosts):cashProductCostForSales(sales);
-    const above=Math.max(0,revenue-numBR(c.opening||450));
-    const salaryMonth=available>0?"calculado automaticamente":"salário registrado";
-    openModal("💰 Gestão de Caixa",`
-      <div class="cash-panel">
-        <div class="cash-month">
-          <div><b>${esc(cashMonthLabel(key))}</b><small>Período atual</small></div>
-          <small>5º dia útil inicia o próximo ciclo</small>
-        </div>
-
-        <div class="cash-cards">
-          <div class="cash-card"><small>Caixa atual</small><strong>${money(c.current)}</strong></div>
-          <div class="cash-card"><small>Caixa padrão</small><strong>${money(c.opening||450)}</strong></div>
-          <div class="cash-card green"><small>Lucro para dividir</small><strong>${money(available)}</strong></div>
-          <div class="cash-card"><small>Custos de produtos</small><strong>${money(costs)}</strong></div>
-        </div>
-
-        <div class="cash-section">
-          <div class="cash-section-head">
-            <b>Salários</b>
-            <small>${salaryMonth} • 50% para cada</small>
-          </div>
-          <div class="cash-salary">
-            <div class="cash-salary-person">
-              <div><span>Vitor</span><span class="salary-value">${money(vitorSalary)}</span></div>
-              <label>Data em que foi pago</label>
-              <input id="cashPaidVitor" type="date" value="${esc(cashDateValue(c.paidDates?.vitor))}">
-            </div>
-            <div class="cash-salary-person">
-              <div><span>Eduardo</span><span class="salary-value">${money(eduardoSalary)}</span></div>
-              <label>Data em que foi pago</label>
-              <input id="cashPaidEduardo" type="date" value="${esc(cashDateValue(c.paidDates?.eduardo))}">
-            </div>
-          </div>
-          <button class="primary" id="saveCashSalaryDates" style="width:100%;margin-top:9px">Salvar datas de pagamento</button>
-        </div>
-
-        <div class="cash-actions">
-          <button class="secondary" id="editCashValue">✏️ Atualizar caixa</button>
-          <button class="secondary" id="registerCashMove">＋ Registrar movimentação</button>
-        </div>
-
-        <div class="cash-rule">
-          <b>Regra do mês:</b> o caixa de giro é R$ 450,00. Depois de pagar os custos dos produtos, o lucro que ultrapassar esse valor é dividido em 50% para Vitor e 50% para Eduardo.
-        </div>
-
-        <div class="cash-section">
-          <div class="cash-section-head"><b>Resumo</b><small>${sales.length} venda(s) • faturamento ${money(revenue)}</small></div>
-          <div class="cash-history">
-            <div class="cash-history-row"><span>Faturamento</span><b>${money(revenue)}</b></div>
-            <div class="cash-history-row"><span>Custos dos produtos</span><b>${money(costs)}</b></div>
-            <div class="cash-history-row"><span>Acima do caixa padrão</span><b>${money(above)}</b></div>
-            <div class="cash-history-row"><span>Disponível para salários</span><b>${money(available)}</b></div>
-          </div>
-        </div>
-
-        ${(c.notes&&c.notes.length)?`
-        <div class="cash-section">
-          <div class="cash-section-head"><b>Movimentações extras</b><small>Últimas registradas</small></div>
-          ${c.notes.slice(-5).reverse().map(n=>`<div class="cash-note-row"><span>${esc(n.text)}<small>${dateOnly(n.date||n.createdAt)}</small></span><b class="${numBR(n.amount)<0?"out":"in"}">${numBR(n.amount)>=0?"+":""}${money(n.amount)}</b></div>`).join("")}
-        </div>`:""}
-      </div>
-    `);
-
-    $("saveCashSalaryDates").onclick=async()=>{
-      const b=$("saveCashSalaryDates"); b.disabled=true;
-      try{
-        await saveCashDoc(key,{paidDates:{vitor:$("cashPaidVitor").value||"",eduardo:$("cashPaidEduardo").value||""}});
-        toast("Datas de pagamento salvas.");
-      }catch(e){console.error(e);toast("Não foi possível salvar as datas no Firebase.");}
-      finally{b.disabled=false}
-    };
-
-    $("editCashValue").onclick=async()=>{
-      const value=prompt("Digite o caixa atual correto:",String(c.current).replace(".",","));
-      if(value===null)return;
-      const n=numBR(value);
-      if(!Number.isFinite(n)||n<0){toast("Valor inválido.");return}
-      try{
-        await saveCashDoc(key,{current:n});
-        toast("Caixa atualizado.");
-        openCashManagement();
-      }catch(e){console.error(e);toast("Não foi possível atualizar o caixa.");}
-    };
-
-    $("registerCashMove").onclick=async()=>{
-      const text=prompt("O que deseja registrar?");
-      if(!text)return;
-      const value=prompt("Valor da movimentação. Use negativo para saída.","0");
-      if(value===null)return;
-      const n=numBR(value);
-      if(!Number.isFinite(n)){toast("Valor inválido.");return}
-      try{
-        const fresh=await getCashDoc(key);
-        const notes=Array.isArray(fresh.notes)?fresh.notes.slice():[];
-        notes.push({text:text.trim(),amount:n,date:new Date().toISOString(),createdBy:currentUserName});
-        await saveCashDoc(key,{current:Math.max(0,numBR(fresh.current)+n),notes});
-        toast("Movimentação registrada.");
-        openCashManagement();
-      }catch(e){console.error(e);toast("Não foi possível registrar a movimentação.");}
-    };
-  }catch(e){
-    console.error("Gestão de Caixa:",e);
-    toast("Não foi possível carregar a Gestão de Caixa.");
-  }
-}
-
 function openModal(title,content){
  $("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><h2>${title}</h2><button type="button" class="close" id="modalClose">×</button></div>${content}</div></div>`;
  const bg=$("modalRoot").querySelector(".modal-bg");
@@ -1397,5 +1248,269 @@ window.addEventListener("load",()=>{
 </script>
 
 
+
+<script id="DV140_CASH_JS">
+(function(){
+  const CASH_OPENING=450;
+  const SEPTEMBER_BOOTSTRAP={
+    opening:450,
+    current:146.41,
+    productCosts:221.60,
+    salaries:{vitor:189.09,eduardo:189.09},
+    paidDates:{vitor:"",eduardo:""},
+    notes:[]
+  };
+
+  const cashMonthKey=()=>{
+    const d=new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+  };
+
+  const cashMonthLabel=key=>{
+    const [y,m]=String(key).split("-").map(Number);
+    return new Date(y,(m||1)-1,1).toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+  };
+
+  const cashDateOnly=v=>{
+    if(!v)return "Não informada";
+    const d=new Date(v);
+    return Number.isNaN(d.getTime())?String(v):d.toLocaleDateString("pt-BR");
+  };
+
+  const fifthBusinessDay=(year,monthIndex)=>{
+    let count=0;
+    for(let day=1;day<=7;day++){
+      const wd=new Date(year,monthIndex,day).getDay();
+      if(wd!==0&&wd!==6){count++;if(count===5)return day;}
+    }
+    return 7;
+  };
+
+  const numCash=v=>{
+    if(typeof v==="number")return Number.isFinite(v)?v:0;
+    if(v===null||v===undefined||v==="")return 0;
+    let x=String(v).replace(/R\\$|\\s/g,"").trim();
+    if(x.includes(","))x=x.replace(/\\./g,"").replace(",",".");
+    const n=Number(x);
+    return Number.isFinite(n)?n:0;
+  };
+
+  const moneyCash=v=>numCash(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  const escapeCash=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+
+  function defaultCash(key){
+    if(key==="2026-09")return JSON.parse(JSON.stringify(SEPTEMBER_BOOTSTRAP));
+    return {
+      opening:CASH_OPENING,current:CASH_OPENING,productCosts:0,
+      salaries:{vitor:0,eduardo:0},
+      paidDates:{vitor:"",eduardo:""},
+      notes:[]
+    };
+  }
+
+  async function readCash(key){
+    const ref=doc(col("cashControl"),key);
+    const snap=await getDoc(ref);
+    if(snap.exists())return {ref,...snap.data()};
+    const base=defaultCash(key);
+    await setDoc(ref,{...base,month:key,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+    return {ref,...base,month:key};
+  }
+
+  async function writeCash(key,patch){
+    await setDoc(doc(col("cashControl"),key),{...patch,month:key,updatedAt:serverTimestamp()},{merge:true});
+    return readCash(key);
+  }
+
+  function monthSales(key){
+    const [y,m]=key.split("-").map(Number);
+    const start=new Date(y,m-1,1);
+    const end=new Date(y,m,1);
+    return (data.sales||[]).filter(s=>{
+      const d=dt(s.createdAt);
+      return d&&d>=start&&d<end;
+    });
+  }
+
+  function salesRevenue(list){
+    return list.reduce((total,s)=>total+numCash(s.total||0),0);
+  }
+
+  function derivedProductCosts(list){
+    return list.reduce((total,s)=>{
+      if(!Array.isArray(s.items))return total;
+      return total+s.items.reduce((sum,i)=>{
+        const q=numCash(i.qty??i.quantity??0);
+        const c=numCash(i.cost??i.unitCost??i.productCost??0);
+        return sum+q*c;
+      },0);
+    },0);
+  }
+
+  function calcMonth(c,key){
+    const sales=monthSales(key);
+    const revenue=salesRevenue(sales);
+    const storedCosts=numCash(c.productCosts);
+    const productCosts=storedCosts>0?storedCosts:derivedProductCosts(sales);
+    const operatingProfit=Math.max(0,revenue-productCosts);
+    const aboveOpening=Math.max(0,operatingProfit-numCash(c.opening||450));
+    return {
+      sales,revenue,productCosts,operatingProfit,aboveOpening,
+      automaticSalary:aboveOpening/2
+    };
+  }
+
+  async function ensureMonth(){
+    const key=cashMonthKey();
+    const nowDate=new Date();
+    const existing=await readCash(key);
+    const previousKey=existing.month;
+    const fifth=fifthBusinessDay(nowDate.getFullYear(),nowDate.getMonth());
+    // New calendar month is created with R$450. Reset is effective from the 5th
+    // business day, as requested. Before then the newly-created month remains intact.
+    if(previousKey!==key && nowDate.getDate()>=fifth){
+      return writeCash(key,defaultCash(key));
+    }
+    return existing;
+  }
+
+  async function openCashManagement(){
+    try{
+      const key=cashMonthKey();
+      const c=await ensureMonth();
+      const calc=calcMonth(c,key);
+      const registeredV=numCash(c.salaries?.vitor);
+      const registeredE=numCash(c.salaries?.eduardo);
+      const salaryV=calc.aboveOpening>0?calc.automaticSalary:registeredV;
+      const salaryE=calc.aboveOpening>0?calc.automaticSalary:registeredE;
+      const salaryTotal=salaryV+salaryE;
+
+      openModal("Gestão de Caixa",`
+        <div class="dv140-cash-panel">
+          <div class="dv140-month">
+            <div><b>${escapeCash(cashMonthLabel(key))}</b><small>Período atual</small></div>
+            <small>Reset no 5º dia útil</small>
+          </div>
+
+          <div class="dv140-cards">
+            <div class="dv140-card"><small>Caixa atual</small><strong>${moneyCash(c.current)}</strong></div>
+            <div class="dv140-card"><small>Caixa padrão</small><strong>${moneyCash(c.opening||450)}</strong></div>
+            <div class="dv140-card green"><small>Lucro para dividir</small><strong>${moneyCash(calc.aboveOpening)}</strong></div>
+            <div class="dv140-card"><small>Custos dos produtos</small><strong>${moneyCash(calc.productCosts)}</strong></div>
+          </div>
+
+          <div class="dv140-section">
+            <div class="dv140-section-title"><b>Salários</b><small>${escapeCash(cashMonthLabel(key))} • 50% para cada</small></div>
+            <div class="dv140-salaries">
+              <div class="dv140-salary">
+                <div class="dv140-salary-head"><b>Vitor</b><strong>${moneyCash(salaryV)}</strong></div>
+                <label>Data do pagamento</label>
+                <input id="dv140PaidVitor" type="date" value="${escapeCash(c.paidDates?.vitor||"")}">
+              </div>
+              <div class="dv140-salary">
+                <div class="dv140-salary-head"><b>Eduardo</b><strong>${moneyCash(salaryE)}</strong></div>
+                <label>Data do pagamento</label>
+                <input id="dv140PaidEduardo" type="date" value="${escapeCash(c.paidDates?.eduardo||"")}">
+              </div>
+            </div>
+            <button class="primary" id="dv140SaveSalaryDates" style="width:100%;margin-top:9px">Salvar datas de pagamento</button>
+          </div>
+
+          <div class="dv140-actions">
+            <button class="secondary" id="dv140EditCash">Atualizar caixa</button>
+            <button class="secondary" id="dv140AddMove">Registrar movimentação</button>
+          </div>
+
+          <div class="dv140-section">
+            <div class="dv140-section-title"><b>Resumo do mês</b><small>${calc.sales.length} venda(s)</small></div>
+            <div class="dv140-summary">
+              <div class="dv140-summary-row"><span>Faturamento</span><b>${moneyCash(calc.revenue)}</b></div>
+              <div class="dv140-summary-row"><span>Custos dos produtos</span><b>${moneyCash(calc.productCosts)}</b></div>
+              <div class="dv140-summary-row"><span>Lucro após custos</span><b>${moneyCash(calc.operatingProfit)}</b></div>
+              <div class="dv140-summary-row"><span>Acima do caixa de R$ 450</span><b>${moneyCash(calc.aboveOpening)}</b></div>
+              <div class="dv140-summary-row"><span>Salários no mês</span><b>${moneyCash(salaryTotal)}</b></div>
+            </div>
+          </div>
+
+          <div class="dv140-rule">
+            <b>Regra:</b> manter R$ 450,00 como caixa de giro. Depois dos custos, o lucro acima desse valor é dividido em 50% para Vitor e 50% para Eduardo.
+          </div>
+
+          ${(Array.isArray(c.notes)&&c.notes.length)?`
+          <div class="dv140-section">
+            <div class="dv140-section-title"><b>Movimentações extras</b><small>Últimas 5</small></div>
+            <div class="dv140-move-list">
+              ${c.notes.slice(-5).reverse().map(n=>`
+                <div class="dv140-move">
+                  <span>${escapeCash(n.text)}<small>${cashDateOnly(n.date)}</small></span>
+                  <b class="${numCash(n.amount)<0?"dv140-out":"dv140-in"}">${numCash(n.amount)>=0?"+":""}${moneyCash(n.amount)}</b>
+                </div>`).join("")}
+            </div>
+          </div>`:""}
+        </div>
+      `);
+
+      $("dv140SaveSalaryDates").onclick=async()=>{
+        const b=$("dv140SaveSalaryDates");b.disabled=true;
+        try{
+          await writeCash(key,{paidDates:{
+            vitor:$("dv140PaidVitor").value||"",
+            eduardo:$("dv140PaidEduardo").value||""
+          }});
+          toast("Datas de pagamento salvas.");
+        }catch(e){
+          console.error(e);
+          toast("Não foi possível salvar as datas no Firebase.");
+        }finally{b.disabled=false}
+      };
+
+      $("dv140EditCash").onclick=async()=>{
+        const v=prompt("Digite o valor correto do caixa atual:",String(c.current).replace(".",","));
+        if(v===null)return;
+        const n=numCash(v);
+        if(!Number.isFinite(n)||n<0){toast("Valor inválido.");return}
+        try{
+          await writeCash(key,{current:n});
+          toast("Caixa atualizado.");
+          openCashManagement();
+        }catch(e){console.error(e);toast("Não foi possível atualizar o caixa.");}
+      };
+
+      $("dv140AddMove").onclick=async()=>{
+        const text=prompt("O que deseja registrar?");
+        if(!text)return;
+        const v=prompt("Valor da movimentação. Use negativo para saída.","0");
+        if(v===null)return;
+        const n=numCash(v);
+        if(!Number.isFinite(n)){toast("Valor inválido.");return}
+        try{
+          const fresh=await readCash(key);
+          const notes=Array.isArray(fresh.notes)?fresh.notes.slice():[];
+          notes.push({text:text.trim(),amount:n,date:new Date().toISOString()});
+          await writeCash(key,{current:Math.max(0,numCash(fresh.current)+n),notes});
+          toast("Movimentação registrada.");
+          openCashManagement();
+        }catch(e){console.error(e);toast("Não foi possível registrar a movimentação.");}
+      };
+    }catch(e){
+      console.error("Gestão de Caixa:",e);
+      toast(e?.code==="permission-denied"?"O Firebase bloqueou o controle de caixa.":"Não foi possível abrir a Gestão de Caixa.");
+    }
+  }
+
+  function bindCashButton(){
+    const b=document.getElementById("dv140OpenCash");
+    if(!b||b.dataset.bound==="1")return;
+    b.dataset.bound="1";
+    b.addEventListener("click",openCashManagement);
+    ensureMonth().catch(e=>console.warn("Cash month initialization:",e));
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(bindCashButton,100));
+  else setTimeout(bindCashButton,100);
+
+  window.DV140Cash={open:openCashManagement,ensure:ensureMonth,calc:calcMonth};
+})();
+</script>
 </body>
 </html>
