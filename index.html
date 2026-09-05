@@ -258,7 +258,9 @@ body.dark .customer-status-select{
  .dv-caixa-menu{top:57px}
 }
 </style><style id="dv-cash-functional-css">
-.dv-cash-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dv-cash-grid>div,.dv-cash-salary>div{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:10px}.dv-cash-grid small{display:block;color:var(--muted);font-size:9px;font-weight:800}.dv-cash-grid b{display:block;font-size:14px;margin-top:3px}.dv-cash-salary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.dv-cash-salary span{display:block;color:var(--muted);font-size:9px}.dv-cash-salary b{display:block;margin-top:3px;font-size:14px}.dv-cash-rule{margin-top:8px;padding:9px;border-radius:11px;background:var(--cream2);color:var(--muted);font-size:10px;line-height:1.35}.dv-cash-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.dv-cash-actions button{height:38px;border:1px solid var(--line);border-radius:10px;background:var(--cream);color:var(--text);font:inherit;font-size:10px;font-weight:800}.dv-cash-notes{margin-top:9px}.dv-cash-notes>small{color:var(--muted);font-size:9px;font-weight:800}.dv-cash-notes>div{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);font-size:10px}.dv-cash-notes b{white-space:nowrap}
+.dv-cash-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dv-cash-grid>div,.dv-cash-salary>div,.dv-salary-record{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:10px}.dv-cash-grid small,.dv-cash-notes>small{display:block;color:var(--muted);font-size:9px;font-weight:800}.dv-cash-grid b{display:block;font-size:14px;margin-top:3px}.dv-cash-salary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.dv-cash-salary span{display:block;color:var(--muted);font-size:9px}.dv-cash-salary b{display:block;margin-top:3px;font-size:14px}.dv-cash-rule{margin-top:8px;padding:9px;border-radius:11px;background:var(--cream2);color:var(--muted);font-size:10px;line-height:1.35}.dv-cash-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.dv-cash-actions button{height:38px;border:1px solid var(--line);border-radius:10px;background:var(--cream);color:var(--text);font:inherit;font-size:10px;font-weight:800}.dv-cash-notes{margin-top:9px}.dv-cash-notes>div{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);font-size:10px}.dv-cash-notes b{white-space:nowrap}.dv-salary-box{margin-top:9px;padding:10px;border:1px solid var(--line);border-radius:13px;background:var(--white)}.dv-salary-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.dv-salary-title b{font-size:12px}.dv-salary-title small{color:var(--muted);font-size:9px}.dv-salary-record{padding:9px;margin-top:7px;background:var(--white)}.dv-salary-record .dv-sr-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.dv-salary-record .dv-sr-head b{font-size:11px}.dv-salary-record .dv-sr-head strong{font-size:12px}.dv-salary-record label{display:block;color:var(--muted);font-size:9px;font-weight:800;margin-top:7px;margin-bottom:4px}.dv-salary-record input{width:100%;height:34px;border:1px solid var(--line);border-radius:9px;background:var(--white);color:var(--text);padding:0 8px;box-sizing:border-box;font:inherit;font-size:11px}.dv-salary-save{width:100%;height:36px;margin-top:8px;border:0;border-radius:10px;background:var(--text);color:var(--white);font:inherit;font-size:10px;font-weight:800}.dv-salary-paid{color:#3f8062;font-weight:800;font-size:9px}.dv-salary-pending{color:var(--muted);font-size:9px}
+@media(max-width:600px){
+ .top{gap:7px}.brand{flex:1;min-width:0}.brand>div:last-child{min-width:0}.brand b{font-size:16px;line-height:1.05;white-space:normal}.brand small{font-size:9px}.dv-top-right{flex:0 0 auto;gap:5px}.dv-caixa-top{height:38px;max-width:132px;padding:0 9px;font-size:9px;overflow:hidden;text-overflow:ellipsis}.user-badge{height:38px!important;padding:0 10px!important;font-size:10px!important}.top-action{width:38px!important;height:38px!important;flex:0 0 38px!important}.dv-caixa-menu{right:8px;top:58px;width:min(420px,calc(100vw - 16px));max-height:calc(100vh - 78px);overflow:auto}}
 </style></head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
@@ -1198,100 +1200,58 @@ window.addEventListener("load",()=>{
 </script><script id="dv-caixa-top-js">
 (function(){
  const KEY="dv_v140_caixa_controle";
- const INITIAL={month:"2026-09",opening:450,current:146.41,productCosts:221.60,salaries:{vitor:189.09,eduardo:189.09},salaryTotal:378.18,notes:[],lastResetMonth:""};
- function get(){try{return Object.assign({},INITIAL,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return {...INITIAL}}}
+ const INITIAL={month:"2026-09",opening:450,current:146.41,productCosts:221.60,salaries:{vitor:189.09,eduardo:189.09},salaryTotal:378.18,salaryDates:{vitor:"",eduardo:""},salaryMonth:"2026-09",notes:[],lastResetMonth:""};
+ function get(){try{return Object.assign({},INITIAL,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return Object.assign({},INITIAL)}}
  function set(x){try{localStorage.setItem(KEY,JSON.stringify(x))}catch(e){}return x}
  function money(v){return Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
  function num(v){return Number(v)||0}
  function esc(x){return String(x||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-
- // Fifth business day of a month.
- function fifthBusinessDay(y,m){
-  let count=0;
-  for(let d=1;d<=7;d++){
-   const day=new Date(y,m,d).getDay();
-   if(day!==0&&day!==6) count++;
-   if(count===5)return d;
-  }
-  return 7;
- }
+ function monthLabel(m){try{const [y,mo]=m.split("-");return new Date(Number(y),Number(mo)-1,1).toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}catch(e){return m}}
+ function fifthBusinessDay(y,m){let n=0;for(let d=1;d<=7;d++){const w=new Date(y,m,d).getDay();if(w!==0&&w!==6)n++;if(n===5)return d}return 7}
  function maybeReset(){
-  const c=get(), now=new Date(), y=now.getFullYear(), m=now.getMonth(), month=y+"-"+String(m+1).padStart(2,"0");
-  if(now.getDate()>=fifthBusinessDay(y,m) && c.lastResetMonth!==month && c.month!==month){
-   c.month=month;c.opening=450;c.current=450;c.productCosts=0;
-   c.salaries={vitor:0,eduardo:0};c.salaryTotal=0;c.notes=[];c.lastResetMonth=month;set(c);
-  }
+  const c=get(),now=new Date(),y=now.getFullYear(),m=now.getMonth(),month=y+"-"+String(m+1).padStart(2,"0");
+  if(now.getDate()>=fifthBusinessDay(y,m)&&c.lastResetMonth!==month&&c.month!==month){c.month=month;c.opening=450;c.current=450;c.productCosts=0;c.salaries={vitor:0,eduardo:0};c.salaryTotal=0;c.salaryDates={vitor:"",eduardo:""};c.salaryMonth=month;c.notes=[];c.lastResetMonth=month;set(c)}
  }
  function salesRevenue(){
-  try{
-   const sales=window.data&&Array.isArray(window.data.sales)?window.data.sales:[];
-   return sales.reduce((sum,s)=>{
-    return sum+(Array.isArray(s.items)?s.items.reduce((a,i)=>a+num(i.qty??i.quantity)*num(i.price||0),0):num(s.total||s.value||0));
-   },0);
-  }catch(e){return 0}
+  try{const sales=window.data&&Array.isArray(window.data.sales)?window.data.sales:[];return sales.reduce((sum,s)=>sum+(Array.isArray(s.items)?s.items.reduce((a,i)=>a+num(i.qty??i.quantity)*num(i.price||0),0):num(s.total||s.value||0)),0)}catch(e){return 0}
  }
- function profitAbove450(){
-  const c=get(), revenue=salesRevenue();
-  // The rule requested: only the amount of monthly faturamento above R$450
-  // is available for the automatic 50/50 salary split.
-  return Math.max(0,revenue-c.opening);
- }
- function updateSalaries(){
-  const c=get(), p=profitAbove450();
-  // Do not erase an already registered salary for the current month when the
-  // current cash is below R$450. Automatic calculation applies when sales data
-  // has crossed the R$450 threshold.
-  if(p>0){
-   c.salaries.vitor=p/2;c.salaries.eduardo=p/2;c.salaryTotal=p;
-   set(c);
-  }
-  render();
- }
+ function amountAbove450(){const c=get();return Math.max(0,salesRevenue()-num(c.opening))}
  function render(){
   const host=document.getElementById("dvCashLive");if(!host)return;
-  const c=get(), p=profitAbove450();
-  const v=(p>0?p/2:c.salaries.vitor||0), e=(p>0?p/2:c.salaries.eduardo||0);
+  const c=get(),above=amountAbove450(),autoHalf=above/2,sm=c.salaryMonth||c.month||"2026-09";
+  const v=num(c.salaries&&c.salaries.vitor),e=num(c.salaries&&c.salaries.eduardo),dates=c.salaryDates||{};
   host.innerHTML=
    '<div class="dv-cash-grid">'+
     '<div><small>CAIXA ATUAL</small><b>'+money(c.current)+'</b></div>'+
-    '<div><small>CAIXA PADRÃO</small><b>'+money(c.opening)+'</b></div>'+
-    '<div><small>FATURAMENTO ACIMA DE R$ 450</small><b>'+money(p)+'</b></div>'+
-    '<div><small>CUSTOS DE PRODUTOS</small><b>'+money(c.productCosts)+'</b></div>'+
-   '</div>'+
-   '<div class="dv-cash-salary"><div><span>Salário Vitor</span><b>'+money(v)+'</b></div><div><span>Salário Eduardo</span><b>'+money(e)+'</b></div></div>'+
-   '<div class="dv-cash-rule">Até R$ 450,00 o valor é preservado como caixa de giro. O que ultrapassar R$ 450,00 no faturamento mensal é dividido automaticamente em 50% para Vitor e 50% para Eduardo. No 5º dia útil, o controle mensal é reiniciado.</div>'+
+    '<div><small>CAIXA PADRÃO</small><b>'+money(c.opening)+'</b></div>'+ 
+    '<div><small>ACIMA DE R$ 450</small><b>'+money(above)+'</b></div>'+ 
+    '<div><small>CUSTOS DE PRODUTOS</small><b>'+money(c.productCosts)+'</b></div>'+ 
+   '</div>'+ 
+   '<div class="dv-cash-salary"><div><span>Vitor</span><b>'+money(v)+'</b></div><div><span>Eduardo</span><b>'+money(e)+'</b></div></div>'+ 
+   '<div class="dv-salary-box">'+
+    '<div class="dv-salary-title"><div><b>Salários</b><small>Pagamento de '+esc(monthLabel(sm))+'</small></div><small>50% para cada</small></div>'+
+    '<div class="dv-salary-record"><div class="dv-sr-head"><b>Vitor</b><strong>'+money(v)+'</strong></div><label>Data em que foi pago</label><input id="dvSalaryDateVitor" type="date" value="'+esc(dates.vitor)+'"></div>'+ 
+    '<div class="dv-salary-record"><div class="dv-sr-head"><b>Eduardo</b><strong>'+money(e)+'</strong></div><label>Data em que foi pago</label><input id="dvSalaryDateEduardo" type="date" value="'+esc(dates.eduardo)+'"></div>'+ 
+    '<button type="button" class="dv-salary-save" id="dvSaveSalaryDates">Salvar datas de pagamento</button>'+ 
+    (dates.vitor||dates.eduardo?'<div style="margin-top:7px">'+(dates.vitor?'<span class="dv-salary-paid">Vitor pago em '+new Date(dates.vitor+'T12:00:00').toLocaleDateString('pt-BR')+'</span>':'<span class="dv-salary-pending">Vitor: data não informada</span>')+' · '+(dates.eduardo?'<span class="dv-salary-paid">Eduardo pago em '+new Date(dates.eduardo+'T12:00:00').toLocaleDateString('pt-BR')+'</span>':'<span class="dv-salary-pending">Eduardo: data não informada</span>')+'</div>':'')+
+   '</div>'+ 
+   '<div class="dv-cash-rule">Caixa de giro: '+money(c.opening)+'. O faturamento acima desse valor é dividido em 50% para cada salário.</div>'+ 
    (c.notes&&c.notes.length?'<div class="dv-cash-notes"><small>ÚLTIMAS MOVIMENTAÇÕES</small>'+c.notes.slice(-3).reverse().map(n=>'<div><span>'+esc(n.text)+'</span><b>'+money(n.amount)+'</b></div>').join("")+'</div>':'');
+  const save=document.getElementById("dvSaveSalaryDates");if(save)save.onclick=()=>{const x=get();x.salaryMonth=sm;x.salaryDates=x.salaryDates||{};x.salaryDates.vitor=document.getElementById("dvSalaryDateVitor").value;x.salaryDates.eduardo=document.getElementById("dvSalaryDateEduardo").value;set(x);render()};
  }
  function setup(){
   maybeReset();
-  const open=document.getElementById("dvOpenCaixa"),menu=document.getElementById("dvCaixaMenu"),close=document.getElementById("dvCloseCaixa");
-  if(!open||!menu)return;
+  const open=document.getElementById("dvOpenCaixa"),menu=document.getElementById("dvCaixaMenu"),close=document.getElementById("dvCloseCaixa");if(!open||!menu)return;
   open.onclick=e=>{e.stopPropagation();maybeReset();render();menu.classList.toggle("open");menu.setAttribute("aria-hidden",menu.classList.contains("open")?"false":"true")};
   close.onclick=()=>{menu.classList.remove("open");menu.setAttribute("aria-hidden","true")};
   document.addEventListener("click",e=>{if(menu.classList.contains("open")&&!menu.contains(e.target)&&e.target!==open)menu.classList.remove("open")});
-  document.getElementById("dvEditCash").onclick=()=>{
-   const c=get(),v=prompt("Digite o caixa atual correto:",String(c.current).replace(".",","));
-   if(v===null)return;
-   const n=Number(String(v).replace(/\./g,"").replace(",","."));
-   if(!Number.isFinite(n)||n<0){alert("Valor inválido.");return}
-   c.current=n;set(c);render();
-  };
-  document.getElementById("dvRegisterOther").onclick=()=>{
-   const text=prompt("O que deseja registrar? (ex.: retirada, aporte, outra despesa)");
-   if(!text)return;
-   const v=prompt("Valor da movimentação (use negativo para saída):","0");
-   if(v===null)return;
-   const n=Number(String(v).replace(/\./g,"").replace(",","."));
-   if(!Number.isFinite(n)){alert("Valor inválido.");return}
-   const c=get();c.current=Math.max(0,c.current+n);c.notes=c.notes||[];c.notes.push({text,amount:n,date:new Date().toISOString()});set(c);render();
-  };
-  const f=document.getElementById("dvOpenFinanceFromCaixa");
-  if(f)f.onclick=()=>{menu.classList.remove("open");document.querySelector('[data-page="finance"]')?.click()};
-  // Wait briefly so the existing Firebase/data initialization can populate sales.
-  setTimeout(updateSalaries,700);
+  document.getElementById("dvEditCash").onclick=()=>{const c=get(),v=prompt("Digite o caixa atual correto:",String(c.current).replace(".",","));if(v===null)return;const n=Number(String(v).replace(/\./g,"").replace(",","."));if(!Number.isFinite(n)||n<0){alert("Valor inválido.");return}c.current=n;set(c);render()};
+  document.getElementById("dvRegisterOther").onclick=()=>{const text=prompt("O que deseja registrar? (ex.: retirada, aporte, outra despesa)");if(!text)return;const v=prompt("Valor da movimentação (use negativo para saída):","0");if(v===null)return;const n=Number(String(v).replace(/\./g,"").replace(",","."));if(!Number.isFinite(n)){alert("Valor inválido.");return}const c=get();c.current=Math.max(0,c.current+n);c.notes=c.notes||[];c.notes.push({text,amount:n,date:new Date().toISOString()});set(c);render()};
+  const f=document.getElementById("dvOpenFinanceFromCaixa");if(f)f.onclick=()=>{menu.classList.remove("open");document.querySelector('[data-page="finance"]')?.click()};
+  setTimeout(render,700);
  }
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",setup);else setup();
- window.DV_V140_CAIXA={get,updateSalaries,resetMonth:()=>{const c=get();c.month="";c.lastResetMonth="";set(c);maybeReset();render()}};
+ window.DV_V140_CAIXA={get,render};
 })();
 </script></body>
 </html>
