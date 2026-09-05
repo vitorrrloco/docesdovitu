@@ -194,70 +194,6 @@ body.dark .customer-status-select{
 #mTotalValue[readonly]{opacity:.92}
 </style>
 
-<style id="v130-sugestoes-organizada">
-/* Apenas a apresentação da aba Sugestão de Compras */
-#page-purchasesuggestion .sc-shell,
-[data-page="purchasesuggestion"] .sc-shell{
-  max-width:980px;margin:0 auto;padding:8px 0 110px;
-}
-.sc-hero{
-  border-radius:28px;padding:24px 22px;margin-bottom:18px;
-  background:linear-gradient(135deg,var(--primary,#4a2b1d),#6a4029);
-  color:#fff;box-shadow:0 10px 30px rgba(50,30,20,.12);
-}
-.sc-hero h1{margin:0;font-size:28px;line-height:1.1}
-.sc-hero p{margin:8px 0 0;opacity:.84;font-size:14px}
-.sc-section{
-  background:var(--card,#fff);border:1px solid rgba(120,90,65,.16);
-  border-radius:24px;padding:18px;margin:14px 0;
-  box-shadow:0 5px 20px rgba(50,30,20,.05);
-}
-.sc-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.sc-section-title h2{margin:0;font-size:19px}
-.sc-section-title span{font-size:13px;color:var(--muted,#8a786b)}
-.sc-product-select{
-  width:100%;min-height:54px;border-radius:16px;border:1px solid rgba(120,90,65,.22);
-  padding:0 15px;background:var(--input,#faf8f5);font-size:16px;color:var(--text,#35251c);
-}
-.sc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.sc-metric{
-  border:1px solid rgba(120,90,65,.15);border-radius:20px;padding:16px;
-  background:var(--surface,#fbfaf8);
-}
-.sc-metric small{display:block;color:var(--muted,#8a786b);font-size:12px;margin-bottom:6px}
-.sc-metric strong{display:block;font-size:23px;line-height:1.15}
-.sc-metric em{display:block;font-style:normal;font-size:12px;color:var(--muted,#8a786b);margin-top:5px}
-.sc-highlight{
-  border-radius:20px;padding:18px;margin-bottom:12px;
-  background:rgba(104,68,43,.08);border:1px solid rgba(104,68,43,.16);
-}
-.sc-highlight .label{font-size:13px;color:var(--muted,#8a786b)}
-.sc-highlight .value{font-size:30px;font-weight:800;margin-top:4px}
-.sc-buy{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:18px;border-radius:20px;border:1px solid rgba(104,68,43,.2);
-  background:rgba(104,68,43,.07);
-}
-.sc-buy strong{font-size:30px}
-.sc-buy small{display:block;color:var(--muted,#8a786b);margin-top:4px}
-.sc-divider{height:1px;background:rgba(120,90,65,.13);margin:16px 0}
-.sc-empty{
-  padding:30px 18px;text-align:center;border:1px dashed rgba(120,90,65,.25);
-  border-radius:20px;color:var(--muted,#8a786b)
-}
-body.dark .sc-section{background:#171719;border-color:#303035}
-body.dark .sc-product-select,body.dark .sc-metric{background:#202023;color:#fff;border-color:#38383f}
-body.dark .sc-metric small,body.dark .sc-metric em,body.dark .sc-section-title span,
-body.dark .sc-highlight .label,body.dark .sc-buy small{color:#b8b8bd}
-body.dark .sc-metric{box-shadow:none}
-@media(max-width:600px){
-  #page-purchasesuggestion .sc-shell,[data-page="purchasesuggestion"] .sc-shell{padding-left:2px;padding-right:2px}
-  .sc-grid{grid-template-columns:1fr}
-  .sc-hero{padding:22px 18px}
-  .sc-section{padding:15px}
-}
-</style>
-</head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
   <img src="logo.png" alt="Logo Doces do Vitu">
@@ -1173,41 +1109,79 @@ window.addEventListener("load",()=>{
 
 
 
-<script id="v130-sugestoes-organizada-js">
+
+
+<style id="DV_V130_SUGESTAO_ONLY">
+#dvSugestaoCompras{max-width:920px;margin:0 auto;padding:4px 0 100px}
+#dvSugestaoCompras .dv-head{margin-bottom:16px}
+#dvSugestaoCompras .dv-head h2{margin:0;font-size:24px}
+#dvSugestaoCompras .dv-head p{margin:5px 0 0;opacity:.65;font-size:13px}
+#dvSugestaoCompras .dv-select{width:100%;box-sizing:border-box;border:1px solid rgba(128,100,80,.22);border-radius:15px;padding:13px 14px;background:var(--input-bg,#faf9f7);color:var(--text,#34251d);font-size:15px;outline:none}
+#dvSugestaoCompras .dv-empty{margin-top:14px;padding:28px 18px;text-align:center;border:1px dashed rgba(128,100,80,.25);border-radius:18px;opacity:.68}
+#dvSugestaoCompras .dv-card{margin-top:14px;background:var(--card,#fff);border:1px solid rgba(128,100,80,.15);border-radius:20px;overflow:hidden}
+#dvSugestaoCompras .dv-product{padding:18px;border-bottom:1px solid rgba(128,100,80,.11)}
+#dvSugestaoCompras .dv-product small{opacity:.6;font-size:12px}
+#dvSugestaoCompras .dv-product h3{margin:4px 0 0;font-size:21px}
+#dvSugestaoCompras .dv-buy{margin-top:14px;padding:15px;border-radius:16px;background:rgba(104,68,43,.08);display:flex;align-items:center;justify-content:space-between;gap:12px}
+#dvSugestaoCompras .dv-buy small{display:block;opacity:.62}
+#dvSugestaoCompras .dv-buy strong{font-size:28px}
+#dvSugestaoCompras .dv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+#dvSugestaoCompras .dv-item{padding:15px 17px;border-bottom:1px solid rgba(128,100,80,.10)}
+#dvSugestaoCompras .dv-item:nth-child(odd){border-right:1px solid rgba(128,100,80,.10)}
+#dvSugestaoCompras .dv-item span{display:block;font-size:12px;opacity:.6;margin-bottom:5px}
+#dvSugestaoCompras .dv-item b{font-size:17px}
+#dvSugestaoCompras .dv-footer{padding:14px 17px;font-size:12px;opacity:.58}
+body.dark #dvSugestaoCompras .dv-select{background:#202023;color:#fff;border-color:#38383f}
+body.dark #dvSugestaoCompras .dv-card{background:#171719;border-color:#303035}
+@media(max-width:600px){#dvSugestaoCompras .dv-grid{grid-template-columns:1fr}#dvSugestaoCompras .dv-item:nth-child(odd){border-right:0}}
+</style>
+<script id="DV_V130_SUGESTAO_ONLY">
 (function(){
-  function styleSuggestionPage(){
-    const candidates=[...document.querySelectorAll('[data-page],section,main,div')];
-    const root=candidates.find(el=>/Sugest[aã]o de Compras/i.test(el.textContent||"") &&
-      (el.querySelector("select") || el.querySelector("button") || el.querySelector("[class*=product]")));
-    if(!root || root.dataset.scOrganized==="1") return;
-    root.dataset.scOrganized="1";
-    root.classList.add("sc-root");
+  const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+  const money=v=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  const qty=v=>Number(v||0).toLocaleString("pt-BR",{maximumFractionDigits:2});
+  const pick=(o,ks,d=0)=>{for(const k of ks)if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=="")return o[k];return d};
+  function state(){return window.data||window.appData||window.state||{}}
+  function products(){const d=state();return d.products||d.produtos||[]}
+  function sales(){const d=state();return d.sales||d.vendas||[]}
+  function pid(p){return p.id||p.productId||p.uid}
+  function pname(p){return p.name||p.nome||"Produto sem nome"}
 
-    // Organiza visualmente os blocos já existentes sem trocar IDs nem listeners.
-    const direct=[...root.children];
-    direct.forEach(el=>{
-      const text=(el.textContent||"").trim();
-      if(!text) return;
-      if(/Sugest[aã]o de Compras/i.test(text) && el.children.length<5) el.classList.add("sc-hero");
-    });
+  function mount(){
+    const host=[...document.querySelectorAll("[data-page],section,main,div")].find(el=>/Sugest[aã]o de Compras/i.test(el.textContent||"")&&(el.querySelector("select")||el.querySelector("[data-product]")));
+    if(!host||host.querySelector("#dvSugestaoCompras"))return;
+    const content=host.querySelector(".page-content,.content,.container")||host;
+    const box=document.createElement("div");box.id="dvSugestaoCompras";
+    box.innerHTML='<div class="dv-head"><h2>Sugestão de Compras</h2><p>Selecione um produto para consultar somente os dados dele.</p></div><select id="dvScProduct" class="dv-select"><option value="">Selecione um produto...</option></select><div id="dvScResult" class="dv-empty">Escolha um produto acima.</div>';
+    while(content.firstChild)content.removeChild(content.firstChild);
+    content.appendChild(box);
 
-    root.querySelectorAll("select").forEach(s=>{
-      s.classList.add("sc-product-select");
-    });
-
-    root.querySelectorAll("button").forEach(b=>{
-      const t=(b.textContent||"").toLowerCase();
-      if(/detalhe|ver|produto|selecion/.test(t)) b.classList.add("sc-action");
+    const ps=products().slice().sort((a,b)=>pname(a).localeCompare(pname(b),"pt-BR"));
+    const sel=box.querySelector("#dvScProduct"),out=box.querySelector("#dvScResult");
+    ps.forEach(p=>{const o=document.createElement("option");o.value=pid(p);o.textContent=pname(p);sel.appendChild(o)});
+    sel.addEventListener("change",()=>{
+      const p=ps.find(x=>String(pid(x))===String(sel.value));
+      if(!p){out.className="dv-empty";out.textContent="Escolha um produto acima.";return}
+      const id=pid(p), now=Date.now(), since=now-30*86400000;
+      let sold=0;
+      sales().forEach(s=>{
+        const dt=new Date(pick(s,["date","createdAt","data"],0)).getTime();
+        if(!(dt>=since&&dt<=now))return;
+        const items=pick(s,["items","cart","products","produtos"],[]);
+        if(!Array.isArray(items))return;
+        items.forEach(i=>{if(String(pick(i,["productId","product_id","id"],""))===String(id))sold+=Number(pick(i,["quantity","qty","quantidade"],1))||0});
+      });
+      const stock=Number(pick(p,["stock","estoque","quantity","qty"],0))||0;
+      const avg=sold/30, need=Math.ceil(avg*30), buy=Math.max(0,need-stock);
+      const cost=Number(pick(p,["cost","custo","unitCost","custoUnitario"],0))||0;
+      const price=Number(pick(p,["price","preco","salePrice","valorVenda"],0))||0;
+      const revenue=sold*price, profit=sold*(price-cost);
+      out.className="";
+      out.innerHTML='<div class="dv-card"><div class="dv-product"><small>Produto selecionado</small><h3>'+esc(pname(p))+'</h3><div class="dv-buy"><div><small>Sugestão de compra</small><strong>'+qty(buy)+' un.</strong></div><div><small>Estoque atual</small><strong>'+qty(stock)+'</strong></div></div></div><div class="dv-grid"><div class="dv-item"><span>Vendas em 30 dias</span><b>'+qty(sold)+' un.</b></div><div class="dv-item"><span>Média por dia</span><b>'+qty(avg)+' un.</b></div><div class="dv-item"><span>Meta para 30 dias</span><b>'+qty(need)+' un.</b></div><div class="dv-item"><span>Custo unitário</span><b>'+money(cost)+'</b></div><div class="dv-item"><span>Preço de venda</span><b>'+money(price)+'</b></div><div class="dv-item"><span>Faturamento gerado</span><b>'+money(revenue)+'</b></div><div class="dv-item"><span>Lucro gerado</span><b>'+money(profit)+'</b></div></div><div class="dv-footer">Baseado nas vendas registradas nos últimos 30 dias e no estoque atual.</div></div>';
     });
   }
-
-  // Executa sem interferir no fluxo do Firebase ou nos handlers existentes.
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",styleSuggestionPage,{once:true});
-  }else styleSuggestionPage();
-
-  const obs=new MutationObserver(()=>styleSuggestionPage());
-  obs.observe(document.body,{childList:true,subtree:true});
+  const boot=()=>setTimeout(mount,300);
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
 </script>
 </body>
