@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.2.19</title>
+<title>DOCES DO VITU 1.3.0</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -31,7 +31,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 .primary{width:100%;min-height:54px;border-radius:15px;background:var(--dark);color:#fff;font-weight:800}
 .secondary{background:var(--cream2);color:var(--dark);font-weight:800;border-radius:14px;padding:13px 16px}
 #loginMsg{min-height:22px;text-align:center;color:var(--red);font-size:13px;margin-top:10px}
-.user-badge{display:inline-flex;align-items:center;background:var(--cream2);color:var(--dark);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:11px;font-weight:800;white-space:nowrap}.app{height:100dvh;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.user-badge{display:inline-flex;appearance:none;align-items:center;background:var(--cream2);color:var(--dark);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:11px;font-weight:800;white-space:nowrap}.app{height:100dvh;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .top{height:74px;flex:0 0 74px;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:8px 15px}
 .brand{display:flex;align-items:center;gap:10px}.brand-mark{width:48px;height:48px;border-radius:15px;background:var(--dark);display:grid;place-items:center;color:#fff;font-size:25px}
 .brand b{font-size:17px;display:block;letter-spacing:.4px}.brand small{font-size:10px;color:var(--muted);display:block;margin-top:2px}
@@ -51,7 +51,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 .analysis-card{min-width:0;overflow:hidden;background:var(--white);border:1px solid var(--line);border-radius:21px;padding:15px;margin-bottom:12px;box-shadow:var(--shadow)}.analysis-head{display:flex;justify-content:space-between;align-items:end;min-width:0;gap:10px}.analysis-head>div{min-width:0}.analysis-head strong{white-space:nowrap;flex:0 0 auto}.analysis-head b{font-size:17px}.analysis-head strong{font-size:21px;color:var(--dark)}.chart{height:220px;margin-top:12px;position:relative}.chart svg{width:100%;height:100%;overflow:visible}.chart text{font-size:9px;fill:var(--muted)}.line{fill:none;stroke:var(--dark);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.dot{fill:var(--caramel);stroke:var(--white);stroke-width:2}
 .finance-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0;gap:10px;margin-bottom:12px}.finance-card{min-width:0;overflow:hidden;background:var(--white);border:1px solid var(--line);border-radius:19px;padding:15px;box-shadow:var(--shadow)}.finance-card small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;font-weight:800}.finance-card strong{display:block;font-size:22px;margin-top:6px}.finance-card p{margin:5px 0 0;overflow-wrap:anywhere;color:var(--muted);font-size:10px}.finance-positive{color:var(--green)}.finance-negative{color:var(--red)}.finance-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}.finance-actions button{min-height:58px}.more{display:grid;grid-template-columns:1fr 1fr;gap:10px}.more button{min-height:118px;background:var(--white);border:1px solid var(--line);border-radius:19px;padding:14px;text-align:left}.more .mi{font-size:28px;display:block;margin-bottom:9px}.more b{display:block;font-size:14px}.more small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
 .modal-bg{position:fixed;inset:0;background:#2b170f73;z-index:5000;display:flex;align-items:flex-end;pointer-events:auto}.modal{position:relative;z-index:1;pointer-events:auto;width:100%;max-width:620px;margin:auto auto 0;max-height:92dvh;overflow:auto;background:var(--white);border-radius:25px 25px 0 0;padding:17px 15px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px #0003}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.modal-head h2{margin:0;font-size:20px}.close{width:40px;height:40px;border-radius:13px;background:var(--cream2);font-size:22px;color:var(--dark)}
-.nav{height:82px;flex:0 0 calc(82px + env(safe-area-inset-bottom));padding:6px 5px env(safe-area-inset-bottom);background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:1000}.nav button{background:none;color:var(--muted);border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.nav .ni{font-size:24px;line-height:27px}.nav small{font-size:10px;font-weight:800}.nav .active{background:var(--cream2);color:var(--dark)}
+.nav{height:82px;flex:0 0 calc(82px + env(safe-area-inset-bottom));padding:6px 4px env(safe-area-inset-bottom);background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,minmax(0,1fr));z-index:1000}.nav button{background:none;color:var(--muted);border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}.nav .ni{font-size:24px;line-height:27px}.nav small{font-size:10px;font-weight:800}.nav .active{background:var(--cream2);color:var(--dark)}
 .toast{position:fixed;left:14px;right:14px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:9000;background:var(--dark);color:#fff;padding:13px;border-radius:15px;text-align:center;font-size:13px;box-shadow:0 10px 30px #0003}
 .empty{text-align:center;color:var(--muted);padding:30px 15px;background:var(--white);border:1px dashed var(--line);border-radius:18px;font-size:13px}
 @media(min-width:700px){.view{padding-left:24px;padding-right:24px}.nav{max-width:720px;width:100%;margin:0 auto;border-radius:22px 22px 0 0}.finance-grid{grid-template-columns:repeat(4,1fr)}}
@@ -82,11 +82,11 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .page{max-width:1320px}
 }
 @media (max-width:899px){
-  .nav{display:grid;grid-template-columns:repeat(5,1fr)}
+  .nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
   .nav:before{display:none}
 }
 
-/* V1.2.33 FINAL - Financeiro compacto e centralizado no celular */
+/* V1.3.0 FINAL - Financeiro compacto e centralizado no celular */
 .finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
 .finance-duo .analysis-card{min-width:0;padding:13px}
 .finance-duo .section-title b{font-size:15px}
@@ -128,7 +128,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 </style>
 
 <style id="professional-motion">
-/* V1.2.33: single-tap motion system, without duplicate click effects */
+/* V1.3.0: single-tap motion system, without duplicate click effects */
 .page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
 @keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .modal-bg{animation:modalFade .16s ease-out both}
@@ -215,8 +215,8 @@ body.dark .customer-status-select{
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.33</small></div></div>
-  <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.3.0</small></div></div>
+  <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
  <nav class="nav">
@@ -224,6 +224,7 @@ body.dark .customer-status-select{
   <button data-page="sales"><span class="ni">🛒</span><small>Vendas</small></button>
   <button data-page="clients"><span class="ni">👥</span><small>Clientes</small></button>
   <button data-page="stock"><span class="ni">📦</span><small>Estoque</small></button>
+  <button data-page="purchases"><span class="ni">🛍️</span><small>Compras</small></button>
   <button data-page="finance"><span class="ni">📊</span><small>Financeiro</small></button>
  </nav>
 </div>
@@ -328,7 +329,7 @@ function go(p){
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
 
-function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="finance")v.innerHTML=finance();bindPage()}
+function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="purchases")v.innerHTML=purchases();if(page==="finance")v.innerHTML=finance();bindPage()}
 function totals(){
  const today=now();let sold=0,received=0,pending=0;
  data.sales.forEach(s=>{sold+=numBR(s.total||0);pending+=Math.max(0,numBR(s.total||0)-Number(s.paid||0))});
@@ -383,6 +384,78 @@ function stock(){
 }
 function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}${p.supplier?` • ${esc(p.supplier)}`:""}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${numBR(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small><div style="display:flex;gap:5px;margin-top:7px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="secondary stock-add-btn" data-add-stock="${p.id}" style="padding:7px 8px;font-size:10px">➕ Adicionar</button><button type="button" class="secondary stock-remove-btn" data-remove-stock="${p.id}" style="padding:7px 8px;font-size:10px">➖ Remover</button><button type="button" class="secondary stock-delete-btn" data-delete-product="${p.id}" style="padding:7px 8px;font-size:10px;color:#a43f37">🗑️</button></div></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
 
+
+function purchases(){
+ const products=data.products||[],sales=data.sales||[],purchasesData=data.purchases||[],today=now();
+ const byProduct=new Map(products.map(p=>[p.id,p]));
+ const stats=products.map(p=>{
+   const items=[];
+   sales.forEach(s=>(Array.isArray(s.items)?s.items:[]).forEach(i=>{
+     const same=(i.productId&&i.productId===p.id)||(String(i.name||"").trim().toLowerCase()===String(p.name||"").trim().toLowerCase());
+     if(same)items.push({sale:s,item:i});
+   }));
+   const qtySold=items.reduce((a,x)=>a+numBR(x.item.qty??x.item.quantity??0),0);
+   const revenue=items.reduce((a,x)=>a+numBR(x.item.price)*numBR(x.item.qty??x.item.quantity??0),0);
+   const cost=items.reduce((a,x)=>{
+     const stored=numBR(x.item.cost??x.item.unitCost??x.item.productCost??0);
+     return a+(stored>0?stored:numBR(p.cost||0))*numBR(x.item.qty??x.item.quantity??0);
+   },0);
+   const firstDates=items.map(x=>dt(x.sale.createdAt)).filter(Boolean).sort((a,b)=>a-b);
+   const first=firstDates[0],last=firstDates[firstDates.length-1]||today;
+   const days=Math.max(1,first?Math.ceil((today-first)/86400000)+1:1);
+   const avgDaily=qtySold/days;
+   const monthlyNeed=Math.ceil(avgDaily*30);
+   const stock=Math.max(0,Math.floor(numBR(p.stock||0)));
+   const suggestion=Math.max(0,monthlyNeed-stock);
+   const profit=revenue-cost;
+   const purchasesFor= purchasesData.filter(x=>x.productId===p.id || String(x.productName||"").trim().toLowerCase()===String(p.name||"").trim().toLowerCase())
+     .map(x=>({...x,_date:dt(x.createdAt)})).sort((a,b)=>(b._date||0)-(a._date||0));
+   const lastPurchase=purchasesFor[0];
+   const lastUnit=lastPurchase?numBR(lastPurchase.unitCost)>0?numBR(lastPurchase.unitCost):(numBR(lastPurchase.quantity)>0?numBR(lastPurchase.total)/numBR(lastPurchase.quantity):0):numBR(p.cost||0);
+   const lastQty=lastPurchase?numBR(lastPurchase.quantity):0;
+   const coverage=avgDaily>0?stock/avgDaily:null;
+   return {p,qtySold,revenue,cost,profit,first,last,days,avgDaily,monthlyNeed,stock,suggestion,lastPurchase,lastUnit,lastQty,coverage};
+ });
+ stats.sort((a,b)=>b.suggestion-a.suggestion||b.qtySold-a.qtySold||String(a.p.name).localeCompare(String(b.p.name),"pt-BR"));
+ const needCount=stats.filter(x=>x.suggestion>0).length;
+ const totalSuggestion=stats.reduce((a,x)=>a+x.suggestion,0);
+ const totalMonthly=stats.reduce((a,x)=>a+x.monthlyNeed,0);
+ const note=`Cálculo baseado exclusivamente nos registros de vendas já salvos. A média diária usa o período desde a primeira venda registrada de cada produto até hoje; a necessidade mensal considera 30 dias. A sugestão desconta o estoque atual. Produtos sem vendas ainda não geram sugestão baseada em giro.`;
+ return `<div class="page">
+  <div class="head"><div><h1>🛍️ Sugestão de Compras</h1><p>Giro, lucro e reposição de cada produto</p></div></div>
+  <div class="purchase-summary">
+   <div class="purchase-kpi"><small>Produtos</small><strong>${products.length}</strong></div>
+   <div class="purchase-kpi"><small>Precisam comprar</small><strong>${needCount}</strong></div>
+   <div class="purchase-kpi"><small>Unidades sugeridas</small><strong>${totalSuggestion}</strong></div>
+  </div>
+  <div class="purchase-note">📊 <b>Como funciona:</b> ${note}</div>
+  <div class="purchase-list">
+   ${stats.map(x=>{
+     const status=x.suggestion>0?`<span class="pp-alert">⚠️ Comprar</span>`:`<span class="pp-alert ok">✓ Estoque OK</span>`;
+     const last=x.lastPurchase?`${money(x.lastUnit)} • ${x.lastQty} un.`:"Sem compra registrada";
+     const period=x.first?`${x.days} dia(s) analisado(s)`:"Sem histórico de venda";
+     return `<div class="purchase-product">
+      <div class="pp-head">
+       <div class="pp-avatar">🍫</div>
+       <div class="pp-name">${esc(x.p.name)}<small>${period} • estoque atual: ${x.stock} un.</small></div>
+       ${status}
+      </div>
+      <div class="pp-metrics">
+       <div class="pp-metric"><span>Giro médio / dia</span><b>${x.avgDaily.toFixed(2).replace(".",",")} un.</b></div>
+       <div class="pp-metric"><span>Venda média / mês</span><b>${x.monthlyNeed} un.</b></div>
+       <div class="pp-metric"><span>Lucro gerado</span><b class="pp-profit">${money(x.profit)}</b></div>
+       <div class="pp-metric"><span>Faturamento</span><b>${money(x.revenue)}</b></div>
+       <div class="pp-metric"><span>Custo dos vendidos</span><b>${money(x.cost)}</b></div>
+       <div class="pp-metric"><span>Último valor pago</span><b>${last}</b></div>
+       <div class="pp-metric"><span>Cobertura atual</span><b>${x.coverage===null?"Sem giro":Math.floor(x.coverage)+" dia(s)"}</b></div>
+       <div class="pp-metric"><span>Estoque mínimo mensal</span><b>${x.monthlyNeed} un.</b></div>
+      </div>
+      <div class="pp-buy"><div><small>SUGESTÃO DE COMPRA</small><b>${x.suggestion} unidade(s)</b></div><div><small>Última compra</small><b>${x.lastPurchase?money(x.lastPurchase.total):"Não registrada"}</b></div></div>
+     </div>`;
+   }).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
+  </div>
+ </div>`;
+}
 function finance(){
  const sales=data.sales||[], payments=data.payments||[], products=data.products||[], purchases=data.purchases||[], nowD=now();
  const monthStart=new Date(nowD.getFullYear(),nowD.getMonth(),1);monthStart.setHours(0,0,0,0);
@@ -406,6 +479,11 @@ const profit=revenue-soldCost;
  const topRows=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name,q])=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(name)}</b><small>${q} unidade(s) vendida(s)</small></div></div>`).join("")||'<div class="empty">Ainda não há vendas neste mês.</div>';
  const methods=Object.entries(byMethod).sort((a,b)=>b[1]-a[1]).map(([m,v])=>`<div class="section-title"><span>${esc(m)}</span><b>${money(v)}</b></div>`).join("")||'<div class="empty">Nenhum recebimento neste mês.</div>';
  return `<div class="page"><div class="head"><div><h1>Financeiro</h1><p>Visão completa do seu negócio • ${nowD.toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}</p></div></div>
+ <div class="finance-actions">
+  <button type="button" class="finance-option" id="financeAnalysis"><b>📈 Análise de vendas</b><small>Veja quando e quanto você vende.</small></button>
+  <button type="button" class="finance-option" id="financeReceivables"><b>💰 A receber</b><small>Clientes e valores pendentes.</small></button>
+  <button type="button" class="finance-option" id="financePayments"><b>💵 Registrar pagamento</b><small>Baixe pagamentos recebidos.</small></button>
+ </div>
  <div class="finance-grid">
   <div class="finance-card"><small>Faturamento do mês</small><strong>${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
   <div class="finance-card"><small>Lucro estimado</small><strong class="finance-positive">${money(profit)}</strong><p>vendas menos custo dos itens vendidos</p></div>
@@ -419,7 +497,6 @@ const profit=revenue-soldCost;
  </div>
  <div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">RESUMO</small><div style="margin-top:3px">Resultado financeiro do mês</div></div><strong>${money(profit)}</strong></div><div class="section" style="margin-top:15px"><div class="section-title"><span>Faturamento</span><b>${money(revenue)}</b></div><div class="section-title"><span>Custos</span><b>${money(cost)}</b></div><div class="section-title"><span>Recebido</span><b class="finance-positive">${money(received)}</b></div><div class="section-title"><span>Pendente</span><b class="finance-negative">${money(pending)}</b></div></div></div>
  <div class="row finance-duo"><div class="analysis-card"><div class="section-title"><b>Recebimentos por forma</b></div>${methods}</div><div class="analysis-card"><div class="section-title"><b>Mais vendidos</b></div><div class="list top-sellers-list">${topRows}</div></div></div>
- <div class="finance-actions"><button class="secondary" id="financeAnalysis">📈 Análise de vendas</button><button class="secondary" id="financeReceivables">💰 A receber</button><button class="secondary" id="financePayments">💵 Registrar pagamento</button><button class="secondary" id="financeAccount">⚙️ Conta</button></div>
  <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button></div>`;
 }
 
@@ -832,7 +909,10 @@ function bindPage(){
  $("payments")?.addEventListener("click",()=>openReceivables());
  $("receivables")?.addEventListener("click",()=>openReceivables());
  $("account")?.addEventListener("click",openAccount);
- $("financeAnalysis")?.addEventListener("click",openAnalysis);$("financeReceivables")?.addEventListener("click",openReceivables);$("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeAccount")?.addEventListener("click",openAccount);
+ $("currentUser")?.addEventListener("click",openAccount);
+ $("financeAnalysis")?.addEventListener("click",openAnalysis);
+ $("financeReceivables")?.addEventListener("click",openReceivables);
+ $("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});
 }
 function openSaleDetail(s){
  if(!s)return;
