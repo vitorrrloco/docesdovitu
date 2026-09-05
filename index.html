@@ -86,7 +86,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .nav:before{display:none}
 }
 
-/* V1.2.32 FINAL - Financeiro compacto e centralizado no celular */
+/* V1.2.33 FINAL - Financeiro compacto e centralizado no celular */
 .finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
 .finance-duo .analysis-card{min-width:0;padding:13px}
 .finance-duo .section-title b{font-size:15px}
@@ -128,7 +128,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 </style>
 
 <style id="professional-motion">
-/* V1.2.32: single-tap motion system, without duplicate click effects */
+/* V1.2.33: single-tap motion system, without duplicate click effects */
 .page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
 @keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .modal-bg{animation:modalFade .16s ease-out both}
@@ -215,7 +215,7 @@ body.dark .customer-status-select{
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.32</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.2.33</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><span id="currentUser" class="user-badge">👤 Vitor</span><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -792,8 +792,36 @@ function bindPage(){
  $("logout")?.addEventListener("click",()=>signOut(auth));
  $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
  $("stockSearch")?.addEventListener("input",e=>{$("stockList").innerHTML=productRows(data.products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())))});
- document.querySelectorAll("[data-client]").forEach(x=>x.onclick=e=>{if(e.target.closest(".charge-btn"))return;openClient(data.clients.find(c=>c.id===x.dataset.client))});
- document.querySelectorAll("[data-charge]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.charge);if(c)openCharge(c)});
+
+ // Delegação de eventos: continua funcionando mesmo quando a busca
+ // recria os cards de clientes via innerHTML.
+ const clientList=$("clientList");
+ if(clientList && !clientList.dataset.eventsBound){
+   clientList.dataset.eventsBound="1";
+   clientList.addEventListener("click",e=>{
+     const charge=e.target.closest("[data-charge]");
+     if(charge){
+       e.preventDefault();e.stopPropagation();
+       const c=data.clients.find(c=>c.id===charge.dataset.charge);
+       if(c)openCharge(c);
+       return;
+     }
+     const chargeClient=e.target.closest("[data-charge-client]");
+     if(chargeClient){
+       e.preventDefault();e.stopPropagation();
+       const c=data.clients.find(c=>c.id===chargeClient.dataset.chargeClient);
+       if(c)chargeClient(c);
+       return;
+     }
+     const row=e.target.closest("[data-client]");
+     if(row){
+       const c=data.clients.find(c=>c.id===row.dataset.client);
+       if(c)openClient(c);
+     }
+   });
+ }
+ // Mantém compatibilidade com outras telas que possam possuir esses
+ // elementos fora do #clientList.
  document.querySelectorAll("[data-charge-client]").forEach(x=>x.onclick=e=>{e.stopPropagation();const c=data.clients.find(c=>c.id===x.dataset.chargeClient);if(c)chargeClient(c)});
  document.querySelectorAll("[data-product]").forEach(x=>x.onclick=e=>{if(e.target.closest("[data-remove-stock]")||e.target.closest("[data-delete-product]"))return;openProduct(data.products.find(p=>p.id===x.dataset.product))});
  document.querySelectorAll("[data-add-stock]").forEach(x=>x.onclick=e=>{e.stopPropagation();openAddStock(data.products.find(p=>p.id===x.dataset.addStock))});
