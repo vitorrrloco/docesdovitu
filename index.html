@@ -225,26 +225,18 @@ body.dark .customer-status-select{
 }
 #mTotalValue[readonly]{opacity:.92}
 </style>
-<style id="dv-v140-css">
+<style id="dv-v140-ui-fix">
+.dv-v140-caixa-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;height:40px!important;padding:0 13px!important;border-radius:12px!important;border:1px solid var(--line)!important;background:var(--white)!important;color:var(--text)!important;font:inherit!important;font-size:12px!important;font-weight:800!important;box-sizing:border-box!important;white-space:nowrap!important}
+.dv-v140-user-wrap{display:inline-flex!important;align-items:center!important;gap:8px!important}
+.dv-v140-caixa-panel{margin:12px 0 16px;background:var(--white);border:1px solid var(--line);border-radius:18px;padding:15px;box-shadow:var(--shadow)}
+.dv-v140-title{font-size:18px;font-weight:800;margin-bottom:10px}
+.dv-v140-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.dv-v140-grid>div,.dv-v140-salaries>div{background:var(--cream);border:1px solid var(--line);border-radius:13px;padding:12px}
+.dv-v140-grid small,.dv-v140-salaries span{display:block;color:var(--muted);font-size:10px}.dv-v140-grid b,.dv-v140-salaries b{display:block;margin-top:3px;font-size:16px}
+.dv-v140-salaries{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}.dv-v140-rule{font-size:11px;color:var(--muted);line-height:1.4;margin:10px 0 0}
 .dv-purchase-selector{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;box-shadow:var(--shadow)}
-.dv-purchase-selector label{display:block;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;margin-bottom:7px}
-.dv-purchase-selector select{width:100%;min-height:50px;border:1px solid var(--line);border-radius:13px;background:var(--cream);color:var(--text);padding:0 12px;font:inherit;font-weight:700}
-.dv-purchase-selector small{display:block;color:var(--muted);font-size:10px;margin-top:7px}
-.dv-purchase-card{background:var(--white);border:1px solid var(--line);border-radius:19px;padding:16px;box-shadow:var(--shadow)}
-.dv-purchase-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:13px}
-.dv-purchase-head small,.dv-purchase-main small,.dv-purchase-grid small{display:block;color:var(--muted);font-size:10px}
-.dv-purchase-head h3{margin:4px 0 0;font-size:20px}
-.dv-purchase-head span{font-size:10px;font-weight:800;border-radius:999px;padding:7px 9px;white-space:nowrap}
-.dv-purchase-head .warn{background:#f5e1d6;color:var(--red)} .dv-purchase-head .ok{background:#e0f0e7;color:var(--green)}
-.dv-purchase-main{background:var(--cream2);border-radius:15px;padding:14px;margin-bottom:10px}
-.dv-purchase-main strong{display:block;font-size:27px;margin:2px 0}.dv-purchase-main span{font-size:10px;color:var(--muted)}
-.dv-purchase-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.dv-purchase-grid>div{background:var(--cream);border:1px solid var(--line);border-radius:13px;padding:11px}
-.dv-purchase-grid b{display:block;margin-top:3px;font-size:14px}
-.dv-purchase-empty{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:25px;text-align:center;color:var(--muted)}
-@media(max-width:600px){.dv-purchase-grid{grid-template-columns:1fr}}
-</style><style id="dv-v140-caixa-css">
-.dv-v140-title{font-size:19px;font-weight:800;margin-bottom:10px}.dv-v140-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.dv-v140-grid>div,.dv-v140-salaries>div{background:var(--cream);border:1px solid var(--line);border-radius:13px;padding:12px}.dv-v140-grid small{display:block;color:var(--muted);font-size:10px}.dv-v140-grid b{display:block;font-size:16px;margin-top:3px}.dv-v140-salaries{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}.dv-v140-salaries span{display:block;color:var(--muted);font-size:10px}.dv-v140-salaries b{display:block;margin-top:3px}.dv-v140-rule{font-size:11px;color:var(--muted);line-height:1.4;margin:10px 0 0}@media(max-width:600px){.dv-v140-grid,.dv-v140-salaries{grid-template-columns:1fr}}
+.dv-purchase-selector label{display:block;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;margin-bottom:7px}.dv-purchase-selector select{width:100%;min-height:50px;border:1px solid var(--line);border-radius:13px;background:var(--cream);color:var(--text);padding:0 12px;font:inherit;font-weight:700}.dv-purchase-selector small{display:block;color:var(--muted);font-size:10px;margin-top:7px}
+.dv-purchase-card{background:var(--white);border:1px solid var(--line);border-radius:19px;padding:16px;box-shadow:var(--shadow)}.dv-purchase-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:13px}.dv-purchase-head small,.dv-purchase-main small,.dv-purchase-grid small{display:block;color:var(--muted);font-size:10px}.dv-purchase-head h3{margin:4px 0;font-size:20px}.dv-purchase-head span{font-size:10px;font-weight:800;border-radius:999px;padding:7px 9px;white-space:nowrap}.dv-purchase-head .warn{background:#f5e1d6;color:var(--red)}.dv-purchase-head .ok{background:#e0f0e7;color:var(--green)}.dv-purchase-main{background:var(--cream2);border-radius:15px;padding:14px;margin-bottom:10px}.dv-purchase-main strong{display:block;font-size:27px;margin:2px 0}.dv-purchase-main span{font-size:10px;color:var(--muted)}.dv-purchase-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.dv-purchase-grid>div{background:var(--cream);border:1px solid var(--line);border-radius:13px;padding:11px}.dv-purchase-grid b{display:block;margin-top:3px;font-size:14px}.dv-purchase-empty{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:25px;text-align:center;color:var(--muted)}
+@media(max-width:600px){.dv-v140-grid,.dv-v140-salaries,.dv-purchase-grid{grid-template-columns:1fr}.dv-v140-caixa-btn{height:38px;padding:0 10px;font-size:11px}}
 </style></head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
@@ -277,7 +269,7 @@ body.dark .customer-status-select{
   <button data-page="clients"><span class="ni">👥</span><small>Clientes</small></button>
   <button data-page="stock"><span class="ni">📦</span><small>Estoque</small></button>
   <button data-page="purchases"><span class="ni">🛍️</span><small>Compras</small></button>
-  <button data-page="finance"><div id="dv-v140-caixa" class="dv-v140-card" style="margin-top:16px"></div><span class="ni">📊</span><small>Financeiro</small></button>
+  <button data-page="finance"><div id="dv-v140-caixa" class="dv-v140-caixa-panel" style="margin-top:16px"></div><span class="ni">📊</span><small>Financeiro</small></button>
  </nav>
 </div>
 <div id="modalRoot"></div>
