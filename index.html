@@ -224,6 +224,175 @@ body.dark .customer-status-select{
   border-color:#4a4a4a;
 }
 #mTotalValue[readonly]{opacity:.92}
+
+/* V1.3.0 visual patch: professional dark mode */
+html.theme-dark, body.theme-dark {
+  --cream:#141210;
+  --cream2:#211c18;
+  --white:#1b1816;
+  --line:#3a3029;
+  --text:#f3e9df;
+  --muted:#b6a69a;
+  --dark:#f3e9df;
+  --dark2:#d8c6b8;
+  --brown:#c79b7a;
+  --caramel:#d4a77f;
+  --green:#5fc58e;
+  --red:#e4776d;
+  --orange:#d59a55;
+  --shadow:0 10px 28px rgba(0,0,0,.28);
+  color-scheme:dark;
+}
+body.theme-dark { background:var(--cream); color:var(--text); }
+body.theme-dark .top,
+body.theme-dark .nav,
+body.theme-dark .modal,
+body.theme-dark .table-wrap,
+body.theme-dark .analysis-card,
+body.theme-dark .finance-card,
+body.theme-dark .purchase-selector-card,
+body.theme-dark .stat,
+body.theme-dark .more button,
+body.theme-dark .item,
+body.theme-dark .client-card,
+body.theme-dark .sale-card {
+  background:var(--white) !important;
+  border-color:var(--line) !important;
+}
+body.theme-dark input,
+body.theme-dark select,
+body.theme-dark textarea {
+  background:#211c18 !important;
+  color:var(--text) !important;
+  border-color:var(--line) !important;
+}
+body.theme-dark input::placeholder,
+body.theme-dark textarea::placeholder { color:#8f8177; }
+body.theme-dark .secondary,
+body.theme-dark .top-action,
+body.theme-dark .user-badge,
+body.theme-dark .nav .active {
+  background:#2a231e !important;
+  color:var(--text) !important;
+  border-color:var(--line) !important;
+}
+body.theme-dark .primary {
+  background:#f0e2d5 !important;
+  color:#2b1d15 !important;
+}
+body.theme-dark th { background:#2a231e !important; color:var(--text) !important; }
+body.theme-dark .hero {
+  background:linear-gradient(135deg,#2c1b12,#4a2a1c) !important;
+}
+body.theme-dark .modal-bg { background:rgba(0,0,0,.68) !important; }
+body.theme-dark .toast { background:#28211c !important; color:var(--text) !important; border-color:var(--line) !important; }
+body.theme-dark .empty { color:var(--muted) !important; }
+body.theme-dark .finance-option {
+  background:#1b1816 !important;
+  color:var(--text) !important;
+  border-color:#45372e !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.22) !important;
+}
+body.theme-dark .finance-option b { color:var(--text) !important; }
+body.theme-dark .finance-option small { color:var(--muted) !important; }
+body.theme-dark .finance-month {
+  background:#2a231e;
+  border:1px solid var(--line);
+  color:var(--muted);
+}
+.theme-toggle {
+  width:100%;
+  min-height:48px;
+  margin-top:10px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--cream2);
+  color:var(--dark);
+  font-weight:800;
+  text-align:left;
+  padding:0 14px;
+}
+.finance-page { width:100%; max-width:720px; margin:0 auto; min-width:0; }
+.finance-page .finance-head {
+  display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+  margin:2px 0 14px;
+}
+.finance-page .finance-head h1 { margin:0; font-size:29px; letter-spacing:-.6px; }
+.finance-page .finance-head p { margin:5px 0 0; color:var(--muted); font-size:12px; }
+.finance-month {
+  flex:0 0 auto; padding:8px 11px; border-radius:12px;
+  font-size:10px; font-weight:800; text-transform:capitalize; white-space:nowrap;
+}
+.finance-page .finance-actions {
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:9px !important;
+  margin:0 0 12px !important;
+  width:100%;
+}
+.finance-page .finance-option {
+  min-width:0 !important;
+  min-height:78px !important;
+  padding:13px !important;
+  display:flex !important;
+  justify-content:center !important;
+  align-items:flex-start !important;
+  text-align:left !important;
+  overflow:hidden;
+}
+.finance-page .finance-option b {
+  font-size:14px !important; line-height:1.25 !important;
+  white-space:normal !important; overflow-wrap:anywhere;
+}
+.finance-page .finance-option small {
+  font-size:10px !important; line-height:1.3 !important;
+  white-space:normal !important; overflow-wrap:anywhere;
+}
+.finance-page .finance-grid {
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:10px !important;
+  width:100%;
+  margin-bottom:12px !important;
+}
+.finance-page .finance-card {
+  min-width:0 !important;
+  min-height:104px;
+  padding:15px !important;
+}
+.finance-page .finance-card strong {
+  font-size:23px !important;
+  overflow-wrap:anywhere;
+}
+.finance-page .finance-summary {
+  margin-bottom:12px;
+}
+.finance-page .finance-duo {
+  width:100% !important;
+  margin:0 !important;
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+.finance-page .finance-duo .analysis-card {
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+}
+@media(max-width:699px){
+  .finance-page .finance-head { align-items:flex-start; }
+  .finance-page .finance-month { margin-top:2px; }
+  .finance-page .finance-actions { grid-template-columns:1fr !important; }
+  .finance-page .finance-option { min-height:64px !important; }
+  .finance-page .finance-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+  .finance-page .finance-card { min-height:98px; padding:13px !important; }
+  .finance-page .finance-card strong { font-size:21px !important; }
+  .finance-page .finance-duo { grid-template-columns:1fr !important; }
+}
+@media(max-width:380px){
+  .finance-page .finance-grid { grid-template-columns:1fr !important; }
+}
+
 </style>
 </head>
 <body>
@@ -509,39 +678,60 @@ function finance(){
  const revenue=monthSales.reduce((a,s)=>a+numBR(s.total||0),0);
  const received=monthPayments.reduce((a,p)=>a+Number(p.amount||0),0);
  const pending=monthSales.reduce((a,s)=>a+Math.max(0,numBR(s.total||0)-Number(s.paid||0)),0);
- const soldCost=monthSales.reduce((sum,s)=>sum+(Array.isArray(s.items)?s.items:[]).reduce((acc,i)=>{const qty=numBR(i.qty??i.quantity??0);const stored=numBR(i.cost??i.unitCost??i.productCost??0);const prod=products.find(p=>p.id===(i.productId??i.id));const unit=stored>0?stored:numBR(prod?.cost??0);return acc+(qty*unit)},0),0);
-const cost=soldCost;
-const profit=revenue-soldCost;
- const margin=revenue>0?(profit/revenue)*100:0;
+ const soldCost=monthSales.reduce((sum,s)=>(sum+(Array.isArray(s.items)?s.items:[]).reduce((acc,i)=>{
+   const qty=numBR(i.qty??i.quantity??0), stored=numBR(i.cost??i.unitCost??i.productCost??0);
+   const prod=products.find(p=>p.id===(i.productId??i.id)), unit=stored>0?stored:numBR(prod?.cost??0);
+   return acc+(qty*unit);
+ },0)),0);
+ const cost=soldCost, profit=revenue-soldCost, margin=revenue>0?(profit/revenue)*100:0;
  const ticket=monthSales.length?revenue/monthSales.length:0;
  const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+Number(i.qty||0),0),0);
  const allReceived=payments.reduce((a,p)=>a+Number(p.amount||0),0);
  const allPurchases=purchases.reduce((a,p)=>a+Number(p.total||0),0);
  const cash=allReceived-allPurchases;
- const byMethod={};monthPayments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+Number(p.amount||0)});
- const top={};monthSales.forEach(s=>(s.items||[]).forEach(i=>{top[i.name]=(top[i.name]||0)+Number(i.qty||0)}));
+ const byMethod={};
+ monthPayments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+Number(p.amount||0)});
+ const top={};
+ monthSales.forEach(s=>(s.items||[]).forEach(i=>{top[i.name]=(top[i.name]||0)+Number(i.qty||0)}));
  const topRows=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name,q])=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(name)}</b><small>${q} unidade(s) vendida(s)</small></div></div>`).join("")||'<div class="empty">Ainda não há vendas neste mês.</div>';
  const methods=Object.entries(byMethod).sort((a,b)=>b[1]-a[1]).map(([m,v])=>`<div class="section-title"><span>${esc(m)}</span><b>${money(v)}</b></div>`).join("")||'<div class="empty">Nenhum recebimento neste mês.</div>';
- return `<div class="page"><div class="head"><div><h1>Financeiro</h1><p>Visão completa do seu negócio • ${nowD.toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}</p></div></div>
- <div class="finance-actions">
-  <button type="button" class="finance-option" id="financeAnalysis"><b>📈 Análise de vendas</b><small>Veja quando e quanto você vende.</small></button>
-  <button type="button" class="finance-option" id="financeReceivables"><b>💰 A receber</b><small>Clientes e valores pendentes.</small></button>
-  <button type="button" class="finance-option" id="financePayments"><b>💵 Registrar pagamento</b><small>Baixe pagamentos recebidos.</small></button>
- </div>
- <div class="finance-grid">
-  <div class="finance-card"><small>Faturamento do mês</small><strong>${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
-  <div class="finance-card"><small>Lucro estimado</small><strong class="finance-positive">${money(profit)}</strong><p>vendas menos custo dos itens vendidos</p></div>
-  <div class="finance-card"><small>Margem de lucro</small><strong>${margin.toFixed(1)}%</strong><p>sobre o faturamento</p></div>
-  <div class="finance-card"><small>Ticket médio</small><strong>${money(ticket)}</strong><p>por venda</p></div>
-  <div class="finance-card"><small>Recebido no mês</small><strong class="finance-positive">${money(received)}</strong><p>pagamentos registrados</p></div>
-  <div class="finance-card"><small>Caixa atual</small><strong class="finance-positive">${money(cash)}</strong><p>recebimentos menos compras registradas</p></div>
-  <div class="finance-card"><small>A receber</small><strong class="finance-negative">${money(pending)}</strong><p>das vendas deste mês</p></div>
-  <div class="finance-card"><small>Custo dos produtos</small><strong>${money(cost)}</strong><p>custo informado no estoque</p></div>
-  <div class="finance-card"><small>Itens vendidos</small><strong>${totalItems}</strong><p>unidades neste mês</p></div>
- </div>
- <div class="analysis-card"><div class="analysis-head"><div><small style="color:var(--muted)">RESUMO</small><div style="margin-top:3px">Resultado financeiro do mês</div></div><strong>${money(profit)}</strong></div><div class="section" style="margin-top:15px"><div class="section-title"><span>Faturamento</span><b>${money(revenue)}</b></div><div class="section-title"><span>Custos</span><b>${money(cost)}</b></div><div class="section-title"><span>Recebido</span><b class="finance-positive">${money(received)}</b></div><div class="section-title"><span>Pendente</span><b class="finance-negative">${money(pending)}</b></div></div></div>
- <div class="row finance-duo"><div class="analysis-card"><div class="section-title"><b>Recebimentos por forma</b></div>${methods}</div><div class="analysis-card"><div class="section-title"><b>Mais vendidos</b></div><div class="list top-sellers-list">${topRows}</div></div></div>
- <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button></div>`;
+ const monthLabel=nowD.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+ return `<div class="page finance-page">
+  <div class="finance-head">
+   <div><h1>Financeiro</h1><p>Resumo financeiro do negócio</p></div>
+   <span class="finance-month">${monthLabel}</span>
+  </div>
+  <div class="finance-actions">
+   <button type="button" class="finance-option" id="financeAnalysis"><b>📈 Análise de vendas</b><small>Veja quando e quanto você vende.</small></button>
+   <button type="button" class="finance-option" id="financeReceivables"><b>💰 A receber</b><small>Clientes e valores pendentes.</small></button>
+   <button type="button" class="finance-option" id="financePayments"><b>💵 Registrar pagamento</b><small>Baixe pagamentos recebidos.</small></button>
+  </div>
+  <div class="finance-grid">
+   <div class="finance-card"><small>Faturamento do mês</small><strong>${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
+   <div class="finance-card"><small>Lucro estimado</small><strong class="finance-positive">${money(profit)}</strong><p>vendas menos custo dos itens</p></div>
+   <div class="finance-card"><small>Margem de lucro</small><strong>${margin.toFixed(1)}%</strong><p>sobre o faturamento</p></div>
+   <div class="finance-card"><small>Ticket médio</small><strong>${money(ticket)}</strong><p>por venda</p></div>
+   <div class="finance-card"><small>Recebido no mês</small><strong class="finance-positive">${money(received)}</strong><p>pagamentos registrados</p></div>
+   <div class="finance-card"><small>Caixa atual</small><strong class="finance-positive">${money(cash)}</strong><p>recebimentos menos compras</p></div>
+   <div class="finance-card"><small>A receber</small><strong class="finance-negative">${money(pending)}</strong><p>das vendas deste mês</p></div>
+   <div class="finance-card"><small>Custo dos produtos</small><strong>${money(cost)}</strong><p>custo dos itens vendidos</p></div>
+   <div class="finance-card"><small>Itens vendidos</small><strong>${totalItems}</strong><p>unidades neste mês</p></div>
+  </div>
+  <div class="analysis-card finance-summary">
+   <div class="analysis-head"><div><small style="color:var(--muted)">RESUMO</small><div style="margin-top:3px">Resultado financeiro do mês</div></div><strong>${money(profit)}</strong></div>
+   <div class="section" style="margin-top:15px">
+    <div class="section-title"><span>Faturamento</span><b>${money(revenue)}</b></div>
+    <div class="section-title"><span>Custos</span><b>${money(cost)}</b></div>
+    <div class="section-title"><span>Recebido</span><b class="finance-positive">${money(received)}</b></div>
+    <div class="section-title"><span>Pendente</span><b class="finance-negative">${money(pending)}</b></div>
+   </div>
+  </div>
+  <div class="row finance-duo">
+   <div class="analysis-card"><div class="section-title"><b>Recebimentos por forma</b></div>${methods}</div>
+   <div class="analysis-card"><div class="section-title"><b>Mais vendidos</b></div><div class="list top-sellers-list">${topRows}</div></div>
+  </div>
+  <button class="secondary" id="logout" style="width:100%;margin-top:12px">Sair da conta</button>
+ </div>`;
 }
 
 function more(){
@@ -1078,10 +1268,28 @@ async function openCustomerStatuses(){
  });
 }
 
+
+function applyTheme(theme){
+  const dark = theme === "dark";
+  document.body.classList.toggle("theme-dark", dark);
+  document.documentElement.classList.toggle("theme-dark", dark);
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute("content", dark ? "#141210" : "#5b321f");
+  const btn=document.getElementById("themeToggle");
+  if(btn) btn.textContent = dark ? "☀️  Modo claro" : "🌙  Modo escuro";
+}
+function toggleTheme(){
+  const next=document.body.classList.contains("theme-dark") ? "light" : "dark";
+  localStorage.setItem("dv-theme",next);
+  applyTheme(next);
+}
+applyTheme(localStorage.getItem("dv-theme")==="dark" ? "dark" : "light");
+
 function openAccount(){
  openModal("Configurações",`<div class="form">
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
   <button class="secondary" id="customerStatuses" style="width:100%;margin-top:10px">👥 Status dos clientes</button>
+  <button type="button" class="theme-toggle" id="themeToggle">🌙  Modo escuro</button>
   <button class="secondary" id="activityLog" style="width:100%;margin-top:10px">📋 Log de atividades</button>
   <details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
    <summary style="cursor:pointer;color:var(--muted);font-weight:800;font-size:13px">Configurações avançadas</summary>
@@ -1093,6 +1301,7 @@ function openAccount(){
    </div>
   </details>
  </div>`);
+ $("themeToggle").onclick=toggleTheme;
  $("customerStatuses").onclick=openCustomerStatuses;
  $("activityLog").onclick=openActivityLog;
  $("resetBusiness").onclick=()=>{
