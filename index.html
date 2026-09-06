@@ -429,7 +429,7 @@ body.theme-dark .tabs button.active {
 .v140-legend span{display:inline-flex;align-items:center;gap:4px}
 .v140-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
 .v140-dot.rev{background:#b77a4e}.v140-dot.cost{background:#7d6b60}
-.v140-chart{width:100%;height:auto;display:block}
+.v140-chart{width:100%;height:auto;min-height:230px;display:block}
 .v140-chart text{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Arial,sans-serif;fill:var(--muted);font-size:9px}
 .v140-chart .grid{stroke:var(--line);stroke-width:1}
 .v140-chart .rev-line{fill:none;stroke:#b77a4e;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
@@ -638,40 +638,52 @@ function stock(){
 function productRows(list){return list.map(p=>`<div class="item" data-product="${p.id}"><div class="avatar">🍫</div><div class="item-main"><b>${esc(p.name)}</b><small>${money(p.price)} • custo ${money(p.cost||0)}${p.supplier?` • ${esc(p.supplier)}`:""}</small></div><div class="item-right"><b>${p.stock||0} un.</b><small>${numBR(p.stock||0)<=Number(p.minStock||2)?"⚠️ baixo":"estoque"}</small><div style="display:flex;gap:5px;margin-top:7px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="secondary stock-add-btn" data-add-stock="${p.id}" style="padding:7px 8px;font-size:10px">➕ Adicionar</button><button type="button" class="secondary stock-remove-btn" data-remove-stock="${p.id}" style="padding:7px 8px;font-size:10px">➖ Remover</button><button type="button" class="secondary stock-delete-btn" data-delete-product="${p.id}" style="padding:7px 8px;font-size:10px;color:#a43f37">🗑️</button></div></div></div>`).join("")||'<div class="empty">Nenhum produto cadastrado.</div>'}
 
 
-function purchaseChartData(productId,daysBack=30){
+function purchaseChartData(productId){
  const products=data.products||[],sales=data.sales||[];
  const p=products.find(x=>x.id===productId); if(!p)return [];
- const end=new Date();end.setHours(23,59,59,999);
- const start=new Date(end);start.setDate(start.getDate()-daysBack+1);start.setHours(0,0,0,0);
- const rows=[];
- for(let n=0;n<daysBack;n++){
-   const d=new Date(start);d.setDate(start.getDate()+n);
-   const next=new Date(d);next.setDate(d.getDate()+1);
-   let revenue=0,cost=0;
-   sales.forEach(s=>{
-     const sd=dt(s.createdAt); if(!sd||sd<d||sd>=next)return;
-     (Array.isArray(s.items)?s.items:[]).forEach(i=>{
-       const same=(i.productId&&i.productId===p.id)||(String(i.name||'').trim().toLowerCase()===String(p.name||'').trim().toLowerCase());
-       if(!same)return;
-       const q=numBR(i.qty??i.quantity??0), price=numBR(i.price||0);
-       const stored=numBR(i.cost??i.unitCost??i.productCost??0);
-       const unitCost=stored>0?stored:numBR(p.cost||0);
-       revenue+=price*q; cost+=unitCost*q;
-     });
+ const productCreated=dt(p.createdAt);
+ const productSales=[];
+ sales.forEach(s=>{
+   const sd=dt(s.createdAt); if(!sd)return;
+   (Array.isArray(s.items)?s.items:[]).forEach(i=>{
+     const same=(i.productId&&i.productId===p.id)||(String(i.name||'').trim().toLowerCase()===String(p.name||'').trim().toLowerCase());
+     if(same)productSales.push({sale:s,item:i,date:sd});
    });
-   rows.push({date:d,label:String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'),revenue,cost});
+ });
+ const firstSale=productSales.map(x=>x.date).sort((a,b)=>a-b)[0]||null;
+ const startSource=productCreated||firstSale||new Date();
+ const start=new Date(startSource.getFullYear(),startSource.getMonth(),1);
+ const today=new Date();
+ const end=new Date(today.getFullYear(),today.getMonth(),1);
+ const rows=[];
+ for(let d=new Date(start);d<=end;d.setMonth(d.getMonth()+1)){
+   const monthStart=new Date(d.getFullYear(),d.getMonth(),1);
+   const monthEnd=new Date(d.getFullYear(),d.getMonth()+1,1);
+   let revenue=0,cost=0;
+   productSales.forEach(({item,date})=>{
+     if(date<monthStart||date>=monthEnd)return;
+     const q=numBR(item.qty??item.quantity??0), price=numBR(item.price||0);
+     const stored=numBR(item.cost??item.unitCost??item.productCost??0);
+     const unitCost=stored>0?stored:numBR(p.cost||0);
+     revenue+=price*q; cost+=unitCost*q;
+   });
+   rows.push({
+     date:new Date(monthStart),
+     label:monthStart.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'}).replace('.',''),
+     revenue,cost
+   });
  }
  return rows;
 }
 function purchaseChartSvg(rows){
- const W=760,H=360,L=48,R=16,T=20,B=44,iw=W-L-R,ih=H-T-B;
+ const W=820,H=500,L=62,R=18,T=24,B=58,iw=W-L-R,ih=H-T-B;
  const max=Math.max(1,...rows.map(r=>Math.max(r.revenue,r.cost)));
  const y=v=>T+ih-(v/max)*ih;
  const x=i=>L+(rows.length===1?iw/2:i*(iw/(rows.length-1)));
  const path=key=>rows.map((r,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(r[key]).toFixed(1)).join(' ');
  const ticks=[0,.25,.5,.75,1].map(f=>max*f);
  const grid=ticks.map(v=>`<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-7}" y="${y(v)+3}" text-anchor="end">${money(v)}</text>`).join('');
- const every=Math.max(1,Math.ceil(rows.length/6));
+ const every=Math.max(1,Math.ceil(rows.length/8));
  const labels=rows.map((r,i)=>i%every===0||i===rows.length-1?`<text x="${x(i)}" y="${H-14}" text-anchor="middle">${r.label}</text>`:'').join('');
  const pointsRev=rows.map((r,i)=>`<circle class="rev-point" cx="${x(i)}" cy="${y(r.revenue)}" r="2.5"/>`).join('');
  const pointsCost=rows.map((r,i)=>`<circle class="cost-point" cx="${x(i)}" cy="${y(r.cost)}" r="2.3"/>`).join('');
@@ -680,7 +692,7 @@ function purchaseChartSvg(rows){
 function purchaseDetail(productId){
  const products=data.products||[],sales=data.sales||[],p=products.find(x=>x.id===productId);
  if(!p)return '<div class="empty">Selecione um produto.</div>';
- const rows=purchaseChartData(productId,30);
+ const rows=purchaseChartData(productId);
  const items=[];
  sales.forEach(s=>(Array.isArray(s.items)?s.items:[]).forEach(i=>{
    const same=(i.productId&&i.productId===p.id)||(String(i.name||'').trim().toLowerCase()===String(p.name||'').trim().toLowerCase());
@@ -695,7 +707,7 @@ function purchaseDetail(productId){
  const profit=revenue-cost,margin=revenue>0?(profit/revenue)*100:0;
  const avgDaily=qtySold/30,stock=Math.max(0,Math.floor(numBR(p.stock||0))),coverage=avgDaily>0?stock/avgDaily:null;
  return `<div class="v140-product-detail">
-  <div class="v140-detail-head"><div><h2>${esc(p.name)}</h2><small>Desempenho baseado nas vendas registradas</small></div><span class="v140-period">Últimos 30 dias</span></div>
+  <div class="v140-detail-head"><div><h2>${esc(p.name)}</h2><small>Desempenho baseado nas vendas registradas</small></div><span class="v140-period">Desde o início do produto</span></div>
   <div class="v140-chart-card">
    <div class="v140-chart-title"><b>Faturamento × Custo</b><div class="v140-legend"><span><i class="v140-dot rev"></i>Faturamento</span><span><i class="v140-dot cost"></i>Custo</span></div></div>
    ${purchaseChartSvg(rows)}
