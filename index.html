@@ -710,7 +710,6 @@ function purchaseDetail(productId){
    <div class="v140-metric"><small>Estoque atual</small><b>${stock} un.</b></div>
    <div class="v140-metric"><small>Cobertura</small><b>${coverage===null?'Sem giro':Math.floor(coverage)+' dia(s)'}</b></div>
   </div>
-  <div class="v140-note">O gráfico usa os registros reais de vendas do produto selecionado. A linha de custo considera o custo salvo na venda e, quando ele não existe, o custo atual cadastrado do produto.</div>
  </div>`;
 }
 function purchases(){
@@ -731,18 +730,12 @@ function purchases(){
    return {p,qtySold,revenue,cost,profit,first,last,days,avgDaily,monthlyNeed,stock,suggestion,lastPurchase,lastUnit,lastQty,coverage};
  });
  stats.sort((a,b)=>b.suggestion-a.suggestion||b.qtySold-a.qtySold||String(a.p.name).localeCompare(String(b.p.name),'pt-BR'));
- const needCount=stats.filter(x=>x.suggestion>0).length,totalSuggestion=stats.reduce((a,x)=>a+x.suggestion,0);
- const note=`Cálculo baseado nos registros de vendas já salvos. A média diária usa o período desde a primeira venda registrada de cada produto até hoje; a necessidade mensal considera 30 dias. A sugestão desconta o estoque atual.`;
  const firstId=products[0]?.id||'';
  return `<div class="page">
   <div class="head"><div><h1>🛍️ Sugestão de Compras</h1><p>Giro, lucro e reposição de cada produto</p></div></div>
-  <div class="purchase-summary"><div class="purchase-kpi"><small>Produtos</small><strong>${products.length}</strong></div><div class="purchase-kpi"><small>Precisam comprar</small><strong>${needCount}</strong></div><div class="purchase-kpi"><small>Unidades sugeridas</small><strong>${totalSuggestion}</strong></div></div>
   <div class="v140-product-panel">
    <div class="v140-product-select"><label>SELECIONE O PRODUTO PARA VER OS DETALHES</label><select id="v140ProductSelect">${products.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')||'<option value="">Nenhum produto cadastrado</option>'}</select></div>
    <div id="v140ProductDetail">${firstId?purchaseDetail(firstId):'<div class="empty">Nenhum produto cadastrado.</div>'}</div>
-  </div>
-  <div class="purchase-list">
-   ${stats.map(x=>{const status=x.suggestion>0?`<span class="pp-alert">⚠️ Comprar</span>`:`<span class="pp-alert ok">✓ Estoque OK</span>`;const last=x.lastPurchase?`${money(x.lastUnit)} • ${x.lastQty} un.`:'Sem compra registrada';const period=x.first?`${x.days} dia(s) analisado(s)`:'Sem histórico de venda';return `<div class="purchase-product"><div class="pp-head"><div class="pp-avatar">🍫</div><div class="pp-name">${esc(x.p.name)}<small>${period} • estoque atual: ${x.stock} un.</small></div>${status}</div><div class="pp-metrics"><div class="pp-metric"><span>Giro médio / dia</span><b>${x.avgDaily.toFixed(2).replace('.',',')} un.</b></div><div class="pp-metric"><span>Venda média / mês</span><b>${x.monthlyNeed} un.</b></div><div class="pp-metric"><span>Lucro gerado</span><b class="pp-profit">${money(x.profit)}</b></div><div class="pp-metric"><span>Faturamento</span><b>${money(x.revenue)}</b></div><div class="pp-metric"><span>Custo dos vendidos</span><b>${money(x.cost)}</b></div><div class="pp-metric"><span>Último valor pago</span><b>${last}</b></div><div class="pp-metric"><span>Cobertura atual</span><b>${x.coverage===null?'Sem giro':Math.floor(x.coverage)+' dia(s)'}</b></div><div class="pp-metric"><span>Estoque mínimo mensal</span><b>${x.monthlyNeed} un.</b></div></div><div class="pp-buy"><div><small>SUGESTÃO DE COMPRA</small><b>${x.suggestion} unidade(s)</b></div><div><small>Última compra</small><b>${x.lastPurchase?money(x.lastPurchase.total):'Não registrada'}</b></div></div></div>`}).join('')||'<div class="empty">Nenhum produto cadastrado.</div>'}
   </div>
  </div>`;
 }
