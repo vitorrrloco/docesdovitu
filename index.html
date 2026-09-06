@@ -664,7 +664,7 @@ function purchaseChartData(productId,daysBack=30){
  return rows;
 }
 function purchaseChartSvg(rows){
- const W=760,H=270,L=48,R=16,T=18,B=38,iw=W-L-R,ih=H-T-B;
+ const W=760,H=360,L=48,R=16,T=20,B=44,iw=W-L-R,ih=H-T-B;
  const max=Math.max(1,...rows.map(r=>Math.max(r.revenue,r.cost)));
  const y=v=>T+ih-(v/max)*ih;
  const x=i=>L+(rows.length===1?iw/2:i*(iw/(rows.length-1)));
@@ -737,7 +737,6 @@ function purchases(){
  return `<div class="page">
   <div class="head"><div><h1>🛍️ Sugestão de Compras</h1><p>Giro, lucro e reposição de cada produto</p></div></div>
   <div class="purchase-summary"><div class="purchase-kpi"><small>Produtos</small><strong>${products.length}</strong></div><div class="purchase-kpi"><small>Precisam comprar</small><strong>${needCount}</strong></div><div class="purchase-kpi"><small>Unidades sugeridas</small><strong>${totalSuggestion}</strong></div></div>
-  <div class="purchase-note">📊 <b>Como funciona:</b> ${note}</div>
   <div class="v140-product-panel">
    <div class="v140-product-select"><label>SELECIONE O PRODUTO PARA VER OS DETALHES</label><select id="v140ProductSelect">${products.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')||'<option value="">Nenhum produto cadastrado</option>'}</select></div>
    <div id="v140ProductDetail">${firstId?purchaseDetail(firstId):'<div class="empty">Nenhum produto cadastrado.</div>'}</div>
