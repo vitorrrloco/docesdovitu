@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.3.0</title>
+<title>DOCES DO VITU 1.4.4</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -185,7 +185,12 @@ button:focus-visible,.link:focus-visible{outline:3px solid #8a56384d;outline-off
 .sale-processing-card b{display:block;font-size:17px}.sale-processing-card small{display:block;color:var(--muted,#777);margin-top:5px}
 @keyframes svSpin{to{transform:rotate(360deg)}}@keyframes svCheck{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
 .chart-tooltip{position:fixed;z-index:99999;pointer-events:none;display:none;background:var(--dark,#24150f);color:#fff;padding:11px 14px;border-radius:12px;font-size:16px;font-weight:900;box-shadow:0 8px 24px #0003;white-space:nowrap;transform:translate(-50%,-120%)}.chart-tooltip.show{display:block}
-</style><style id="V1220_FINAL_CSS">.fq-selected-label{margin:7px 0;padding:9px 11px;border-radius:12px;border:1px solid var(--line,#ddd);background:var(--white,#fff);font-size:12px}.fast-product.active{outline:2px solid currentColor}.fq-cart-item{min-width:0;display:flex;align-items:center;gap:10px}.fq-cart-item .item-main{min-width:0;flex:1}.fq-cart-item .item-main b,.fq-cart-item .item-main small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fq-cart-right{min-width:90px;display:flex;flex-direction:column;align-items:flex-end;gap:5px}@media(max-width:430px){.fq-cart-item{gap:7px;padding:8px!important}.fq-cart-right{min-width:78px}.fq-cart-right button{font-size:11px!important;padding:7px 8px!important}}</style>
+<style id="DV_V143_DAILY_REPORT_CSS">
+.daily-report{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:16px;color:var(--text)}
+.daily-report-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}.daily-report-head h3{margin:0;font-size:21px}.daily-report-head small{display:block;color:var(--muted);margin-top:3px}.daily-report-date{width:155px;height:45px;border:1px solid var(--line);border-radius:12px;background:var(--white);color:var(--text);padding:0 9px}
+.daily-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}.daily-kpi{padding:11px;border:1px solid var(--line);border-radius:14px;background:var(--cream2)}.daily-kpi small{display:block;color:var(--muted);font-size:10px}.daily-kpi b{display:block;font-size:18px;margin-top:4px}.daily-report-section{margin-top:15px}.daily-report-section h4{margin:0 0 8px;font-size:14px}.daily-report-table{width:100%;min-width:0;border-collapse:collapse}.daily-report-table th,.daily-report-table td{padding:8px 6px;border-bottom:1px solid var(--line);font-size:10px;white-space:normal}.daily-report-table th{background:var(--cream2);font-size:9px}.daily-report-table td.num,.daily-report-table th.num{text-align:right;white-space:nowrap}.daily-client{padding:10px 0;border-bottom:1px solid var(--line)}.daily-client:last-child{border-bottom:0}.daily-client-head{display:flex;justify-content:space-between;gap:8px}.daily-client-items{margin-top:5px;color:var(--muted);font-size:10px;line-height:1.55}.daily-note{padding:10px;border-radius:12px;background:var(--cream2);color:var(--muted);font-size:10px}.daily-report-actions{display:flex;gap:8px;margin-top:12px}.daily-report-actions button{flex:1;min-height:48px}.daily-report-scroll{max-height:66dvh;overflow:auto;padding-right:2px}
+@media(max-width:430px){.daily-report{padding:12px}.daily-report-head{display:block}.daily-report-date{width:100%;margin-top:10px}.daily-kpi b{font-size:16px}}@media(min-width:600px){.daily-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style></style><style id="V1220_FINAL_CSS">.fq-selected-label{margin:7px 0;padding:9px 11px;border-radius:12px;border:1px solid var(--line,#ddd);background:var(--white,#fff);font-size:12px}.fast-product.active{outline:2px solid currentColor}.fq-cart-item{min-width:0;display:flex;align-items:center;gap:10px}.fq-cart-item .item-main{min-width:0;flex:1}.fq-cart-item .item-main b,.fq-cart-item .item-main small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fq-cart-right{min-width:90px;display:flex;flex-direction:column;align-items:flex-end;gap:5px}@media(max-width:430px){.fq-cart-item{gap:7px;padding:8px!important}.fq-cart-right{min-width:78px}.fq-cart-right button{font-size:11px!important;padding:7px 8px!important}}</style>
 <style id="DV_CLIENT_PICKER_FINAL">
 #fqClientResults{position:relative;margin-top:6px;z-index:10000;max-height:240px;overflow:auto}
 #fqClientResults.hidden{display:none}
@@ -481,7 +486,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.4.0</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.4.4</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -675,7 +680,7 @@ function clients(){
 function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),pending=clientPending(c),isOtimo=String(c.status||"normal").toLowerCase()==="otimo";return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b>${isOtimo?`<small class="client-status-otimo">Ótimo</small>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
- return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><button class="top-action" id="newProduct">＋</button></div>
+ return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><div style="display:flex;gap:7px;align-items:center"><button class="secondary" id="avulsoEntry" style="padding:10px 11px;font-size:11px">➕ Entrada avulsa</button><button class="top-action" id="newProduct">＋</button></div></div>
  <input class="search" id="stockSearch" placeholder="🔎 Procurar produto">
  <div class="list" id="stockList">${productRows(data.products)}</div></div>`
 }
@@ -815,6 +820,54 @@ function purchases(){
   </div>
  </div>`;
 }
+function dateKeyLocal(d){return d?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`:''}
+function dayBoundsFromKey(key){const [y,m,d]=String(key||'').split('-').map(Number);const start=new Date(y,m-1,d);start.setHours(0,0,0,0);const end=new Date(y,m-1,d+1);end.setHours(0,0,0,0);return {start,end}}
+function dayData(key){
+ const {start,end}=dayBoundsFromKey(key),inDay=v=>{const d=dt(v?.createdAt);return d&&d>=start&&d<end};
+ const sales=(data.sales||[]).filter(inDay).sort((a,b)=>(dt(a.createdAt)||0)-(dt(b.createdAt)||0));
+ const payments=(data.payments||[]).filter(inDay).sort((a,b)=>(dt(a.createdAt)||0)-(dt(b.createdAt)||0));
+ const purchases=(data.purchases||[]).filter(inDay).sort((a,b)=>(dt(a.createdAt)||0)-(dt(b.createdAt)||0));
+ const logs=(data.logs||[]).filter(inDay).sort((a,b)=>(dt(a.createdAt)||0)-(dt(b.createdAt)||0));
+ const revenue=sales.reduce((a,s)=>a+numBR(s.total||0),0),received=payments.reduce((a,p)=>a+numBR(p.amount||0),0),cost=sales.reduce((a,s)=>a+saleCostAmount(s),0),profit=revenue-cost,pending=sales.reduce((a,s)=>a+salePendingAmount(s),0);
+ const itemsMap=new Map(),clientsMap=new Map(),methods=new Map();
+ sales.forEach(s=>{
+  (s.items||[]).forEach(i=>{const name=String(i.name||'Produto').trim()||'Produto',q=numBR(i.qty??i.quantity??0),price=numBR(i.price||0),stored=numBR(i.cost??i.unitCost??i.productCost??0),prod=data.products.find(p=>p.id===(i.productId??i.id)),unitCost=stored>0?stored:numBR(prod?.cost||0),r=itemsMap.get(name)||{name,qty:0,revenue:0,cost:0};r.qty+=q;r.revenue+=q*price;r.cost+=q*unitCost;itemsMap.set(name,r)});
+  const cname=String(s.clientName||'Venda balcão'),r=clientsMap.get(cname)||{name:cname,sales:0,qty:0,total:0,items:new Map()};r.sales++;r.total+=numBR(s.total||0);(s.items||[]).forEach(i=>{const q=numBR(i.qty??i.quantity??0),n=String(i.name||'Produto');r.qty+=q;r.items.set(n,(r.items.get(n)||0)+q)});clientsMap.set(cname,r);
+ });
+ payments.forEach(p=>{const m=String(p.method||'Outro');methods.set(m,(methods.get(m)||0)+numBR(p.amount||0))});
+ return {start,end,sales,payments,purchases,logs,revenue,received,cost,profit,pending,totalItems:[...itemsMap.values()].reduce((a,r)=>a+r.qty,0),items:[...itemsMap.values()].sort((a,b)=>b.qty-a.qty||b.revenue-a.revenue),clients:[...clientsMap.values()].sort((a,b)=>b.total-a.total),methods:[...methods.entries()].sort((a,b)=>b[1]-a[1])};
+}
+function dailyReportHtml(key){
+ const d=dayData(key),label=d.start.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}),entryTotal=d.purchases.reduce((a,p)=>a+numBR(p.total||0),0);
+ const itemRows=d.items.map(r=>`<tr><td>${esc(r.name)}</td><td class="num">${r.qty}</td><td class="num">${money(r.revenue)}</td><td class="num">${money(r.cost)}</td><td class="num">${money(r.revenue-r.cost)}</td></tr>`).join('')||'<tr><td colspan="5">Nenhum item vendido neste dia.</td></tr>';
+ const clientRows=d.clients.map(c=>`<div class="daily-client"><div class="daily-client-head"><b>${esc(c.name)}</b><b>${money(c.total)}</b></div><div class="daily-client-items">${c.qty} unidade(s) • ${c.sales} venda(s) • ${Array.from(c.items.entries()).map(([n,q])=>`${esc(n)}: ${q} un.`).join(' • ')}</div></div>`).join('')||'<div class="daily-note">Nenhuma venda registrada neste dia.</div>';
+ const methodRows=d.methods.map(([m,v])=>`<tr><td>${esc(m)}</td><td class="num">${money(v)}</td></tr>`).join('')||'<tr><td colspan="2">Nenhum recebimento no dia.</td></tr>';
+ const purchaseRows=d.purchases.map(p=>{const q=numBR(p.quantity),u=numBR(p.unitCost)||(q>0?numBR(p.total)/q:0);return `<tr><td>${esc(p.productName||'Produto')}</td><td class="num">${q}</td><td class="num">${money(p.total)}</td><td class="num">${money(u)}</td></tr>`}).join('')||'<tr><td colspan="4">Nenhuma entrada de compra neste dia.</td></tr>';
+ const logRows=d.logs.map(l=>`<tr><td>${dateTime(l.createdAt)}</td><td>${esc(l.action||'Atividade')}</td><td>${esc(l.details||'')}</td></tr>`).join('')||'<tr><td colspan="3">Nenhuma outra atividade registrada.</td></tr>';
+ return `<div class="daily-report"><div class="daily-report-head"><div><h3>Fechamento do dia</h3><small>${esc(label)}</small></div><input id="dailyReportDate" class="daily-report-date" type="date" value="${key}"></div><div class="daily-report-scroll"><div class="daily-kpis"><div class="daily-kpi"><small>Faturamento</small><b class="private-number">${money(d.revenue)}</b></div><div class="daily-kpi"><small>Recebido no dia</small><b class="private-number">${money(d.received)}</b></div><div class="daily-kpi"><small>Custo dos produtos</small><b class="private-number">${money(d.cost)}</b></div><div class="daily-kpi"><small>Lucro bruto</small><b class="private-number">${money(d.profit)}</b></div><div class="daily-kpi"><small>Vendas</small><b>${d.sales.length}</b></div><div class="daily-kpi"><small>Itens vendidos</small><b>${d.totalItems}</b></div><div class="daily-kpi"><small>A receber das vendas</small><b class="private-number">${money(d.pending)}</b></div><div class="daily-kpi"><small>Entradas de estoque</small><b class="private-number">${money(entryTotal)}</b></div></div>
+ <div class="daily-report-section"><h4>🧾 Vendas realizadas</h4><div class="table-wrap"><table class="daily-report-table"><thead><tr><th>Horário</th><th>Cliente</th><th>Itens</th><th class="num">Total</th><th class="num">Pago</th><th class="num">Pendente</th></tr></thead><tbody>${d.sales.map(s=>`<tr><td>${dateTime(s.createdAt)}</td><td>${esc(s.clientName||"Venda balcão")}</td><td>${(s.items||[]).map(i=>`${esc(i.name||"Produto")} × ${numBR(i.qty??i.quantity??0)}`).join(" • ")||"Venda"}</td><td class="num">${money(s.total)}</td><td class="num">${money(s.paid||0)}</td><td class="num">${money(salePendingAmount(s))}</td></tr>`).join('')||'<tr><td colspan="6">Nenhuma venda registrada neste dia.</td></tr>'}</tbody></table></div></div>
+ <div class="daily-report-section"><h4>🍫 Produtos vendidos</h4><div class="table-wrap"><table class="daily-report-table"><thead><tr><th>Produto</th><th class="num">Qtd.</th><th class="num">Faturamento</th><th class="num">Custo</th><th class="num">Lucro</th></tr></thead><tbody>${itemRows}</tbody></table></div></div>
+ <div class="daily-report-section"><h4>👥 Clientes e o que cada pessoa pegou</h4>${clientRows}</div>
+ <div class="daily-report-section"><h4>💵 Recebimentos registrados</h4><div class="table-wrap"><table class="daily-report-table"><thead><tr><th>Horário</th><th>Cliente</th><th>Forma</th><th class="num">Valor</th></tr></thead><tbody>${d.payments.map(p=>`<tr><td>${dateTime(p.createdAt)}</td><td>${esc(p.clientName||"Venda balcão")}</td><td>${esc(p.method||"Outro")}</td><td class="num">${money(p.amount||0)}</td></tr>`).join('')||'<tr><td colspan="4">Nenhum recebimento registrado neste dia.</td></tr>'}</tbody></table></div></div>
+ <div class="daily-report-section"><h4>💳 Recebimentos por forma</h4><div class="table-wrap"><table class="daily-report-table"><thead><tr><th>Forma</th><th class="num">Valor</th></tr></thead><tbody>${methodRows}</tbody></table></div></div>
+ <div class="daily-report-section"><h4>📦 Entradas de estoque</h4><div class="table-wrap"><table class="daily-report-table"><thead><tr><th>Produto</th><th class="num">Qtd.</th><th class="num">Total</th><th class="num">Custo/un.</th></tr></thead><tbody>${purchaseRows}</tbody></table></div></div>
+ <div class="daily-report-section"><h4>📝 Todas as atividades registradas</h4><div class="table-wrap"><table class="daily-report-table"><thead><tr><th>Horário</th><th>Ação</th><th>Detalhes</th></tr></thead><tbody>${logRows}</tbody></table></div></div></div><div class="daily-report-actions"><button type="button" class="secondary" id="dailyReportClose">Fechar</button><button type="button" class="primary" id="dailyReportPrint">🖨️ Imprimir / PDF</button></div></div>`;
+}
+function openDailyCashReport(initialKey=dateKeyLocal(now())){
+ const key=initialKey||dateKeyLocal(now());openModal('📋 Caixa do dia',dailyReportHtml(key));
+ const bind=()=>{const date=$('dailyReportDate');if(date)date.onchange=()=>openDailyCashReport(date.value||key);$('dailyReportClose')?.addEventListener('click',closeModal);$('dailyReportPrint')?.addEventListener('click',()=>printDailyReport(date?.value||key));};bind();
+}
+function printDailyReport(key){
+ const d=dayData(key),label=d.start.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}),entryTotal=d.purchases.reduce((a,p)=>a+numBR(p.total||0),0);
+ const itemRows=d.items.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.qty}</td><td>${money(r.revenue)}</td><td>${money(r.cost)}</td><td>${money(r.revenue-r.cost)}</td></tr>`).join('')||'<tr><td colspan="5">Nenhum item vendido.</td></tr>';
+ const clientRows=d.clients.map(c=>`<div class="pc"><b>${esc(c.name)} • ${money(c.total)}</b><div>${c.qty} unidade(s) • ${c.sales} venda(s) • ${Array.from(c.items.entries()).map(([n,q])=>`${esc(n)}: ${q} un.`).join(' • ')}</div></div>`).join('')||'Nenhuma venda.';
+ const methods=d.methods.map(([m,v])=>`<tr><td>${esc(m)}</td><td>${money(v)}</td></tr>`).join('')||'<tr><td colspan="2">Nenhum recebimento.</td></tr>';
+ const purchases=d.purchases.map(p=>{const q=numBR(p.quantity),u=numBR(p.unitCost)||(q>0?numBR(p.total)/q:0);return `<tr><td>${esc(p.productName||'Produto')}</td><td>${q}</td><td>${money(p.total)}</td><td>${money(u)}</td></tr>`}).join('')||'<tr><td colspan="4">Nenhuma entrada.</td></tr>';
+ const logs=d.logs.map(l=>`<tr><td>${dateTime(l.createdAt)}</td><td>${esc(l.action||'Atividade')}</td><td>${esc(l.details||'')}</td></tr>`).join('')||'<tr><td colspan="3">Nenhuma outra atividade.</td></tr>';
+ const w=window.open('','_blank','noopener,noreferrer');if(!w){toast('O navegador bloqueou a impressão. Tente novamente.');return;}
+ w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Caixa do dia • DOCES DO VITU</title><style>body{font-family:Arial,sans-serif;color:#222;padding:24px}h1{font-size:24px;margin:0 0 4px}h2{font-size:16px;margin:20px 0 7px}.muted{color:#666;font-size:11px}.k{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.k div{border:1px solid #bbb;padding:8px}.k small{display:block;font-size:9px}.k b{font-size:15px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #bbb;padding:6px;font-size:10px;text-align:left}th{background:#eee}.pc{border-bottom:1px solid #bbb;padding:7px 0}.pc div{font-size:10px;margin-top:3px}</style></head><body><h1>DOCES DO VITU • Fechamento do dia</h1><div class="muted">${esc(label)}</div><h2>Resumo</h2><div class="k"><div><small>Faturamento</small><b>${money(d.revenue)}</b></div><div><small>Recebido</small><b>${money(d.received)}</b></div><div><small>Custo</small><b>${money(d.cost)}</b></div><div><small>Lucro bruto</small><b>${money(d.profit)}</b></div><div><small>Vendas</small><b>${d.sales.length}</b></div><div><small>Itens</small><b>${d.totalItems}</b></div><div><small>A receber</small><b>${money(d.pending)}</b></div><div><small>Entradas</small><b>${money(entryTotal)}</b></div></div><h2>Vendas realizadas</h2><table><thead><tr><th>Horário</th><th>Cliente</th><th>Itens</th><th>Total</th><th>Pago</th><th>Pendente</th></tr></thead><tbody>${d.sales.map(s=>`<tr><td>${dateTime(s.createdAt)}</td><td>${esc(s.clientName||"Venda balcão")}</td><td>${(s.items||[]).map(i=>`${esc(i.name||"Produto")} × ${numBR(i.qty??i.quantity??0)}`).join(" • ")||"Venda"}</td><td>${money(s.total)}</td><td>${money(s.paid||0)}</td><td>${money(salePendingAmount(s))}</td></tr>`).join('')||'<tr><td colspan="6">Nenhuma venda.</td></tr>'}</tbody></table><h2>Recebimentos registrados</h2><table><thead><tr><th>Horário</th><th>Cliente</th><th>Forma</th><th>Valor</th></tr></thead><tbody>${d.payments.map(p=>`<tr><td>${dateTime(p.createdAt)}</td><td>${esc(p.clientName||"Venda balcão")}</td><td>${esc(p.method||"Outro")}</td><td>${money(p.amount||0)}</td></tr>`).join('')||'<tr><td colspan="4">Nenhum recebimento.</td></tr>'}</tbody></table><h2>Produtos vendidos</h2><table><thead><tr><th>Produto</th><th>Qtd.</th><th>Faturamento</th><th>Custo</th><th>Lucro</th></tr></thead><tbody>${itemRows}</tbody></table><h2>Clientes e itens</h2>${clientRows}<h2>Recebimentos por forma</h2><table><thead><tr><th>Forma</th><th>Valor</th></tr></thead><tbody>${methods}</tbody></table><h2>Entradas de estoque</h2><table><thead><tr><th>Produto</th><th>Qtd.</th><th>Total</th><th>Custo/un.</th></tr></thead><tbody>${purchases}</tbody></table><h2>Atividades do dia</h2><table><thead><tr><th>Horário</th><th>Ação</th><th>Detalhes</th></tr></thead><tbody>${logs}</tbody></table></body></html>`);
+ w.document.close();setTimeout(()=>{w.focus();w.print()},250);
+}
 function finance(){
  const sales=data.sales||[], payments=data.payments||[], products=data.products||[], purchases=data.purchases||[], nowD=now();
  const monthSales=monthSalesFor(nowD), monthPayments=monthPaymentsFor(nowD);
@@ -842,6 +895,7 @@ function finance(){
    <button type="button" class="finance-option" id="financeAnalysis"><b>📈 Análise de vendas</b><small>Veja quando e quanto você vende.</small></button>
    <button type="button" class="finance-option" id="financeReceivables"><b>💰 A receber</b><small>Clientes e valores pendentes.</small></button>
    <button type="button" class="finance-option" id="financePayments"><b>💵 Registrar pagamento</b><small>Baixe pagamentos recebidos.</small></button>
+   <button type="button" class="finance-option" id="financeDailyReport"><b>📋 Gerar caixa do dia</b><small>Tudo que aconteceu na data escolhida.</small></button>
   </div>
   <div class="finance-grid">
    <div class="finance-card"><small>Faturamento do mês</small><strong class="private-number money-large">${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
@@ -1037,6 +1091,12 @@ function openPaymentForClient(c){
   }catch(e){console.error("Erro ao registrar pagamento",e);overlay.remove();toast(e.code==="permission-denied"?"Firebase recusou o pagamento.":"Não foi possível registrar o pagamento.");}
   finally{if(overlay.isConnected)overlay.remove();btn.disabled=false;btn.dataset.busy="0";}
  }
+}
+function openAvulsoEntry(){
+ openModal('Entrada de doce avulso',`<div class="form"><div style="padding:12px;border-radius:14px;background:var(--cream2);border:1px solid var(--line);margin-bottom:12px"><b>➕ Registrar um doce que ainda não está no estoque</b><small style="display:block;color:var(--muted);margin-top:4px">O sistema criará o produto e já registrará a entrada no estoque.</small></div><div class="field"><label>Nome do doce</label><input id="avName" placeholder="Ex.: Paçoca artesanal"></div><div class="row"><div class="field"><label>Quantidade</label><input id="avQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div><div class="field"><label>Custo total pago</label><input id="avTotal" type="text" inputmode="decimal" placeholder="Ex.: 25,00"></div></div><div class="field"><label>Preço de venda por unidade</label><input id="avPrice" type="text" inputmode="decimal" placeholder="Ex.: 1,50"></div><div class="field"><label>Estoque mínimo</label><input id="avMin" type="number" min="0" step="1" value="2"></div><div class="field"><label>Fornecedor (opcional)</label><input id="avSupplier" placeholder="Nome do fornecedor"></div><div id="avPreview" style="font-size:12px;color:var(--muted)">Informe quantidade e custo para calcular o custo unitário.</div><div class="actions"><button type="button" class="secondary" id="cancelAvulso">Cancelar</button><button type="button" class="primary" id="saveAvulso">Registrar entrada</button></div></div>`);
+ const preview=()=>{const q=Math.floor(numBR($('avQty')?.value)||0),t=numBR($('avTotal')?.value)||0,el=$('avPreview');if(q>0&&t>0){el.textContent=`Custo unitário: ${money(t/q)} • custo total: ${money(t)}`;el.style.color='var(--green,#2f8f68)'}else{el.textContent='Informe quantidade e custo para calcular o custo unitário.';el.style.color='var(--muted)'}};
+ $('avQty').oninput=preview;$('avTotal').oninput=preview;$('cancelAvulso').onclick=closeModal;
+ $('saveAvulso').onclick=async()=>{const btn=$('saveAvulso');if(btn.dataset.busy==='1')return;const name=$('avName').value.trim(),q=Math.floor(numBR($('avQty').value)||0),t=numBR($('avTotal').value)||0,price=numBR($('avPrice').value)||0,minStock=Math.floor(numBR($('avMin').value)||0),supplier=$('avSupplier').value.trim();if(!name)return toast('Informe o nome do doce.');if(q<1)return toast('Informe uma quantidade válida.');if(t<=0)return toast('Informe o custo total pago.');if(price<=0)return toast('Informe o preço de venda.');if((data.products||[]).some(p=>String(p.name||'').trim().toLowerCase()===name.toLowerCase()))return toast('Esse doce já existe no estoque. Use Adicionar estoque.');btn.dataset.busy='1';btn.disabled=true;try{const unit=Math.round(t/q*100)/100,ref=await addDoc(col('products'),{name,price,cost:unit,stock:q,minStock,supplier,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await addDoc(col('purchases'),{productId:ref.id,productName:name,quantity:q,total:t,unitCost:unit,previousUnitCost:0,newAverageCost:unit,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction('Entrada avulsa',`${name} • +${q} un. • custo ${money(t)} • custo unitário ${money(unit)}`);closeModal();render();toast(`Entrada de ${q} unidade(s) registrada!`)}catch(e){console.error(e);toast('Erro ao registrar entrada: '+(e.message||''));btn.disabled=false;btn.dataset.busy='0'}};preview();
 }
 function openAddStock(p){
  if(!p)return;const current=numBR(p.stock||0),oldCost=numBR(p.cost||0);
@@ -1294,7 +1354,7 @@ function bindV140Month(){
 function bindPage(){
  $("newSale")?.addEventListener("click",openSale);$("qSale")?.addEventListener("click",openSale);$("qQuickSale")?.addEventListener("click",openQuickSale);
  $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
- $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());
+ $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());$("avulsoEntry")?.addEventListener("click",openAvulsoEntry);
  $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
  $("seeSales")?.addEventListener("click",()=>go("sales"));
  $("logout")?.addEventListener("click",()=>signOut(auth));
@@ -1351,7 +1411,7 @@ function bindPage(){
  $("currentUser")?.addEventListener("click",openAccount);
  $("financeAnalysis")?.addEventListener("click",openAnalysis);
  $("financeReceivables")?.addEventListener("click",openReceivables);
- $("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});
+ $("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});$("financeDailyReport")?.addEventListener("click",()=>openDailyCashReport());
 }
 function openSaleDetail(s){
  if(!s)return;
