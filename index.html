@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.3.0</title>
+<title>DOCES DO VITU 1.5.3</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -88,7 +88,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
   .nav:before{display:none}
 }
 
-/* V1.4.0 FINAL - Financeiro compacto e centralizado no celular */
+/* V1.5.3 FINAL - Financeiro compacto e centralizado no celular */
 .finance-duo{width:100%;max-width:100%;margin-left:auto;margin-right:auto;align-items:stretch}
 .finance-duo .analysis-card{min-width:0;padding:13px}
 .finance-duo .section-title b{font-size:15px}
@@ -114,7 +114,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 .boot-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px;opacity:1;transition:opacity .18s ease,visibility .18s ease}.boot-loader.done{opacity:0;visibility:hidden;pointer-events:none}.boot-card{width:min(330px,88vw);text-align:center;padding:26px 22px;border-radius:22px;background:var(--white);box-shadow:0 14px 45px rgba(74,40,25,.14);display:flex;flex-direction:column;align-items:center;gap:8px}.boot-logo{font-size:42px;line-height:1}.boot-card b{font-size:19px;color:var(--dark)}.boot-card small{color:var(--muted);margin-bottom:8px}.boot-track{width:100%;height:7px;border-radius:99px;background:var(--cream2);overflow:hidden}.boot-bar{height:100%;width:0%;border-radius:99px;background:var(--brown);transition:width .12s ease}.boot-card strong{font-size:13px;color:var(--brown);min-height:18px}
 @media(prefers-reduced-motion:reduce){.boot-loader,.boot-bar{transition:none!important}}
 
-/* V1.4.0 - somente ajustes visuais de Sugestão de Compras e Financeiro */
+/* V1.5.3 - somente ajustes visuais de Sugestão de Compras e Financeiro */
 .purchase-selector-card{background:var(--white);border:1px solid var(--line);border-radius:21px;padding:17px;margin:12px 0;box-shadow:var(--shadow)}
 .purchase-selector-card label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
 .purchase-selector-card small{display:block;color:var(--muted);font-size:10px;margin-top:7px;line-height:1.35}
@@ -162,7 +162,7 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 </style>
 
 <style id="professional-motion">
-/* V1.4.0: single-tap motion system, without duplicate click effects */
+/* V1.5.3: single-tap motion system, without duplicate click effects */
 .page{animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both;will-change:transform,opacity}
 @keyframes pageEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .modal-bg{animation:modalFade .16s ease-out both}
@@ -227,7 +227,7 @@ body.dark .customer-status-select{
 }
 #mTotalValue[readonly]{opacity:.92}
 
-/* V1.4.0 visual patch: professional dark mode */
+/* V1.5.3 visual patch: professional dark mode */
 html.theme-dark, body.theme-dark {
   --cream:#141210;
   --cream2:#211c18;
@@ -408,7 +408,7 @@ body.theme-dark .finance-month {
 </style>
 
 <style id="V130_DARK_REMAINS_FIX">
-/* V1.4.0: corrigir somente os componentes que permaneciam claros no modo escuro */
+/* V1.5.3: corrigir somente os componentes que permaneciam claros no modo escuro */
 body.theme-dark .brand-mark {
   background:#2c1b12 !important;
   color:#fff !important;
@@ -424,7 +424,7 @@ body.theme-dark .tabs button.active {
   border-color:#2c1b12 !important;
 }
 
-/* V1.4.0: detalhe e gráfico do produto, mantendo a interface existente */
+/* V1.5.3: detalhe e gráfico do produto, mantendo a interface existente */
 .v140-product-panel{margin-top:12px;display:grid;gap:12px}
 .v140-product-select{display:grid;gap:6px}
 .v140-product-select label{font-size:11px;font-weight:800;color:var(--muted)}
@@ -464,6 +464,70 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 @media(max-width:420px){.v140-detail-head{display:block}.v140-period{display:block;margin-top:4px}.v140-metrics{grid-template-columns:1fr 1fr}}
 
 </style>
+
+<style id="v153-responsive-and-client-profile">
+/* V1.5.3: caixa do dia responsivo e perfil completo do cliente */
+.modal{min-width:0;overflow-x:hidden}
+.modal>*{min-width:0;max-width:100%}
+.daily-report,.daily-report-card{min-width:0;max-width:100%;overflow:hidden}
+.daily-report-table{min-width:0!important;width:100%;table-layout:fixed}
+.daily-report-table th,.daily-report-table td{white-space:normal;overflow-wrap:anywhere;word-break:break-word;max-width:0}
+.daily-report-card .daily-report-table{display:table}
+@media(max-width:600px){
+ .daily-report-toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch}
+ .daily-report-toolbar .field{grid-column:1/-1;min-width:0}
+ .daily-report-toolbar button{width:100%;min-width:0}
+ .daily-report-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .daily-report-card{padding:11px}
+ .daily-report-table{font-size:10px}
+ .daily-report-table th,.daily-report-table td{padding:7px 4px}
+ .daily-report-table th{font-size:8px}
+}
+.client-profile{min-width:0}
+.client-profile-head{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px;margin-bottom:10px;background:var(--cream2);border:1px solid var(--line);border-radius:18px}
+.client-avatar-large{width:48px;height:48px;border-radius:15px;background:var(--dark);color:#fff;display:grid;place-items:center;font-size:23px}
+.client-profile-main{min-width:0}
+.client-profile-main h3{margin:0;font-size:18px;overflow-wrap:anywhere}
+.client-profile-main p{margin:4px 0 0;color:var(--muted);font-size:10px;overflow-wrap:anywhere}
+.client-profile-debt{text-align:right;min-width:88px}
+.client-profile-debt small{display:block;color:var(--muted);font-size:8px;font-weight:900}
+.client-profile-debt b{display:block;margin-top:3px;font-size:15px;color:var(--red)}
+.client-period-tabs{display:flex;gap:6px;overflow-x:auto;padding:2px 1px 7px;margin-bottom:3px;-webkit-overflow-scrolling:touch}
+.client-period-tabs button{flex:0 0 auto;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--white);color:var(--muted);font-size:10px;font-weight:900}
+.client-period-tabs button.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+.client-period-label{padding:4px 2px 9px;color:var(--muted);font-size:10px}
+.client-profile-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:10px}
+.client-profile-metrics>div{min-width:0;padding:10px;border:1px solid var(--line);border-radius:13px;background:var(--white)}
+.client-profile-metrics small{display:block;color:var(--muted);font-size:8px;font-weight:900;line-height:1.2}
+.client-profile-metrics strong{display:block;margin-top:4px;font-size:15px;overflow-wrap:anywhere}
+.client-profile-card{min-width:0;border:1px solid var(--line);border-radius:16px;background:var(--white);padding:11px;margin-bottom:10px}
+.client-section-title{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}
+.client-section-title b{font-size:13px}
+.client-section-title small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.client-top-products{display:flex;flex-direction:column;gap:5px}
+.client-top-product{display:grid;grid-template-columns:27px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px;border-radius:11px;background:var(--cream)}
+.client-rank{width:27px;height:27px;border-radius:9px;background:var(--cream2);display:grid;place-items:center;font-size:10px;font-weight:900;color:var(--dark)}
+.client-top-product .item-main b{font-size:11px;overflow-wrap:anywhere}
+.client-top-product .item-main small{font-size:9px}
+.client-top-product .item-right b{font-size:12px}
+.client-profile-card .list{gap:5px}
+.client-sale-row{padding:9px}
+.client-sale-row .item-main b{font-size:11px;white-space:normal;overflow-wrap:anywhere}
+.client-sale-row .item-main small{font-size:9px}
+.client-sale-row .item-right b{font-size:12px}
+.client-profile-actions{padding-top:1px}
+.client-profile-actions .primary,.client-profile-actions .secondary{min-height:48px}
+@media(max-width:420px){
+ .client-profile-head{grid-template-columns:42px minmax(0,1fr);align-items:start}
+ .client-avatar-large{width:42px;height:42px;font-size:20px}
+ .client-profile-debt{grid-column:1/-1;text-align:left;padding-top:4px;border-top:1px solid var(--line)}
+ .client-profile-debt b{font-size:14px}
+ .client-profile-metrics{gap:6px}
+ .client-profile-metrics>div{padding:9px}
+ .client-profile-metrics strong{font-size:14px}
+}
+</style>
+
 </head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
@@ -486,7 +550,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.4.0</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.3</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -1025,14 +1089,97 @@ function clientPending(c){
  return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))+salesPending;
 }
 function clientInitialPending(c){return Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0))}
+function clientSalesFor(c){
+ const nameKey=String(c?.name||"").trim().toLowerCase();
+ return (data.sales||[]).filter(s=>{
+   if(s.clientId===c.id)return true;
+   return !s.clientId && String(s.clientName||"").trim().toLowerCase()===nameKey;
+ }).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
+}
+function clientPeriodSales(sales,period){
+ if(period==="total")return sales.slice();
+ const days=Number(period)||1, end=now();
+ end.setHours(23,59,59,999);
+ const start=new Date(end);
+ start.setDate(start.getDate()-(days-1));
+ start.setHours(0,0,0,0);
+ return sales.filter(s=>{const d=dt(s.createdAt);return d&&d>=start&&d<=end});
+}
+function clientProfileHtml(c,period){
+ const all=clientSalesFor(c), ss=clientPeriodSales(all,period);
+ const total=ss.reduce((a,s)=>a+numBR(s.total||0),0);
+ const paid=ss.reduce((a,s)=>a+Math.min(numBR(s.total||0),Math.max(0,numBR(s.paid||0))),0);
+ const pendingPeriod=ss.reduce((a,s)=>a+salePendingAmount(s),0);
+ const items=ss.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+numBR(i.qty||0),0),0);
+ const ticket=ss.length?total/ss.length:0;
+ const top={};
+ ss.forEach(s=>(s.items||[]).forEach(i=>{
+   const name=String(i.name||"Produto").trim()||"Produto";
+   const qty=numBR(i.qty||0), revenue=numBR(i.total||0)||numBR(i.price||0)*qty;
+   if(!top[name])top[name]={qty:0,revenue:0};
+   top[name].qty+=qty; top[name].revenue+=revenue;
+ }));
+ const topRows=Object.entries(top).sort((a,b)=>b[1].qty-a[1].qty||b[1].revenue-a[1].revenue).slice(0,6).map(([name,v],idx)=>`
+   <div class="client-top-product"><div class="client-rank">${idx+1}</div><div class="item-main"><b>${esc(name)}</b><small>${v.qty} unidade(s) • ${money(v.revenue)}</small></div><div class="item-right"><b>${v.qty}x</b></div></div>`).join("")||`<div class="empty">Nenhuma compra nesse período.</div>`;
+ const latest=all.slice(0,8);
+ const latestRows=latest.map(s=>`<div class="item client-sale-row" data-sale="${s.id}"><div class="avatar">🍬</div><div class="item-main"><b>${esc(s.items?.map(i=>i.name).join(", ")||"Venda")}</b><small>${dateTime(s.createdAt)} • ${(s.items||[]).reduce((a,i)=>a+numBR(i.qty||0),0)} item(ns)</small></div><div class="item-right"><b>${money(s.total)}</b><div class="status ${statusClass(status(s.total,s.paid))}">${status(s.total,s.paid)}</div></div></div>`).join("")||`<div class="empty">Nenhuma venda registrada.</div>`;
+ const periodLabel=period==="total"?"Todo o histórico":`Últimos ${period} dias`;
+ const since=dt(c.createdAt);
+ return `<div class="client-profile">
+  <div class="client-profile-head">
+   <div class="client-avatar-large">👤</div>
+   <div class="client-profile-main"><h3>${esc(c.name)}</h3><p>${c.phone?`📱 ${esc(c.phone)}`:"Sem telefone cadastrado"}${since?` • Cliente desde ${dateOnly(since)}`:""}</p></div>
+   <div class="client-profile-debt"><small>A RECEBER</small><b>${money(clientPending(c))}</b></div>
+  </div>
+  <div class="client-period-tabs">
+   <button type="button" data-client-period="1" class="${period==="1"?"active":""}">Hoje</button>
+   <button type="button" data-client-period="7" class="${period==="7"?"active":""}">7 dias</button>
+   <button type="button" data-client-period="15" class="${period==="15"?"active":""}">15 dias</button>
+   <button type="button" data-client-period="30" class="${period==="30"?"active":""}">30 dias</button>
+   <button type="button" data-client-period="total" class="${period==="total"?"active":""}">TOTAL</button>
+  </div>
+  <div class="client-period-label">Resumo de <b>${periodLabel}</b></div>
+  <div class="client-profile-metrics">
+   <div><small>TOTAL COMPRADO</small><strong class="private-number">${money(total)}</strong></div>
+   <div><small>COMPRAS</small><strong>${ss.length}</strong></div>
+   <div><small>ITENS LEVADOS</small><strong>${items}</strong></div>
+   <div><small>TICKET MÉDIO</small><strong class="private-number">${money(ticket)}</strong></div>
+   <div><small>PAGO NAS VENDAS</small><strong class="private-number">${money(paid)}</strong></div>
+   <div><small>A RECEBER DO PERÍODO</small><strong class="private-number">${money(pendingPeriod)}</strong></div>
+  </div>
+  <div class="client-profile-card">
+   <div class="client-section-title"><div><b>🍫 Doces mais pegos</b><small>Por quantidade comprada em ${periodLabel.toLowerCase()}.</small></div></div>
+   <div class="client-top-products">${topRows}</div>
+  </div>
+  <div class="client-profile-card">
+   <div class="client-section-title"><div><b>🧾 Últimas vendas</b><small>As ${latest.length} vendas mais recentes deste cliente.</small></div></div>
+   <div class="list">${latestRows}</div>
+  </div>
+ </div>`;
+}
 function openClient(c){
- const ss=data.sales.filter(s=>s.clientId===c.id).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
- const total=ss.reduce((a,s)=>a+numBR(s.total||0),0),pending=clientPending(c);
- openModal(esc(c.name),`<div class="hero"><div><small>A RECEBER</small><h2>${money(pending)}</h2><p>${ss.length} compras registradas</p></div><div class="emoji">👤</div></div>${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:12px">💸 Cobrar ${money(pending)}</button>`:""}<button class="secondary" id="editClientBtn" style="width:100%;margin-bottom:12px">✏️ Editar cliente</button><div class="section-title"><b>Histórico de compras</b></div><div class="list">${ss.map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma compra.</div>'}</div><div class="form" style="margin-top:11px"><small style="color:var(--muted)">Total comprado</small><h2 style="margin:4px 0">${money(total)}</h2><button class="primary" id="registerFromClient">💵 Registrar pagamento</button></div>`);
+ const initialPeriod="1";
+ const pending=clientPending(c);
+ const actions=`${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:9px">💸 Cobrar ${money(pending)}</button>`:""}<button class="secondary" id="editClientBtn" style="width:100%;margin-bottom:9px">✏️ Editar cliente</button><button class="primary" id="registerFromClient" style="width:100%">💵 Registrar pagamento</button>`;
+ openModal(esc(c.name),`<div id="clientProfileContent">${clientProfileHtml(c,initialPeriod)}</div><div class="client-profile-actions">${actions}</div>`);
+ const bindPeriodTabs=()=>{
+   document.querySelectorAll("[data-client-period]").forEach(btn=>{
+     btn.onclick=()=>{
+       const period=btn.dataset.clientPeriod;
+       const box=$("clientProfileContent");
+       if(box)box.innerHTML=clientProfileHtml(c,period);
+       bindPeriodTabs();
+     };
+   });
+   document.querySelectorAll(".client-sale-row[data-sale]").forEach(row=>{
+     row.onclick=()=>openSaleDetail(data.sales.find(s=>s.id===row.dataset.sale));
+   });
+ };
+ bindPeriodTabs();
  $("registerFromClient").onclick=()=>openPaymentForClient(c);
  if($("chargeClientModal"))$("chargeClientModal").onclick=()=>chargeClient(c);
  $("editClientBtn").onclick=()=>openEditClient(c);
-}
+} 
 function openEditClient(c){
  openModal("Editar cliente",`<div class="form"><div class="field"><label>Nome do cliente</label><input id="editClientName" value="${esc(c.name)}" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="editClientPhone" value="${esc(c.phone||"")}" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelEditClient">Cancelar</button><button class="primary" id="saveEditClient">Salvar alterações</button></div></div>`);
  $("cancelEditClient").onclick=closeModal;
