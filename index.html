@@ -227,6 +227,17 @@ body.dark .customer-status-select{
 }
 #mTotalValue[readonly]{opacity:.92}
 
+
+/* V1.5.4: fotos de clientes */
+.client-avatar-img{width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;border:1px solid var(--line,#ddd);background:var(--cream2,#f4eee8)}
+.client-avatar-large-img{width:74px;height:74px;border-radius:50%;object-fit:cover;display:block;border:2px solid var(--line,#ddd);background:var(--cream2,#f4eee8);box-shadow:0 5px 18px #0002}
+.client-photo-picker{display:flex;align-items:center;gap:14px;padding:13px;border:1px dashed var(--line,#d8c8bb);border-radius:16px;background:var(--cream2,#f7f1eb)}
+.client-photo-preview{width:68px;height:68px;border-radius:50%;object-fit:cover;display:grid;place-items:center;overflow:hidden;flex:0 0 auto;background:var(--white,#fff);border:1px solid var(--line,#ddd);font-size:30px}
+.client-photo-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.client-photo-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.client-photo-actions button{font-size:11px;padding:8px 10px}
+.client-photo-note{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:4px}
+@media(max-width:430px){.client-profile-head{gap:10px!important}.client-avatar-large-img{width:62px;height:62px}.client-photo-picker{align-items:flex-start}}
 /* V1.5.3 visual patch: professional dark mode */
 html.theme-dark, body.theme-dark {
   --cream:#141210;
@@ -466,7 +477,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 </style>
 
 <style id="v153-responsive-and-client-profile">
-/* V1.5.3: caixa do dia responsivo e perfil completo do cliente */
+/* V1.5.3: caixa do dia responsivo e perfil completo do cliente | V1.5.4: fotos de clientes */
 .modal{min-width:0;overflow-x:hidden}
 .modal>*{min-width:0;max-width:100%}
 .daily-report,.daily-report-card{min-width:0;max-width:100%;overflow:hidden}
@@ -750,7 +761,34 @@ function clients(){
  <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
  <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
-function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),pending=clientPending(c),isOtimo=String(c.status||"normal").toLowerCase()==="otimo";return `<div class="item" data-client="${c.id}"><div class="avatar">👤</div><div class="item-main"><b>${esc(c.name)}</b>${isOtimo?`<small class="client-status-otimo">Ótimo</small>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+function clientAvatar(c,large=false){
+ const cls=large?"client-avatar-large-img":"client-avatar-img";
+ return c?.photoData?`<img class="${cls}" src="${esc(c.photoData)}" alt="Foto de ${esc(c.name||"cliente")}">`:(large?`<div class="client-avatar-large">👤</div>`:`<div class="avatar">👤</div>`);
+}
+function compressClientPhoto(file){
+ return new Promise((resolve,reject)=>{
+  if(!file)return resolve("");
+  if(!file.type||!file.type.startsWith("image/"))return reject(new Error("Selecione uma imagem válida."));
+  const reader=new FileReader();
+  reader.onerror=()=>reject(new Error("Não foi possível ler a foto."));
+  reader.onload=()=>{
+   const img=new Image();
+   img.onerror=()=>reject(new Error("Não foi possível abrir a foto."));
+   img.onload=()=>{
+    const max=420, scale=Math.min(1,max/Math.max(img.width,img.height));
+    const w=Math.max(1,Math.round(img.width*scale)),h=Math.max(1,Math.round(img.height*scale));
+    const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+    const ctx=canvas.getContext("2d");ctx.drawImage(img,0,0,w,h);
+    let quality=.78, out=canvas.toDataURL("image/jpeg",quality);
+    while(out.length>260000&&quality>.48){quality-=.07;out=canvas.toDataURL("image/jpeg",quality)}
+    resolve(out);
+   };
+   img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+ });
+}
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),pending=clientPending(c),isOtimo=String(c.status||"normal").toLowerCase()==="otimo";return `<div class="item" data-client="${c.id}">${clientAvatar(c)}<div class="item-main"><b>${esc(c.name)}</b>${isOtimo?`<small class="client-status-otimo">Ótimo</small>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><div class="stock-head-actions"><button type="button" class="stock-avulsa-head" id="stockAvulsaHead">＋ Avulsa</button><button class="top-action" id="newProduct">＋</button></div></div>
@@ -1127,7 +1165,7 @@ function clientProfileHtml(c,period){
  const since=dt(c.createdAt);
  return `<div class="client-profile">
   <div class="client-profile-head">
-   <div class="client-avatar-large">👤</div>
+   ${clientAvatar(c,true)}
    <div class="client-profile-main"><h3>${esc(c.name)}</h3><p>${c.phone?`📱 ${esc(c.phone)}`:"Sem telefone cadastrado"}${since?` • Cliente desde ${dateOnly(since)}`:""}</p></div>
    <div class="client-profile-debt"><small>A RECEBER</small><b>${money(clientPending(c))}</b></div>
   </div>
@@ -1181,9 +1219,15 @@ function openClient(c){
  $("editClientBtn").onclick=()=>openEditClient(c);
 } 
 function openEditClient(c){
- openModal("Editar cliente",`<div class="form"><div class="field"><label>Nome do cliente</label><input id="editClientName" value="${esc(c.name)}" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="editClientPhone" value="${esc(c.phone||"")}" placeholder="(47) 99999-9999"></div><div class="actions"><button class="secondary" id="cancelEditClient">Cancelar</button><button class="primary" id="saveEditClient">Salvar alterações</button></div></div>`);
+ openModal("Editar cliente",`<div class="form"><div class="field"><label>Nome do cliente</label><input id="editClientName" value="${esc(c.name)}" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="editClientPhone" value="${esc(c.phone||"")}" placeholder="(47) 99999-9999"></div><div class="field"><label>Foto (opcional)</label><div class="client-photo-picker"><div class="client-photo-preview" id="editClientPhotoPreview">${c.photoData?`<img src="${esc(c.photoData)}" alt="Foto atual">`:'👤'}</div><div><input id="editClientPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button type="button" class="secondary" id="chooseEditClientPhoto">📷 ${c.photoData?'Trocar foto':'Adicionar foto'}</button><div class="client-photo-actions"><button type="button" class="secondary" id="removeEditClientPhoto" style="${c.photoData?'display:inline-block':'display:none'}">🗑️ Remover</button></div><small class="client-photo-note">A foto é reduzida automaticamente para não pesar no sistema.</small></div></div></div><div class="actions"><button class="secondary" id="cancelEditClient">Cancelar</button><button class="primary" id="saveEditClient">Salvar alterações</button></div></div>`);
  $("cancelEditClient").onclick=closeModal;
- $("saveEditClient").onclick=async()=>{const name=$("editClientName").value.trim();if(!name)return toast("Digite o nome.");try{await updateDoc(doc(col("clients"),c.id),{name,phone:$("editClientPhone").value.trim()});await logAction("Cliente editado",`${c.name} → ${name}`);closeModal();toast("Cliente atualizado!")}catch(e){toast("Não foi possível editar o cliente.")}};
+ let editPhotoData=c.photoData||"";
+ const editPhotoInput=$("editClientPhoto"),editPreview=$("editClientPhotoPreview"),editRemove=$("removeEditClientPhoto");
+ const updateEditPhotoPreview=()=>{editPreview.innerHTML=editPhotoData?`<img src="${esc(editPhotoData)}" alt="Prévia da foto">`:'👤';editRemove.style.display=editPhotoData?'inline-block':'none';$("chooseEditClientPhoto").textContent=editPhotoData?'📷 Trocar foto':'📷 Adicionar foto'};
+ $("chooseEditClientPhoto").onclick=()=>editPhotoInput.click();
+ editPhotoInput.onchange=async()=>{const file=editPhotoInput.files?.[0];if(!file)return;try{editPhotoData=await compressClientPhoto(file);updateEditPhotoPreview()}catch(e){toast(e.message||"Não foi possível carregar a foto.");editPhotoInput.value=""}};
+ editRemove.onclick=()=>{editPhotoData="";editPhotoInput.value="";updateEditPhotoPreview()};
+ $("saveEditClient").onclick=async()=>{const name=$("editClientName").value.trim();if(!name)return toast("Digite o nome.");try{await updateDoc(doc(col("clients"),c.id),{name,phone:$("editClientPhone").value.trim(),photoData:editPhotoData||""});await logAction("Cliente editado",`${c.name} → ${name}`);closeModal();toast("Cliente atualizado!")}catch(e){console.error(e);toast("Não foi possível editar o cliente.")}};
 }
 function pixPayload(amount){
  const value=Number(amount||0),key="13993881931",merchant="DOCES DO VITU",city="JOINVILLE";
@@ -1340,8 +1384,13 @@ function openProduct(p=null){
  updatePurchasePreview();
 }
 function openClientForm(){
- openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" autocomplete="name" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" autocomplete="tel" placeholder="(47) 99999-9999"></div><div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="saveClient">Salvar</button></div></div>`);
- const cancel=$("cancelModal"),btn=$("saveClient");
+ openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" autocomplete="name" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" autocomplete="tel" placeholder="(47) 99999-9999"></div><div class="field"><label>Foto (opcional)</label><div class="client-photo-picker"><div class="client-photo-preview" id="clientPhotoPreview">👤</div><div><input id="cPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button type="button" class="secondary" id="chooseClientPhoto">📷 Adicionar foto</button><div class="client-photo-actions"><button type="button" class="secondary" id="removeClientPhoto" style="display:none">🗑️ Remover</button></div><small class="client-photo-note">A foto é reduzida automaticamente para não pesar no sistema.</small></div></div></div><div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="saveClient">Salvar</button></div></div>`);
+ const cancel=$("cancelModal"),btn=$("saveClient"),photoInput=$("cPhoto"),photoPreview=$("clientPhotoPreview"),removePhoto=$("removeClientPhoto");
+ let photoData="";
+ const updatePhotoPreview=()=>{if(!photoPreview)return;photoPreview.innerHTML=photoData?`<img src="${esc(photoData)}" alt="Prévia da foto">`:'👤';if(removePhoto)removePhoto.style.display=photoData?'inline-block':'none'};
+ $("chooseClientPhoto")?.addEventListener("click",()=>photoInput?.click());
+ photoInput?.addEventListener("change",async()=>{const file=photoInput.files?.[0];if(!file)return;try{photoData=await compressClientPhoto(file);updatePhotoPreview()}catch(e){toast(e.message||"Não foi possível carregar a foto.");photoInput.value=""}});
+ removePhoto?.addEventListener("click",()=>{photoData="";photoInput.value="";updatePhotoPreview()});
  if(cancel)cancel.onclick=closeModal;
  if(btn)btn.onclick=async()=>{
   const name=$("cName")?.value.trim()||"";
@@ -1350,7 +1399,7 @@ function openClientForm(){
   btn.dataset.busy="1";btn.disabled=true;
   try{
    const phone=$("cPhone")?.value.trim()||"";
-   const ref=await addDoc(col("clients"),{name,phone,status:"normal",createdAt:serverTimestamp()});
+   const ref=await addDoc(col("clients"),{name,phone,photoData:photoData||"",status:"normal",createdAt:serverTimestamp()});
    await logAction("Cliente cadastrado",name);
    closeModal();
    toast("Cliente cadastrado!");
