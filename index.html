@@ -294,6 +294,11 @@ body.theme-dark .hero {
 body.theme-dark .modal-bg { background:rgba(0,0,0,.68) !important; }
 body.theme-dark .toast { background:#28211c !important; color:var(--text) !important; border-color:var(--line) !important; }
 body.theme-dark .empty { color:var(--muted) !important; }
+
+.sales-period-bar{margin:10px 0 12px;padding:11px 13px;border:1px solid var(--line);border-radius:15px;background:var(--white);display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:var(--shadow)}
+.sales-period-bar>div{display:flex;flex-direction:column;gap:2px}.sales-period-bar small{font-size:9px;color:var(--muted);font-weight:800;letter-spacing:.08em}.sales-period-bar b{font-size:13px;color:var(--text)}
+.sales-period-bar select{min-width:125px;padding:10px 30px 10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--white);color:var(--text);font-weight:800}
+.daily-report{display:flex;flex-direction:column;gap:13px}.daily-report-toolbar{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.daily-report-toolbar .field{flex:1;min-width:170px;margin:0}.daily-report-toolbar button{min-height:42px}.daily-report-card{border:1px solid var(--line);border-radius:15px;padding:13px;background:var(--white)}.daily-report-card h3{margin:0 0 9px;font-size:14px}.daily-report-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.daily-report-metric{padding:10px;border:1px solid var(--line);border-radius:12px}.daily-report-metric small{display:block;color:var(--muted);font-size:9px}.daily-report-metric b{display:block;margin-top:3px;font-size:15px}.daily-report-table{width:100%;border-collapse:collapse;font-size:11px}.daily-report-table th,.daily-report-table td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.daily-report-table th{font-size:9px;color:var(--muted);text-transform:uppercase}.daily-report-muted{color:var(--muted);font-size:11px}
 body.theme-dark .finance-option {
   background:#1b1816 !important;
   color:var(--text) !important;
@@ -660,10 +665,19 @@ function home(){
 function saleItem(s){let st=status(s.total,s.paid),disc=Number(s.discountPct||0);return `<div class="item" data-sale="${s.id}"><div class="avatar">🍬</div><div class="item-main"><b>${esc(s.clientName||"Venda balcão")}</b><small>${dateTime(s.createdAt)} • ${esc(s.items?.map(i=>i.name).join(", ")||"Venda")}${disc>0?` • <span style="color:var(--green,#2f8f68);font-weight:800">${disc.toFixed(2).replace('.',',')}% OFF</span>`:""}</small></div><div class="item-right"><b>${money(s.total)}</b><div class="status ${statusClass(st)}">${st}</div></div></div>`}
 
 function sales(){
- const rows=data.sales.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
- return `<div class="page"><div class="head"><div><h1>Vendas</h1><p>Cada venda com dia e horário</p></div><button class="top-action" id="newSale">＋</button></div>
+ const days=Number(localStorage.getItem("docesDoVituSalesDays")||7);
+ const rows=getSalesForPeriod(days);
+ return `<div class="page"><div class="head"><div><h1>Vendas</h1><p>Mostrando as vendas mais recentes</p></div><button class="top-action" id="newSale">＋</button></div>
+ <div class="sales-period-bar"><div><small>PERÍODO</small><b>Vendas exibidas</b></div><select id="salesPeriod"><option value="7" ${days===7?'selected':''}>7 dias</option><option value="14" ${days===14?'selected':''}>14 dias</option><option value="21" ${days===21?'selected':''}>21 dias</option><option value="30" ${days===30?'selected':''}>30 dias</option><option value="0" ${days===0?'selected':''}>Todos os dias</option></select></div>
  <div class="tabs"><button class="active" data-sales-filter="all">Todas</button><button data-sales-filter="paid">Pagas</button><button data-sales-filter="partial">Parciais</button><button data-sales-filter="pending">Pendentes</button></div>
- <div class="table-wrap"><table><thead><tr><th>Data</th><th>Horário</th><th>Cliente</th><th>Produto</th><th>Qtd.</th><th>Total</th><th>Status</th></tr></thead><tbody id="salesBody">${rows.map(s=>saleRow(s)).join("")||'<tr><td colspan="7">Nenhuma venda.</td></tr>'}</tbody></table></div></div>`
+ <div class="table-wrap"><table><thead><tr><th>Data</th><th>Horário</th><th>Cliente</th><th>Produto</th><th>Qtd.</th><th>Total</th><th>Status</th></tr></thead><tbody id="salesBody">${rows.map(s=>saleRow(s)).join("")||'<tr><td colspan="7">Nenhuma venda no período.</td></tr>'}</tbody></table></div></div>`
+}
+function getSalesForPeriod(days){
+ const all=data.sales.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));
+ if(!days)return all;
+ const end=now(); end.setHours(23,59,59,999);
+ const start=new Date(end); start.setDate(start.getDate()-(days-1)); start.setHours(0,0,0,0);
+ return all.filter(s=>{const d=dt(s.createdAt);return d&&d>=start&&d<=end});
 }
 function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==="Parcial"?"partial":"pending",d=dt(s.createdAt);return `<tr data-status="${filter}" data-sale="${s.id}"><td>${d?d.toLocaleDateString("pt-BR"):"-"}</td><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(s.clientName||"Balcão")}</td><td>${esc(s.items?.map(i=>i.name).join(", ")||"-")}</td><td>${s.items?.reduce((a,i)=>a+Number(i.qty||0),0)||0}</td><td>${money(s.total)}</td><td class="${statusClass(st)}">${st}</td></tr>`}
 
@@ -815,6 +829,41 @@ function purchases(){
   </div>
  </div>`;
 }
+function dayData(dateKey){
+ const [y,m,d]=String(dateKey).split("-").map(Number);
+ const start=new Date(y,m-1,d);start.setHours(0,0,0,0); const end=new Date(y,m-1,d+1);end.setHours(0,0,0,0);
+ const inDay=created=>{const x=dt(created);return x&&x>=start&&x<end};
+ return {dateKey,start,sales:(data.sales||[]).filter(s=>inDay(s.createdAt)),payments:(data.payments||[]).filter(p=>inDay(p.createdAt)),purchases:(data.purchases||[]).filter(p=>inDay(p.createdAt)),logs:(data.logs||[]).filter(l=>inDay(l.createdAt))};
+}
+function dailyCashHtml(r){
+ const {start,sales,payments,purchases,logs}=r;
+ const revenue=sales.reduce((a,s)=>a+numBR(s.total||0),0),received=payments.reduce((a,p)=>a+numBR(p.amount||0),0),cost=sales.reduce((a,s)=>a+saleCostAmount(s),0),profit=revenue-cost,pending=sales.reduce((a,s)=>a+salePendingAmount(s),0),stockEntry=purchases.reduce((a,p)=>a+numBR(p.total||0),0),itemCount=sales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+numBR(i.qty||0),0),0);
+ const byMethod={};payments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+numBR(p.amount||0)});
+ const products={};sales.forEach(s=>(s.items||[]).forEach(i=>{const n=i.name||"Produto",q=numBR(i.qty||0),rev=q*numBR(i.price||0),prod=data.products.find(p=>p.id===i.productId),uc=numBR(i.cost??i.unitCost??prod?.cost??0);if(!products[n])products[n]={qty:0,revenue:0,cost:0};products[n].qty+=q;products[n].revenue+=rev;products[n].cost+=q*uc;}));
+ const clients={};sales.forEach(s=>{const n=s.clientName||"Venda balcão";if(!clients[n])clients[n]=[];(s.items||[]).forEach(i=>clients[n].push(`${i.name||"Produto"} x${numBR(i.qty||0)}`));});
+ const saleRows=sales.map(s=>{const d=dt(s.createdAt);return `<tr><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(s.clientName||"Venda balcão")}</td><td>${esc((s.items||[]).map(i=>`${i.name||"Produto"} x${numBR(i.qty||0)}`).join(", ")||"-")}</td><td>${money(s.total)}</td><td>${money(s.paid||0)}</td><td>${money(salePendingAmount(s))}</td></tr>`}).join("");
+ const productRows=Object.entries(products).sort((a,b)=>b[1].qty-a[1].qty).map(([n,v])=>`<tr><td>${esc(n)}</td><td>${v.qty}</td><td>${money(v.revenue)}</td><td>${money(v.cost)}</td><td>${money(v.revenue-v.cost)}</td></tr>`).join("");
+ const clientRows=Object.entries(clients).map(([n,it])=>`<tr><td>${esc(n)}</td><td>${esc(it.join(", "))}</td></tr>`).join("");
+ const paymentRows=payments.map(p=>{const d=dt(p.createdAt);return `<tr><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(p.clientName||"Venda balcão")}</td><td>${esc(p.method||"Outro")}</td><td>${money(p.amount)}</td></tr>`}).join("");
+ const purchaseRows=purchases.map(p=>`<tr><td>${esc(p.productName||p.name||"Produto")}</td><td>${p.qty??p.quantity??0}</td><td>${money(p.total||0)}</td></tr>`).join("");
+ const logRows=logs.map(l=>{const d=dt(l.createdAt);return `<tr><td>${d?d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"-"}</td><td>${esc(l.action||"Atividade")}</td><td>${esc(l.details||"")}</td></tr>`}).join("");
+ return `<div class="daily-report"><div class="daily-report-toolbar"><div class="field"><label>Data do caixa</label><input id="dailyCashDate" type="date" value="${r.dateKey}"></div><button class="primary" id="dailyCashRefresh">Gerar relatório</button><button class="secondary" id="dailyCashPrint">🖨️ Imprimir / PDF</button></div>
+ <div class="daily-report-card"><h3>Resumo • ${start.toLocaleDateString("pt-BR")}</h3><div class="daily-report-summary"><div class="daily-report-metric"><small>Faturamento</small><b>${money(revenue)}</b></div><div class="daily-report-metric"><small>Recebido</small><b>${money(received)}</b></div><div class="daily-report-metric"><small>Custo</small><b>${money(cost)}</b></div><div class="daily-report-metric"><small>Lucro bruto</small><b>${money(profit)}</b></div><div class="daily-report-metric"><small>A receber</small><b>${money(pending)}</b></div><div class="daily-report-metric"><small>Entrada de estoque</small><b>${money(stockEntry)}</b></div><div class="daily-report-metric"><small>Vendas</small><b>${sales.length}</b></div><div class="daily-report-metric"><small>Itens vendidos</small><b>${itemCount}</b></div></div></div>
+ <div class="daily-report-card"><h3>Vendas do dia</h3>${saleRows?`<table class="daily-report-table"><thead><tr><th>Hora</th><th>Cliente</th><th>Itens</th><th>Total</th><th>Pago</th><th>Pendente</th></tr></thead><tbody>${saleRows}</tbody></table>`:`<div class="daily-report-muted">Nenhuma venda registrada neste dia.</div>`}</div>
+ <div class="daily-report-card"><h3>Produtos vendidos</h3>${productRows?`<table class="daily-report-table"><thead><tr><th>Produto</th><th>Qtd.</th><th>Faturamento</th><th>Custo</th><th>Lucro</th></tr></thead><tbody>${productRows}</tbody></table>`:`<div class="daily-report-muted">Nenhum produto vendido.</div>`}</div>
+ <div class="daily-report-card"><h3>Clientes e itens</h3>${clientRows?`<table class="daily-report-table"><thead><tr><th>Cliente</th><th>O que levou</th></tr></thead><tbody>${clientRows}</tbody></table>`:`<div class="daily-report-muted">Nenhum cliente teve venda neste dia.</div>`}</div>
+ <div class="daily-report-card"><h3>Recebimentos</h3><div class="daily-report-muted" style="margin-bottom:8px">${Object.entries(byMethod).map(([m,v])=>`${esc(m)}: <b>${money(v)}</b>`).join(" • ")||"Nenhum recebimento"}</div>${paymentRows?`<table class="daily-report-table"><thead><tr><th>Hora</th><th>Cliente</th><th>Forma</th><th>Valor</th></tr></thead><tbody>${paymentRows}</tbody></table>`:""}</div>
+ <div class="daily-report-card"><h3>Entradas de estoque</h3>${purchaseRows?`<table class="daily-report-table"><thead><tr><th>Produto</th><th>Qtd.</th><th>Total</th></tr></thead><tbody>${purchaseRows}</tbody></table>`:`<div class="daily-report-muted">Nenhuma entrada de estoque.</div>`}</div>
+ <div class="daily-report-card"><h3>Atividades registradas</h3>${logRows?`<table class="daily-report-table"><thead><tr><th>Hora</th><th>Ação</th><th>Detalhes</th></tr></thead><tbody>${logRows}</tbody></table>`:`<div class="daily-report-muted">Nenhuma atividade registrada.</div>`}</div></div>`;
+}
+function printDailyCash(r){
+ const {start,sales,payments}=r,revenue=sales.reduce((a,s)=>a+numBR(s.total||0),0),received=payments.reduce((a,p)=>a+numBR(p.amount||0),0),cost=sales.reduce((a,s)=>a+saleCostAmount(s),0),pending=sales.reduce((a,s)=>a+salePendingAmount(s),0),w=window.open();
+ if(!w){toast("Permita pop-ups para gerar o PDF.");return}
+ const rows=sales.map(s=>`<tr><td>${dateTime(s.createdAt)}</td><td>${esc(s.clientName||"Venda balcão")}</td><td>${esc((s.items||[]).map(i=>`${i.name||"Produto"} x${numBR(i.qty||0)}`).join(", "))}</td><td>${money(s.total)}</td><td>${money(s.paid||0)}</td><td>${money(salePendingAmount(s))}</td></tr>`).join("");
+ w.document.open();w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Caixa do dia</title><style>body{font-family:Arial,sans-serif;color:#222;padding:28px;font-size:12px}h1{margin:0 0 5px;font-size:22px}p{margin:0 0 18px;color:#666}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}.box{border:1px solid #ddd;border-radius:8px;padding:10px}.box small{display:block;color:#777}.box b{font-size:16px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{padding:7px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}th{font-size:10px;color:#666;text-transform:uppercase}</style></head><body><h1>DOCES DO VITU • Caixa do dia</h1><p>${start.toLocaleDateString("pt-BR")}</p><div class="summary"><div class="box"><small>Faturamento</small><b>${money(revenue)}</b></div><div class="box"><small>Recebido</small><b>${money(received)}</b></div><div class="box"><small>Custo</small><b>${money(cost)}</b></div><div class="box"><small>A receber</small><b>${money(pending)}</b></div></div><h2>Vendas (${sales.length})</h2><table><thead><tr><th>Data/hora</th><th>Cliente</th><th>Itens</th><th>Total</th><th>Pago</th><th>Pendente</th></tr></thead><tbody>${rows||'<tr><td colspan="6">Nenhuma venda.</td></tr>'}</tbody></table><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);w.document.close();
+}
+function openDailyCashReport(){const n=now(),key=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`,r=dayData(key);openModal("Caixa do dia",dailyCashHtml(r));bindDailyCash(r)}
+function bindDailyCash(r){$("dailyCashRefresh")?.addEventListener("click",()=>{const key=$("dailyCashDate")?.value||r.dateKey,rr=dayData(key);openModal("Caixa do dia",dailyCashHtml(rr));bindDailyCash(rr)});$("dailyCashPrint")?.addEventListener("click",()=>printDailyCash(r))}
 function finance(){
  const sales=data.sales||[], payments=data.payments||[], products=data.products||[], purchases=data.purchases||[], nowD=now();
  const monthSales=monthSalesFor(nowD), monthPayments=monthPaymentsFor(nowD);
@@ -842,6 +891,7 @@ function finance(){
    <button type="button" class="finance-option" id="financeAnalysis"><b>📈 Análise de vendas</b><small>Veja quando e quanto você vende.</small></button>
    <button type="button" class="finance-option" id="financeReceivables"><b>💰 A receber</b><small>Clientes e valores pendentes.</small></button>
    <button type="button" class="finance-option" id="financePayments"><b>💵 Registrar pagamento</b><small>Baixe pagamentos recebidos.</small></button>
+   <button type="button" class="finance-option" id="financeDailyCash"><b>📋 Gerar caixa do dia</b><small>Relatório completo de um dia, com opção de imprimir/PDF.</small></button>
   </div>
   <div class="finance-grid">
    <div class="finance-card"><small>Faturamento do mês</small><strong class="private-number money-large">${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
@@ -1310,7 +1360,8 @@ function bindV140Month(){
 }
 
 function bindPage(){
- $("newSale")?.addEventListener("click",openSale);$("qSale")?.addEventListener("click",openSale);$("qQuickSale")?.addEventListener("click",openQuickSale);$("stockAvulsaHead")?.addEventListener("click",openAvulsaStockPicker);
+ $("newSale")?.addEventListener("click",openSale);
+ $("salesPeriod")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituSalesDays",e.target.value);render()});$("qSale")?.addEventListener("click",openSale);$("qQuickSale")?.addEventListener("click",openQuickSale);$("stockAvulsaHead")?.addEventListener("click",openAvulsaStockPicker);
  $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
  $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());
  $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
@@ -1368,6 +1419,7 @@ function bindPage(){
  $("account")?.addEventListener("click",openAccount);
  $("currentUser")?.addEventListener("click",openAccount);
  $("financeAnalysis")?.addEventListener("click",openAnalysis);
+$("financeDailyCash")?.addEventListener("click",openDailyCashReport);
  $("financeReceivables")?.addEventListener("click",openReceivables);
  $("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});
 }
