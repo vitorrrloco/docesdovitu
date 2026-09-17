@@ -479,6 +479,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 <style id="v153-responsive-and-client-profile">
 /* V1.5.3: caixa do dia responsivo e perfil completo do cliente | V1.5.4: fotos de clientes */
 .modal{min-width:0;overflow-x:hidden}
+.modal-head.no-modal-title{padding-bottom:2px}.modal-head.no-modal-title h2{display:none}.modal-head.no-modal-title{justify-content:flex-end}
 .modal>*{min-width:0;max-width:100%}
 .daily-report,.daily-report-card{min-width:0;max-width:100%;overflow:hidden}
 .daily-report-table{min-width:0!important;width:100%;table-layout:fixed}
@@ -495,11 +496,14 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
  .daily-report-table th{font-size:8px}
 }
 .client-profile{min-width:0}
-.client-profile-head{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px;margin-bottom:10px;background:var(--cream2);border:1px solid var(--line);border-radius:18px}
-.client-avatar-large{width:48px;height:48px;border-radius:15px;background:var(--dark);color:#fff;display:grid;place-items:center;font-size:23px}
+.client-profile-head{display:grid;grid-template-columns:82px minmax(0,1fr) auto;gap:13px;align-items:center;padding:14px;margin-bottom:10px;background:var(--cream2);border:1px solid var(--line);border-radius:18px}
+.client-avatar-large{width:74px;height:74px;border-radius:50%;background:var(--dark);color:#fff;display:grid;place-items:center;font-size:30px;border:2px solid var(--line);box-shadow:0 5px 18px #0002}
+.client-profile-photo-col{min-width:0;text-align:center}
+.client-profile-photo-col .client-avatar-large-img,.client-profile-photo-col .client-avatar-large{margin:0 auto}
+.client-profile-photo-name{display:block;margin-top:6px;font-size:13px;font-weight:900;line-height:1.15;overflow-wrap:anywhere;word-break:break-word}
 .client-profile-main{min-width:0}
-.client-profile-main h3{margin:0;font-size:18px;overflow-wrap:anywhere}
-.client-profile-main p{margin:4px 0 0;color:var(--muted);font-size:10px;overflow-wrap:anywhere}
+.client-profile-main h3{display:none}
+.client-profile-main p{margin:0;color:var(--muted);font-size:11px;line-height:1.45;overflow-wrap:anywhere;word-break:break-word}
 .client-profile-debt{text-align:right;min-width:88px}
 .client-profile-debt small{display:block;color:var(--muted);font-size:8px;font-weight:900}
 .client-profile-debt b{display:block;margin-top:3px;font-size:15px;color:var(--red)}
@@ -529,9 +533,10 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 .client-profile-actions{padding-top:1px}
 .client-profile-actions .primary,.client-profile-actions .secondary{min-height:48px}
 @media(max-width:420px){
- .client-profile-head{grid-template-columns:42px minmax(0,1fr);align-items:start}
- .client-avatar-large{width:42px;height:42px;font-size:20px}
- .client-profile-debt{grid-column:1/-1;text-align:left;padding-top:4px;border-top:1px solid var(--line)}
+ .client-profile-head{grid-template-columns:72px minmax(0,1fr);align-items:start;gap:10px;padding:12px}
+ .client-avatar-large,.client-avatar-large-img{width:64px;height:64px;font-size:26px}
+ .client-profile-photo-name{font-size:12px;margin-top:5px}
+ .client-profile-debt{grid-column:1/-1;text-align:left;padding-top:8px;border-top:1px solid var(--line)}
  .client-profile-debt b{font-size:14px}
  .client-profile-metrics{gap:6px}
  .client-profile-metrics>div{padding:9px}
@@ -561,7 +566,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.5</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.6</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -1165,8 +1170,8 @@ function clientProfileHtml(c,period){
  const since=dt(c.createdAt);
  return `<div class="client-profile">
   <div class="client-profile-head">
-   ${clientAvatar(c,true)}
-   <div class="client-profile-main"><h3>${esc(c.name)}</h3><p>${c.phone?`📱 ${esc(c.phone)}`:"Sem telefone cadastrado"}${since?` • Cliente desde ${dateOnly(since)}`:""}</p></div>
+   <div class="client-profile-photo-col">${clientAvatar(c,true)}<span class="client-profile-photo-name">${esc(c.name)}</span></div>
+   <div class="client-profile-main"><p>${c.phone?`📱 ${esc(c.phone)}`:"Sem telefone cadastrado"}${since?`<br>📅 Cliente desde ${dateOnly(since)}`:""}</p></div>
    <div class="client-profile-debt"><small>A RECEBER</small><b>${money(clientPending(c))}</b></div>
   </div>
   <div class="client-period-tabs">
@@ -1199,7 +1204,7 @@ function openClient(c){
  const initialPeriod="1";
  const pending=clientPending(c);
  const actions=`${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:9px">💸 Cobrar ${money(pending)}</button>`:""}<button class="secondary" id="editClientBtn" style="width:100%;margin-bottom:9px">✏️ Editar cliente</button><button class="primary" id="registerFromClient" style="width:100%">💵 Registrar pagamento</button>`;
- openModal(esc(c.name),`<div id="clientProfileContent">${clientProfileHtml(c,initialPeriod)}</div><div class="client-profile-actions">${actions}</div>`);
+ openModal("",`<div id="clientProfileContent">${clientProfileHtml(c,initialPeriod)}</div><div class="client-profile-actions">${actions}</div>`);
  const bindPeriodTabs=()=>{
    document.querySelectorAll("[data-client-period]").forEach(btn=>{
      btn.onclick=()=>{
@@ -1482,7 +1487,8 @@ function analysisHtml(kind,periods,selectedMonthKey){
 }
 
 function openModal(title,content){
- $("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div class="modal-head"><h2>${title}</h2><button type="button" class="close" id="modalClose">×</button></div>${content}</div></div>`;
+ const modalHead=title?`<div class="modal-head"><h2>${title}</h2><button type="button" class="close" id="modalClose">×</button></div>`:`<div class="modal-head no-modal-title"><h2 aria-hidden="true"></h2><button type="button" class="close" id="modalClose">×</button></div>`;
+ $("modalRoot").innerHTML=`<div class="modal-bg"><div class="modal"><div>${modalHead}</div>${content}</div></div>`;
  const bg=$("modalRoot").querySelector(".modal-bg");
  $("modalClose").onclick=closeModal;
  bg.addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal()});
