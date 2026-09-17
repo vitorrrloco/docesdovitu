@@ -228,7 +228,7 @@ body.dark .customer-status-select{
 #mTotalValue[readonly]{opacity:.92}
 
 
-/* V1.5.5: fotos de clientes com Galeria + Câmera */
+/* V1.5.5: fotos de clientes com Galeria + Câmera | V1.5.7: perfil do cliente ajustado */
 .client-avatar-img{width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;border:1px solid var(--line,#ddd);background:var(--cream2,#f4eee8)}
 .client-avatar-large-img{width:74px;height:74px;border-radius:50%;object-fit:cover;display:block;border:2px solid var(--line,#ddd);background:var(--cream2,#f4eee8);box-shadow:0 5px 18px #0002}
 .client-photo-picker{display:flex;align-items:center;gap:14px;padding:13px;border:1px dashed var(--line,#d8c8bb);border-radius:16px;background:var(--cream2,#f7f1eb)}
@@ -501,7 +501,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 .client-profile-photo-col{min-width:0;text-align:center}
 .client-profile-photo-col .client-avatar-large-img,.client-profile-photo-col .client-avatar-large{margin:0 auto}
 .client-profile-photo-name{display:block;margin-top:6px;font-size:13px;font-weight:900;line-height:1.15;overflow-wrap:anywhere;word-break:break-word}
-.client-profile-main{min-width:0}
+.client-profile-main{min-width:0;align-self:center}
 .client-profile-main h3{display:none}
 .client-profile-main p{margin:0;color:var(--muted);font-size:11px;line-height:1.45;overflow-wrap:anywhere;word-break:break-word}
 .client-profile-debt{text-align:right;min-width:88px}
@@ -533,10 +533,11 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 .client-profile-actions{padding-top:1px}
 .client-profile-actions .primary,.client-profile-actions .secondary{min-height:48px}
 @media(max-width:420px){
- .client-profile-head{grid-template-columns:72px minmax(0,1fr);align-items:start;gap:10px;padding:12px}
+ .client-profile-head{grid-template-columns:72px minmax(0,1fr);align-items:center;gap:10px;padding:12px}
  .client-avatar-large,.client-avatar-large-img{width:64px;height:64px;font-size:26px}
  .client-profile-photo-name{font-size:12px;margin-top:5px}
  .client-profile-debt{grid-column:1/-1;text-align:left;padding-top:8px;border-top:1px solid var(--line)}
+ .client-profile-main{align-self:center}
  .client-profile-debt b{font-size:14px}
  .client-profile-metrics{gap:6px}
  .client-profile-metrics>div{padding:9px}
@@ -566,7 +567,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.6</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.7</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -1171,7 +1172,7 @@ function clientProfileHtml(c,period){
  return `<div class="client-profile">
   <div class="client-profile-head">
    <div class="client-profile-photo-col">${clientAvatar(c,true)}<span class="client-profile-photo-name">${esc(c.name)}</span></div>
-   <div class="client-profile-main"><p>${c.phone?`📱 ${esc(c.phone)}`:"Sem telefone cadastrado"}${since?`<br>📅 Cliente desde ${dateOnly(since)}`:""}</p></div>
+   <div class="client-profile-main"><p>${c.phone?`📱 ${esc(c.phone)}`:"📱 Sem telefone cadastrado"}${since?`<br>📅 Cliente desde ${dateOnly(since)}`:""}</p></div>
    <div class="client-profile-debt"><small>A RECEBER</small><b>${money(clientPending(c))}</b></div>
   </div>
   <div class="client-period-tabs">
