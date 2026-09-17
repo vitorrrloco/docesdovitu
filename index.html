@@ -228,7 +228,7 @@ body.dark .customer-status-select{
 #mTotalValue[readonly]{opacity:.92}
 
 
-/* V1.5.4: fotos de clientes */
+/* V1.5.5: fotos de clientes com Galeria + Câmera */
 .client-avatar-img{width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;border:1px solid var(--line,#ddd);background:var(--cream2,#f4eee8)}
 .client-avatar-large-img{width:74px;height:74px;border-radius:50%;object-fit:cover;display:block;border:2px solid var(--line,#ddd);background:var(--cream2,#f4eee8);box-shadow:0 5px 18px #0002}
 .client-photo-picker{display:flex;align-items:center;gap:14px;padding:13px;border:1px dashed var(--line,#d8c8bb);border-radius:16px;background:var(--cream2,#f7f1eb)}
@@ -561,7 +561,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.3</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.5</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -1219,14 +1219,17 @@ function openClient(c){
  $("editClientBtn").onclick=()=>openEditClient(c);
 } 
 function openEditClient(c){
- openModal("Editar cliente",`<div class="form"><div class="field"><label>Nome do cliente</label><input id="editClientName" value="${esc(c.name)}" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="editClientPhone" value="${esc(c.phone||"")}" placeholder="(47) 99999-9999"></div><div class="field"><label>Foto (opcional)</label><div class="client-photo-picker"><div class="client-photo-preview" id="editClientPhotoPreview">${c.photoData?`<img src="${esc(c.photoData)}" alt="Foto atual">`:'👤'}</div><div><input id="editClientPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button type="button" class="secondary" id="chooseEditClientPhoto">📷 ${c.photoData?'Trocar foto':'Adicionar foto'}</button><div class="client-photo-actions"><button type="button" class="secondary" id="removeEditClientPhoto" style="${c.photoData?'display:inline-block':'display:none'}">🗑️ Remover</button></div><small class="client-photo-note">A foto é reduzida automaticamente para não pesar no sistema.</small></div></div></div><div class="actions"><button class="secondary" id="cancelEditClient">Cancelar</button><button class="primary" id="saveEditClient">Salvar alterações</button></div></div>`);
+ openModal("Editar cliente",`<div class="form"><div class="field"><label>Nome do cliente</label><input id="editClientName" value="${esc(c.name)}" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="editClientPhone" value="${esc(c.phone||"")}" placeholder="(47) 99999-9999"></div><div class="field"><label>Foto (opcional)</label><div class="client-photo-picker"><div class="client-photo-preview" id="editClientPhotoPreview">${c.photoData?`<img src="${esc(c.photoData)}" alt="Foto atual">`:'👤'}</div><div><input id="editClientPhotoGallery" type="file" accept="image/*" style="display:none"><input id="editClientPhotoCamera" type="file" accept="image/*" capture="environment" style="display:none"><div class="client-photo-actions" style="margin-top:0"><button type="button" class="secondary" id="chooseEditClientPhotoGallery">🖼️ Galeria</button><button type="button" class="secondary" id="chooseEditClientPhotoCamera">📷 Câmera</button></div><div class="client-photo-actions"><button type="button" class="secondary" id="removeEditClientPhoto" style="${c.photoData?'display:inline-block':'display:none'}">🗑️ Remover</button></div><small class="client-photo-note">Escolha uma foto da galeria ou tire uma nova com a câmera.</small></div></div></div><div class="actions"><button class="secondary" id="cancelEditClient">Cancelar</button><button class="primary" id="saveEditClient">Salvar alterações</button></div></div>`);
  $("cancelEditClient").onclick=closeModal;
  let editPhotoData=c.photoData||"";
- const editPhotoInput=$("editClientPhoto"),editPreview=$("editClientPhotoPreview"),editRemove=$("removeEditClientPhoto");
- const updateEditPhotoPreview=()=>{editPreview.innerHTML=editPhotoData?`<img src="${esc(editPhotoData)}" alt="Prévia da foto">`:'👤';editRemove.style.display=editPhotoData?'inline-block':'none';$("chooseEditClientPhoto").textContent=editPhotoData?'📷 Trocar foto':'📷 Adicionar foto'};
- $("chooseEditClientPhoto").onclick=()=>editPhotoInput.click();
- editPhotoInput.onchange=async()=>{const file=editPhotoInput.files?.[0];if(!file)return;try{editPhotoData=await compressClientPhoto(file);updateEditPhotoPreview()}catch(e){toast(e.message||"Não foi possível carregar a foto.");editPhotoInput.value=""}};
- editRemove.onclick=()=>{editPhotoData="";editPhotoInput.value="";updateEditPhotoPreview()};
+ const editGalleryInput=$("editClientPhotoGallery"),editCameraInput=$("editClientPhotoCamera"),editPreview=$("editClientPhotoPreview"),editRemove=$("removeEditClientPhoto");
+ const updateEditPhotoPreview=()=>{editPreview.innerHTML=editPhotoData?`<img src="${esc(editPhotoData)}" alt="Prévia da foto">`:'👤';editRemove.style.display=editPhotoData?'inline-block':'none'};
+ $("chooseEditClientPhotoGallery").onclick=()=>editGalleryInput.click();
+ $("chooseEditClientPhotoCamera").onclick=()=>editCameraInput.click();
+ const handleEditPhoto=async(input)=>{const file=input.files?.[0];if(!file)return;try{editPhotoData=await compressClientPhoto(file);updateEditPhotoPreview()}catch(e){toast(e.message||"Não foi possível carregar a foto.");input.value=""}};
+ editGalleryInput.onchange=()=>handleEditPhoto(editGalleryInput);
+ editCameraInput.onchange=()=>handleEditPhoto(editCameraInput);
+ editRemove.onclick=()=>{editPhotoData="";editGalleryInput.value="";editCameraInput.value="";updateEditPhotoPreview()};
  $("saveEditClient").onclick=async()=>{const name=$("editClientName").value.trim();if(!name)return toast("Digite o nome.");try{await updateDoc(doc(col("clients"),c.id),{name,phone:$("editClientPhone").value.trim(),photoData:editPhotoData||""});await logAction("Cliente editado",`${c.name} → ${name}`);closeModal();toast("Cliente atualizado!")}catch(e){console.error(e);toast("Não foi possível editar o cliente.")}};
 }
 function pixPayload(amount){
@@ -1384,13 +1387,16 @@ function openProduct(p=null){
  updatePurchasePreview();
 }
 function openClientForm(){
- openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" autocomplete="name" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" autocomplete="tel" placeholder="(47) 99999-9999"></div><div class="field"><label>Foto (opcional)</label><div class="client-photo-picker"><div class="client-photo-preview" id="clientPhotoPreview">👤</div><div><input id="cPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button type="button" class="secondary" id="chooseClientPhoto">📷 Adicionar foto</button><div class="client-photo-actions"><button type="button" class="secondary" id="removeClientPhoto" style="display:none">🗑️ Remover</button></div><small class="client-photo-note">A foto é reduzida automaticamente para não pesar no sistema.</small></div></div></div><div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="saveClient">Salvar</button></div></div>`);
- const cancel=$("cancelModal"),btn=$("saveClient"),photoInput=$("cPhoto"),photoPreview=$("clientPhotoPreview"),removePhoto=$("removeClientPhoto");
+ openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" autocomplete="name" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" autocomplete="tel" placeholder="(47) 99999-9999"></div><div class="field"><label>Foto (opcional)</label><div class="client-photo-picker"><div class="client-photo-preview" id="clientPhotoPreview">👤</div><div><input id="cPhotoGallery" type="file" accept="image/*" style="display:none"><input id="cPhotoCamera" type="file" accept="image/*" capture="environment" style="display:none"><div class="client-photo-actions" style="margin-top:0"><button type="button" class="secondary" id="chooseClientPhotoGallery">🖼️ Galeria</button><button type="button" class="secondary" id="chooseClientPhotoCamera">📷 Câmera</button></div><div class="client-photo-actions"><button type="button" class="secondary" id="removeClientPhoto" style="display:none">🗑️ Remover</button></div><small class="client-photo-note">Escolha uma foto da galeria ou tire uma nova com a câmera.</small></div></div></div><div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="saveClient">Salvar</button></div></div>`);
+ const cancel=$("cancelModal"),btn=$("saveClient"),galleryInput=$("cPhotoGallery"),cameraInput=$("cPhotoCamera"),photoPreview=$("clientPhotoPreview"),removePhoto=$("removeClientPhoto");
  let photoData="";
  const updatePhotoPreview=()=>{if(!photoPreview)return;photoPreview.innerHTML=photoData?`<img src="${esc(photoData)}" alt="Prévia da foto">`:'👤';if(removePhoto)removePhoto.style.display=photoData?'inline-block':'none'};
- $("chooseClientPhoto")?.addEventListener("click",()=>photoInput?.click());
- photoInput?.addEventListener("change",async()=>{const file=photoInput.files?.[0];if(!file)return;try{photoData=await compressClientPhoto(file);updatePhotoPreview()}catch(e){toast(e.message||"Não foi possível carregar a foto.");photoInput.value=""}});
- removePhoto?.addEventListener("click",()=>{photoData="";photoInput.value="";updatePhotoPreview()});
+ $("chooseClientPhotoGallery")?.addEventListener("click",()=>galleryInput?.click());
+ $("chooseClientPhotoCamera")?.addEventListener("click",()=>cameraInput?.click());
+ const handleClientPhoto=async(input)=>{const file=input?.files?.[0];if(!file)return;try{photoData=await compressClientPhoto(file);updatePhotoPreview()}catch(e){toast(e.message||"Não foi possível carregar a foto.");input.value=""}};
+ galleryInput?.addEventListener("change",()=>handleClientPhoto(galleryInput));
+ cameraInput?.addEventListener("change",()=>handleClientPhoto(cameraInput));
+ removePhoto?.addEventListener("click",()=>{photoData="";galleryInput.value="";cameraInput.value="";updatePhotoPreview()});
  if(cancel)cancel.onclick=closeModal;
  if(btn)btn.onclick=async()=>{
   const name=$("cName")?.value.trim()||"";
