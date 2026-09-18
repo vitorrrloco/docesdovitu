@@ -910,10 +910,51 @@ function purchaseDetail(productId,monthKey){
   </div>
  </div>`;
 }
-function monthlyBusinessOverview(){const sales=data.sales||[],purchasesData=data.purchases||[],today=now(),months=[];for(let k=5;k>=0;k--){const d=new Date(today.getFullYear(),today.getMonth()-k,1),next=new Date(d.getFullYear(),d.getMonth()+1,1);const ms=sales.filter(s=>{const x=dt(s.createdAt);return x&&x>=d&&x<next}),ps=purchasesData.filter(p=>{const x=dt(p.createdAt);return x&&x>=d&&x<next});months.push({label:d.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''),revenue:ms.reduce((a,s)=>a+numBR(s.total||0),0),purchases:ps.reduce((a,p)=>a+numBR(p.total||0),0)})}return months}
-function businessOverviewSvg(rows){const W=900,H=300,L=58,R=20,T=24,B=48,iw=W-L-R,ih=H-T-B,max=Math.max(1,...rows.map(r=>Math.max(r.revenue,r.purchases))),x=i=>L+(rows.length===1?iw/2:i*(iw/(rows.length-1))),y=v=>T+ih-(v/max)*ih,path=k=>rows.map((r,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(r[k]).toFixed(1)).join(' '),grid=[0,.25,.5,.75,1].map(f=>{const v=max*f;return `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${money(v)}</text>`}).join(''),labels=rows.map((r,i)=>`<text x="${x(i)}" y="${H-18}" text-anchor="middle">${esc(r.label)}</text>`).join('');return `<div class="v140-chart-wrap"><svg class="v140-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><g>${grid}${labels}</g><path class="rev-line" d="${path('revenue')}"/><path class="cost-line" d="${path('purchases')}"/>${rows.map((r,i)=>`<circle class="rev-point chart-hit" cx="${x(i)}" cy="${y(r.revenue)}" r="4" data-chart-label="${esc(r.label)} • Faturamento" data-chart-value="${money(r.revenue)}"/><circle class="cost-point chart-hit" cx="${x(i)}" cy="${y(r.purchases)}" r="3.5" data-chart-label="${esc(r.label)} • Compras" data-chart-value="${money(r.purchases)}"/>`).join('')}</svg></div>`}
-function purchases(){const products=data.products||[],selectedId=localStorage.getItem('docesDoVituPurchaseProduct')||'',selected=products.find(p=>p.id===selectedId),months=monthlyBusinessOverview();return `<div class="page"><div class="head"><div><h1>🛍️ Sugestão de Compras</h1><p>Selecione um item para ver quanto comprar.</p></div></div><div class="v140-product-panel"><div class="v140-product-select"><label>SELECIONE O PRODUTO</label><select id="v140ProductSelect"><option value="">Selecione um item...</option>${products.map(p=>`<option value="${esc(p.id)}" ${p.id===selectedId?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><div id="v140ProductDetail">${selected?purchaseDetail(selected.id):'<div class="v140-product-detail-empty">Nenhum item selecionado. Escolha um produto acima.</div>'}</div></div>${selected?`<div class="analysis-card v140-overview-card"><div class="section-title"><div><b>📊 Visão geral do negócio</b><small>Compras × faturamento dos últimos 6 meses.</small></div></div><div class="v140-overview-grid"><div class="v140-overview-metric"><small>FATURAMENTO • 6 MESES</small><b>${money(months.reduce((a,r)=>a+r.revenue,0))}</b></div><div class="v140-overview-metric"><small>COMPRAS • 6 MESES</small><b>${money(months.reduce((a,r)=>a+r.purchases,0))}</b></div></div>${businessOverviewSvg(months)}</div>`:''}</div>`}
-
+function businessOverviewOptions(){
+ const t=now(), months=[];
+ const first=new Date(t.getFullYear(),t.getMonth(),1);
+ for(let d=new Date(first);d<=t;d.setMonth(d.getMonth()+1)){
+   const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+   const raw=d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+   months.push({key,label:raw.charAt(0).toUpperCase()+raw.slice(1)});
+ }
+ return months;
+}
+function businessOverviewData(period,monthKey){
+ const sales=data.sales||[], purchasesData=data.purchases||[], t=now();
+ let start,end,label;
+ const dayStart=new Date(t.getFullYear(),t.getMonth(),t.getDate());
+ dayStart.setHours(0,0,0,0);
+ if(period==='today'){
+   start=dayStart; end=new Date(dayStart); end.setDate(end.getDate()+1); label='Hoje';
+ }else if(period==='7'){
+   start=new Date(dayStart); start.setDate(start.getDate()-6); end=new Date(dayStart); end.setDate(end.getDate()+1); label='Últimos 7 dias';
+ }else if(period==='30'){
+   start=new Date(dayStart); start.setDate(start.getDate()-29); end=new Date(dayStart); end.setDate(end.getDate()+1); label='Últimos 30 dias';
+ }else{
+   const key=monthKey||`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
+   const [y,m]=key.split('-').map(Number); start=new Date(y,m-1,1); end=new Date(y,m,1); label=start.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}); label=label.charAt(0).toUpperCase()+label.slice(1);
+ }
+ const rows=[];
+ for(let d=new Date(start);d<end;d.setDate(d.getDate()+1)){
+   const a=new Date(d),b=new Date(d); b.setDate(b.getDate()+1);
+   const ms=sales.filter(s=>{const x=dt(s.createdAt);return x&&x>=a&&x<b});
+   const ps=purchasesData.filter(q=>{const x=dt(q.createdAt);return x&&x>=a&&x<b});
+   rows.push({label:period==='today'?'Hoje':a.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}),revenue:ms.reduce((v,x)=>v+numBR(x.total||0),0),purchases:ps.reduce((v,x)=>v+numBR(x.total||0),0)});
+ }
+ return {rows,label,start,end};
+}
+function businessOverviewSvg(rows){
+ const W=Math.max(900,rows.length*42),H=320,L=68,R=22,T=24,B=58,iw=W-L-R,ih=H-T-B,max=Math.max(1,...rows.map(r=>Math.max(r.revenue,r.purchases))),x=i=>L+(rows.length===1?iw/2:i*(iw/(rows.length-1))),y=v=>T+ih-(v/max)*ih,path=k=>rows.map((r,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(r[k]).toFixed(1)).join(' '),grid=[0,.25,.5,.75,1].map(f=>{const v=max*f;return `<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${money(v)}</text>`}).join(''),labels=rows.map((r,i)=>`<text x="${x(i)}" y="${H-20}" text-anchor="middle">${esc(r.label)}</text>`).join('');
+ return `<div class="v140-chart-wrap"><svg class="v140-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Gráfico de faturamento e compras"><g>${grid}${labels}</g><path class="rev-line" d="${path('revenue')}"/><path class="cost-line" d="${path('purchases')}"/>${rows.map((r,i)=>`<circle class="rev-point chart-hit" cx="${x(i)}" cy="${y(r.revenue)}" r="4" data-chart-label="${esc(r.label)} • Faturamento" data-chart-value="${money(r.revenue)}"/><circle class="cost-point chart-hit" cx="${x(i)}" cy="${y(r.purchases)}" r="3.5" data-chart-label="${esc(r.label)} • Compras" data-chart-value="${money(r.purchases)}"/>`).join('')}</svg></div>`;
+}
+function purchases(){
+ const products=data.products||[],selectedId=localStorage.getItem('docesDoVituPurchaseProduct')||'',selected=products.find(p=>p.id===selectedId);
+ const period=localStorage.getItem('docesDoVituBusinessPeriod')||'today',monthKey=localStorage.getItem('docesDoVituBusinessMonth')||`${now().getFullYear()}-${String(now().getMonth()+1).padStart(2,'0')}`;
+ const ov=businessOverviewData(period,monthKey),monthOptions=businessOverviewOptions();
+ const totalRevenue=ov.rows.reduce((a,r)=>a+r.revenue,0),totalPurchases=ov.rows.reduce((a,r)=>a+r.purchases,0);
+ return `<div class="page"><div class="head"><div><h1>🛍️ Sugestão de Compras</h1><p>Selecione um item para ver quanto comprar.</p></div></div><div class="v140-product-panel"><div class="v140-product-select"><label>SELECIONE O PRODUTO</label><select id="v140ProductSelect"><option value="">Selecione um item...</option>${products.map(p=>`<option value="${esc(p.id)}" ${p.id===selectedId?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><div id="v140ProductDetail">${selected?purchaseDetail(selected.id):'<div class="v140-product-detail-empty">Nenhum item selecionado. Escolha um produto acima.</div>'}</div></div><div class="analysis-card v140-overview-card"><div class="section-title"><div><b>📊 Controle do período</b><small>Compras × faturamento de tudo que foi registrado.</small></div></div><div class="v140-overview-filters"><div><label>PERÍODO</label><select id="v140BusinessPeriod"><option value="today" ${period==='today'?'selected':''}>Hoje</option><option value="7" ${period==='7'?'selected':''}>Últimos 7 dias</option><option value="30" ${period==='30'?'selected':''}>Últimos 30 dias</option><option value="month" ${period==='month'?'selected':''}>Mês selecionado</option></select></div>${period==='month'?`<div><label>MÊS</label><select id="v140BusinessMonth">${monthOptions.map(o=>`<option value="${o.key}" ${o.key===monthKey?'selected':''}>${esc(o.label)}</option>`).join('')}</select></div>`:''}</div><div class="v140-overview-grid"><div class="v140-overview-metric"><small>FATURAMENTO • ${esc(ov.label.toUpperCase())}</small><b>${money(totalRevenue)}</b></div><div class="v140-overview-metric"><small>COMPRAS • ${esc(ov.label.toUpperCase())}</small><b>${money(totalPurchases)}</b></div></div>${businessOverviewSvg(ov.rows)}</div></div>`;
+}
 function dayData(dateKey){
  const [y,m,d]=String(dateKey).split("-").map(Number);
  const start=new Date(y,m-1,d);start.setHours(0,0,0,0); const end=new Date(y,m-1,d+1);end.setHours(0,0,0,0);
@@ -1560,6 +1601,8 @@ function bindPage(){
  $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
  $("stockSearch")?.addEventListener("input",e=>{$("stockList").innerHTML=productRows(data.products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())))})
  $("v140ProductSelect")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituPurchaseProduct",e.target.value||"");render();});
+ $("v140BusinessPeriod")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituBusinessPeriod",e.target.value);render();});
+ $("v140BusinessMonth")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituBusinessMonth",e.target.value);render();});
  bindV140Month();
 
  // Delegação de eventos: continua funcionando mesmo quando a busca
@@ -1822,3 +1865,6 @@ window.addEventListener("load",()=>{
 
 </body>
 </html>
+<style>
+.v140-overview-filters{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 18px}.v140-overview-filters>div{min-width:190px;flex:1}.v140-overview-filters label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}.v140-overview-filters select{width:100%;min-height:44px}.v140-overview-card .v140-chart-wrap{overflow-x:auto}@media(max-width:600px){.v140-overview-filters{display:grid;grid-template-columns:1fr}.v140-overview-filters>div{min-width:0}.v140-overview-card .v140-chart-wrap{margin-inline:-8px}}
+</style>
