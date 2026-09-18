@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.5.3</title>
+<title>DOCES DO VITU 1.5.10</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -114,6 +114,19 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 .boot-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--cream);padding:24px;opacity:1;transition:opacity .18s ease,visibility .18s ease}.boot-loader.done{opacity:0;visibility:hidden;pointer-events:none}.boot-card{width:min(330px,88vw);text-align:center;padding:26px 22px;border-radius:22px;background:var(--white);box-shadow:0 14px 45px rgba(74,40,25,.14);display:flex;flex-direction:column;align-items:center;gap:8px}.boot-logo{font-size:42px;line-height:1}.boot-card b{font-size:19px;color:var(--dark)}.boot-card small{color:var(--muted);margin-bottom:8px}.boot-track{width:100%;height:7px;border-radius:99px;background:var(--cream2);overflow:hidden}.boot-bar{height:100%;width:0%;border-radius:99px;background:var(--brown);transition:width .12s ease}.boot-card strong{font-size:13px;color:var(--brown);min-height:18px}
 @media(prefers-reduced-motion:reduce){.boot-loader,.boot-bar{transition:none!important}}
 
+/* V1.5.10 - planejamento de compra para 30 dias */
+.purchase-30-card{background:var(--cream2);border:1px solid var(--line);border-radius:21px;padding:17px;margin:12px 0;box-shadow:var(--shadow)}
+.purchase-30-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:13px}
+.purchase-30-head h3{margin:0;font-size:19px}
+.purchase-30-head small{display:block;color:var(--muted);font-size:10px;margin-top:4px;line-height:1.35}
+.purchase-30-badge{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;background:var(--white);border:1px solid var(--line);font-size:10px;font-weight:800;white-space:nowrap}
+.purchase-30-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.purchase-30-metric{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.purchase-30-metric small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}
+.purchase-30-metric b{display:block;font-size:17px;overflow-wrap:anywhere}
+.purchase-30-metric.highlight{background:#fff3e6}
+.purchase-30-note{margin-top:10px;color:var(--muted);font-size:10px;line-height:1.4}
+@media(max-width:700px){.purchase-30-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.purchase-30-head{flex-direction:column}.purchase-30-badge{align-self:flex-start}}
 /* V1.5.3 - somente ajustes visuais de Sugestão de Compras e Financeiro */
 .purchase-selector-card{background:var(--white);border:1px solid var(--line);border-radius:21px;padding:17px;margin:12px 0;box-shadow:var(--shadow)}
 .purchase-selector-card label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
@@ -228,7 +241,7 @@ body.dark .customer-status-select{
 #mTotalValue[readonly]{opacity:.92}
 
 
-/* V1.5.5: fotos de clientes com Galeria + Câmera | V1.5.7: perfil do cliente ajustado | V1.5.8: relatório de clientes resumido + ranking */
+/* V1.5.5: fotos de clientes com Galeria + Câmera | V1.5.7: perfil do cliente ajustado | V1.5.8: relatório de clientes resumido + ranking | V1.5.9: estoque transacional e correção de concorrência */
 .client-avatar-img{width:44px;height:44px;border-radius:50%;object-fit:cover;display:block;border:1px solid var(--line,#ddd);background:var(--cream2,#f4eee8)}
 .client-avatar-large-img{width:74px;height:74px;border-radius:50%;object-fit:cover;display:block;border:2px solid var(--line,#ddd);background:var(--cream2,#f4eee8);box-shadow:0 5px 18px #0002}
 .client-photo-picker{display:flex;align-items:center;gap:14px;padding:13px;border:1px dashed var(--line,#d8c8bb);border-radius:16px;background:var(--cream2,#f7f1eb)}
@@ -567,7 +580,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.8</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.10</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -586,7 +599,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc,runTransaction} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
@@ -907,6 +920,8 @@ function purchaseDetail(productId,monthKey){
    <div class="v140-metric"><small>Média diária</small><b>${avgDaily.toFixed(2).replace('.',',')} un.</b></div>
    <div class="v140-metric"><small>Estoque atual</small><b>${stock} un.</b></div>
    <div class="v140-metric"><small>Cobertura</small><b>${coverage===null?'Sem giro':Math.floor(coverage)+' dia(s)'}</b></div>
+   <div class="v140-metric"><small>Necessário para 30 dias</small><b>${monthlyNeed} un.</b></div>
+   <div class="v140-metric"><small>Comprar para 30 dias</small><b>${Math.max(0,monthlyNeed-stock)} un.</b></div>
   </div>
  </div>`;
 }
@@ -931,6 +946,16 @@ function purchases(){
  const firstId=products[0]?.id||'';
  return `<div class="page">
   <div class="head"><div><h1>🛍️ Sugestão de Compras</h1><p>Giro, lucro e reposição de cada produto</p></div></div>
+  <div class="purchase-30-card">
+   <div class="purchase-30-head"><div><h3>📦 Planejamento para 30 dias</h3><small>Calcula quanto de cada doce precisa estar disponível para cobrir os próximos 30 dias de vendas.</small></div><span class="purchase-30-badge">30 DIAS</span></div>
+   <div class="purchase-30-grid">
+    <div class="purchase-30-metric"><small>Produtos analisados</small><b>${stats.length}</b></div>
+    <div class="purchase-30-metric"><small>Demanda estimada</small><b>${stats.reduce((a,x)=>a+x.monthlyNeed,0)} un.</b></div>
+    <div class="purchase-30-metric"><small>Estoque disponível</small><b>${stats.reduce((a,x)=>a+x.stock,0)} un.</b></div>
+    <div class="purchase-30-metric highlight"><small>Compra sugerida</small><b>${stats.reduce((a,x)=>a+x.suggestion,0)} un.</b></div>
+   </div>
+   <div class="purchase-30-note">A sugestão de cada produto considera a média diária de vendas registrada e desconta o estoque atual. Produtos sem giro não recebem sugestão automática.</div>
+  </div>
   <div class="v140-product-panel">
    <div class="v140-product-select"><label>SELECIONE O PRODUTO PARA VER OS DETALHES</label><select id="v140ProductSelect">${products.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')||'<option value="">Nenhum produto cadastrado</option>'}</select></div>
    <div id="v140ProductDetail">${firstId?purchaseDetail(firstId):'<div class="empty">Nenhum produto cadastrado.</div>'}</div>
@@ -1048,90 +1073,77 @@ function more(){
 function openQuickSale(){
  const products=data.products.filter(p=>numBR(p.stock)>0);
  if(!products.length){toast("Cadastre um produto com estoque primeiro.");return}
- const clients=data.clients.slice().sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));
- openModal("⚡️ Lançamento rápido",`<div class="form">
-  <div class="field"><label>Cliente</label><input id="fqClientSearch" autocomplete="off" placeholder="🔎 Nome do cliente ou deixe vazio"><input id="fqClient" type="hidden"><div id="fqClientResults" class="quick-client-results hidden"></div></div>
-  <div class="field"><label>Produto</label><div id="fqSelectedLabel" class="fq-selected-label">Produto selecionado: <b>${esc(products[0].name)}</b></div>
-  <div class="fast-products" id="fqProducts">${products.map((p,i)=>`<button type="button" class="fast-product ${i===0?"active":""}" data-fq-product="${p.id}"><b>${esc(p.name)}</b><small>${money(p.price)} • ${numBR(p.stock)} un.</small></button>`).join("")}</div></div>
-  <div class="row"><div class="field"><label>Quantidade</label><input id="fqQty" type="number" min="1" step="1" value="1"></div></div>
+ let cart=[];
+ openModal("Lançamento rápido",`<div class="form">
+  <div class="field"><label>Cliente</label><select id="fqClient"><option value="">Venda balcão</option>${data.clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></div>
+  <div class="field"><label>Produto</label><div class="fast-products" id="fqProducts">${products.map((p,i)=>`<button type="button" class="fast-product ${i===0?"active":""}" data-fq-product="${p.id}"><b>${esc(p.name)}</b><small>${money(p.price)} • ${numBR(p.stock)} un.</small></button>`).join("")}</div></div>
+  <div class="row"><div class="field"><label>Quantidade</label><input id="fqQty" type="number" min="1" step="1" value="1"></div><div class="field"><label>Desconto (%)</label><input id="fqDiscount" type="number" min="0" max="100" step="0.01" value="0"></div></div>
   <button type="button" class="primary" id="fqAddProduct" style="width:100%">＋ Adicionar produto à venda</button>
-  <div id="fqCart" class="list" style="margin-top:8px"></div><div id="fqCartEmpty" class="empty">Nenhum produto adicionado.</div>
+  <div id="fqCart" class="list" style="margin-top:10px"></div>
   <div class="section-title" style="margin-top:10px"><span>Total da venda</span><b id="fqGrandTotal">R$ 0,00</b></div>
-  <div class="field"><label>Desconto opcional</label><input id="fqDiscountValue" type="text" value="0,00"></div>
-  <div id="fqFinalTotal" style="font-size:20px;font-weight:900;margin-top:5px">Total líquido: R$ 0,00</div>
   <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="fqConfirm">Confirmar venda</button></div>
  </div>`);
- let selectedId=products[0].id,cart=[];
- const selected=()=>products.find(p=>p.id===selectedId);
- const totalOriginal=()=>cart.reduce((a,i)=>a+numBR(i.price)*numBR(i.qty),0);
- const selectedClient=()=>clients.find(c=>c.id===($("fqClient")?.value||""));
- const discount=()=>{const c=selectedClient();if(String(c?.status||"normal").toLowerCase()==="otimo")return Math.round(totalOriginal()*0.10*100)/100;return Math.min(totalOriginal(),Math.max(0,numBR($("fqDiscountValue")?.value)))};
- const totalFinal=()=>Math.max(0,totalOriginal()-discount());
- const selectProduct=id=>{selectedId=id;document.querySelectorAll("[data-fq-product]").forEach(x=>x.classList.toggle("active",x.dataset.fqProduct===id));const p=selected();if(p)$("fqSelectedLabel").innerHTML=`Produto selecionado: <b>${esc(p.name)}</b> • ${money(p.price)}`};
- const draw=()=>{const box=$("fqCart"),empty=$("fqCartEmpty");if(!cart.length){box.innerHTML="";empty.style.display="block"}else{empty.style.display="none";box.innerHTML=cart.map((i,idx)=>`<div class="item fq-cart-item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${numBR(i.qty)} × ${money(i.price)} = ${money(numBR(i.qty)*numBR(i.price))}</small></div><div class="fq-cart-right"><b>${money(numBR(i.qty)*numBR(i.price))}</b><button type="button" class="secondary" data-remove-cart="${idx}">✕ Remover</button></div></div>`).join("")}$("fqGrandTotal").textContent=money(totalOriginal());$("fqFinalTotal").textContent="Total líquido: "+money(totalFinal());box.querySelectorAll("[data-remove-cart]").forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.removeCart),1);draw()})};
- document.querySelectorAll("[data-fq-product]").forEach(b=>b.onclick=()=>selectProduct(b.dataset.fqProduct));
+ const selected=()=>products.find(p=>p.id===$("fqProducts")?.querySelector(".fast-product.active")?.dataset.fqProduct);
+ const totalOriginal=()=>cart.reduce((a,i)=>a+numBR(i.qty)*numBR(i.price),0);
+ const discount=()=>Math.min(100,Math.max(0,numBR($("fqDiscount").value)||0));
+ const totalFinal=()=>Math.max(0,totalOriginal()*(1-discount()/100));
+ const draw=()=>{
+  const box=$("fqCart"); if(!box)return;
+  box.innerHTML=cart.map(i=>`<div class="item"><div class="avatar">🍫</div><div class="item-main"><b>${esc(i.name)}</b><small>${i.qty} × ${money(i.price)}</small></div><div class="item-right"><b>${money(i.qty*i.price)}</b></div></div>`).join("")||'<div class="empty">Nenhum produto adicionado.</div>';
+  $("fqGrandTotal").textContent=money(totalFinal());
+ };
+ document.querySelectorAll("#fqProducts .fast-product").forEach(b=>b.onclick=()=>{document.querySelectorAll("#fqProducts .fast-product").forEach(x=>x.classList.remove("active"));b.classList.add("active")});
  $("fqAddProduct").onclick=()=>{const p=selected(),q=Math.floor(numBR($("fqQty").value)||0);if(!p)return toast("Selecione um produto.");if(q<1)return toast("Informe uma quantidade válida.");const ex=cart.find(i=>i.productId===p.id),already=ex?numBR(ex.qty):0;if(already+q>numBR(p.stock))return toast(`Estoque insuficiente para ${p.name}.`);if(ex)ex.qty=already+q;else cart.push({productId:p.id,name:p.name,qty:q,price:numBR(p.price),cost:numBR(p.cost)});$("fqQty").value=1;draw()};
- $("fqQty").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("fqAddProduct").click()}};
- $("fqDiscountValue").oninput=draw;$("cancelModal").onclick=closeModal;draw();selectProduct(products[0].id);
- $("fqConfirm").onclick=async()=>{const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;if(!cart.length)return toast("Adicione pelo menos um produto.");const clientId=$("fqClient").value||"",c=data.clients.find(x=>x.id===clientId),originalTotal=totalOriginal(),discountAmount=discount(),total=totalFinal();if(total<=0)return toast("O total da venda precisa ser maior que zero.");for(const i of cart){const p=data.products.find(x=>x.id===i.productId);if(!p||numBR(p.stock)<numBR(i.qty))return toast(`Estoque insuficiente para ${i.name}.`)}btn.dataset.busy="1";btn.disabled=true;const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Confirmando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);try{const ratio=originalTotal?discountAmount/originalTotal:0,items=cart.map(i=>({...i,price:Math.round(numBR(i.price)*(1-ratio)*100)/100})),saleRef=doc(col("sales"));await setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await Promise.all(cart.map(i=>{const p=data.products.find(x=>x.id===i.productId);return updateDoc(doc(col("products"),i.productId),{stock:numBR(p.stock)-numBR(i.qty)})}));closeModal();render();go("home");overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';setTimeout(()=>overlay.remove(),700)}catch(e){console.error(e);overlay.remove();toast(e.message||"Erro ao registrar venda")}finally{btn.dataset.busy="0"}};
- const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");
- let fqActiveIndex=-1;
- const fqShow=()=>{fqActiveIndex=-1;results.querySelectorAll("[data-fq-client]").forEach(b=>b.classList.remove("active"))};
- search.onkeydown=e=>{if(results.classList.contains("hidden"))return;const items=[...results.querySelectorAll("[data-fq-client]")];if(!items.length)return;if(e.key==="ArrowDown"){e.preventDefault();fqActiveIndex=(fqActiveIndex+1)%items.length;items.forEach((b,i)=>b.classList.toggle("active",i===fqActiveIndex));items[fqActiveIndex]?.scrollIntoView({block:"nearest"});return}if(e.key==="ArrowUp"){e.preventDefault();fqActiveIndex=(fqActiveIndex-1+items.length)%items.length;items.forEach((b,i)=>b.classList.toggle("active",i===fqActiveIndex));items[fqActiveIndex]?.scrollIntoView({block:"nearest"});return}if(e.key==="Enter"){e.preventDefault();const b=items[fqActiveIndex>=0?fqActiveIndex:0];if(b)b.click();return}};
- search.oninput=()=>{hidden.value="";$("fqDiscountValue").readOnly=false;$("fqDiscountValue").value="0,00";const q=search.value.trim().toLowerCase(),m=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,10);results.innerHTML=m.map(c=>`<button type="button" class="client-result" data-fq-client="${c.id}">${esc(c.name)}</button>`).join("");results.classList.remove("hidden");fqShow();draw()};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden");const auto=String(c.status||"normal").toLowerCase()==="otimo";$("fqDiscountValue").value=auto?(totalOriginal()*0.10).toFixed(2).replace(".",","):"0,00";$("fqDiscountValue").readOnly=auto;draw()}};
+ $("fqDiscount").oninput=draw; $("cancelModal").onclick=closeModal;
+ $("fqConfirm").onclick=async()=>{
+  const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;if(!cart.length)return toast("Adicione pelo menos um produto.");
+  const clientId=$("fqClient").value||"",c=data.clients.find(x=>x.id===clientId),originalTotal=totalOriginal(),discountAmount=originalTotal*discount()/100,total=totalFinal();if(total<=0)return toast("O total da venda precisa ser maior que zero.");
+  btn.dataset.busy="1";btn.disabled=true;const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Confirmando venda...</b><small>Atualizando estoque com segurança...</small></div>';document.body.appendChild(overlay);
+  try{
+   const ratio=originalTotal?discountAmount/originalTotal:0,items=cart.map(i=>({...i,price:Math.round(numBR(i.price)*(1-ratio)*100)/100})),saleRef=doc(col("sales"));
+   await runTransaction(db,async tx=>{
+    const refs=cart.map(i=>doc(col("products"),i.productId));
+    const snaps=[]; for(const ref of refs) snaps.push(await tx.get(ref));
+    for(let idx=0;idx<cart.length;idx++){const p=snaps[idx];if(!p.exists())throw Error(`Produto não encontrado: ${cart[idx].name}`);const stock=numBR(p.data().stock||0),q=numBR(cart[idx].qty);if(stock<q)throw Error(`Estoque insuficiente para ${cart[idx].name}. Disponível: ${stock}.`);}
+    tx.set(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    for(let idx=0;idx<cart.length;idx++){const ref=refs[idx],p=snaps[idx],q=numBR(cart[idx].qty);tx.update(ref,{stock:numBR(p.data().stock||0)-q});}
+   });
+   closeModal();render();go("home");overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b><small>Estoque atualizado.</small></div>';setTimeout(()=>overlay.remove(),700);
+  }catch(e){console.error(e);overlay.remove();toast(e.message||"Erro ao registrar venda")}finally{btn.dataset.busy="0";btn.disabled=false}
+ };
+ draw();
 }
 function openSale(){
  const products=data.products.filter(p=>numBR(p.stock||0)>0);
  if(!products.length){toast("Cadastre um produto com estoque primeiro.");return}
- const clients=data.clients;
  openModal("Nova venda",`<div class="form">
- <div class="field"><label>Cliente</label><div class="client-picker" style="position:relative"><input id="mClientSearch" autocomplete="off" placeholder="🔎 Digite o nome do cliente..." aria-label="Pesquisar cliente"><input id="mClient" type="hidden" value=""><div id="mClientResults" class="client-results hidden"></div></div></div>
- <div class="field"><label>Produto</label><select id="mProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join("")}</select></div>
- <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Valor líquido</label><input id="mTotalValue" type="number" min="0" step="0.01" value="0" inputmode="decimal"></div></div><div id="mDiscount" style="font-size:12px;min-height:18px;margin-top:-5px"></div><div class="field"><label>Pago agora</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div>
- <div class="field"><label>Pagamento</label><select id="mMethod"><option>Pagamento no salário</option><option>Dinheiro</option><option>Cartão</option><option>PIX</option></select></div>
- <div id="mTotal" style="font-size:20px;font-weight:900;margin-top:8px"></div>
- <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
- const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,c=data.clients.find(x=>x.id===$("mClient").value),autoDiscount=String(c?.status||"normal").toLowerCase()==="otimo"?0.10:0;const field=$("mTotalValue");if(autoDiscount>0){field.value=(original*(1-autoDiscount)).toFixed(2);field.readOnly=true;field.title="Desconto automático de 10% para cliente Ótimo";}else{field.readOnly=false;if(document.activeElement!==field)field.value=original.toFixed(2);field.title="";}$("mTotal").textContent="Total líquido: "+money(Number(field.value)||0);updateSaleDiscount(original,Number(field.value)||0)};const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
- const clientSearch=$("mClientSearch"),clientHidden=$("mClient"),clientResults=$("mClientResults");
- let activeIndex=-1;
- const showClientResults=(term="")=>{const q=term.trim().toLowerCase();const matches=clients.filter(c=>!q||c.name.toLowerCase().includes(q)).slice(0,12);clientResults.innerHTML=matches.map((c,i)=>`<button type="button" class="client-result" data-pick-client="${c.id}" data-index="${i}">${esc(c.name)}${c.phone?`<small>${esc(c.phone)}</small>`:""}</button>`).join("")||'<div class="client-no-results">Nenhum cliente encontrado.</div>';activeIndex=-1;clientResults.classList.remove("hidden")};
- const setActive=idx=>{const items=[...clientResults.querySelectorAll("[data-pick-client]")];if(!items.length)return;activeIndex=(idx+items.length)%items.length;items.forEach((b,i)=>b.classList.toggle("active",i===activeIndex));items[activeIndex]?.scrollIntoView({block:"nearest"})};
- const pickClient=id=>{const c=clients.find(x=>x.id===id);if(c){clientHidden.value=c.id;clientSearch.value=c.name;clientResults.classList.add("hidden");clientSearch.blur();update()}};
- clientSearch.addEventListener("focus",()=>showClientResults(clientSearch.value));
- clientSearch.addEventListener("input",()=>{clientHidden.value="";showClientResults(clientSearch.value)});
- clientSearch.addEventListener("keydown",e=>{
-   if(!clientResults.classList.contains("hidden")){
-     if(e.key==="ArrowDown"){e.preventDefault();e.stopPropagation();setActive(activeIndex+1);return}
-     if(e.key==="ArrowUp"){e.preventDefault();e.stopPropagation();setActive(activeIndex-1);return}
-     if(e.key==="Enter"){e.preventDefault();e.stopPropagation();const items=[...clientResults.querySelectorAll("[data-pick-client]")];const b=items[activeIndex>=0?activeIndex:0];if(b)pickClient(b.dataset.pickClient);return}
-     if(e.key==="Escape"){e.preventDefault();e.stopPropagation();clientResults.classList.add("hidden");return}
-   }
- });
- clientResults.addEventListener("mousedown",e=>e.preventDefault());
- clientResults.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();const b=e.target.closest("[data-pick-client]");if(b)pickClient(b.dataset.pickClient)});
- document.addEventListener("mousedown",function closeClientDropdown(e){if(!clientSearch.contains(e.target)&&!clientResults.contains(e.target)){clientResults.classList.add("hidden")}}, {once:true});
- $("mProduct").onchange=update;$("mQty").oninput=update;$("mTotalValue").oninput=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("mTotalValue").value)||0);$("mTotal").textContent="Total líquido: "+money(val);updateSaleDiscount(original,val)};update();
- $("cancelModal").onclick=closeModal;$("confirmSale").onclick=async()=>{
- const btn=$("confirmSale");if(!btn||btn.dataset.busy==="1")return;btn.dataset.busy="1";
- const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Confirmando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);
- try{
-  const p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),total=Math.max(0,Number($("mTotalValue").value)||0),clientId=$("mClient").value||"";
-  if(!p)throw Error("Selecione um produto.");
-  if(total<=0)throw Error("Informe o valor da venda.");
-  if(q>numBR(p.stock||0))throw Error("Estoque insuficiente.");
-  const c=data.clients.find(x=>x.id===clientId),paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),originalTotal=numBR(p.price||0)*q,discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
-  const saleRef=doc(col("sales"));
-  await Promise.all([
-   setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:numBR(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
-   updateDoc(doc(col("products"),p.id),{stock:numBR(p.stock||0)-q}),
-   logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`)
-  ]);
-  if(paid>0)await addDoc(col("payments"),{saleId:saleRef.id,clientId,clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
-  closeModal();render();go("home");
-  overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';
-  setTimeout(()=>overlay.remove(),550);
- }catch(e){console.error(e);overlay.remove();toast(e.message||"Não foi possível registrar a venda.")}finally{btn.dataset.busy="0"}
-};
+  <div class="field"><label>Cliente</label><select id="mClient"><option value="">Venda balcão</option>${data.clients.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></div>
+  <div class="field"><label>Produto</label><select id="mProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join("")}</select></div>
+  <div class="row"><div class="field"><label>Quantidade</label><input id="mQty" type="number" min="1" value="1"></div><div class="field"><label>Valor da venda</label><input id="mTotalValue" type="number" min="0" step="0.01"></div></div>
+  <div id="mDiscount" style="min-height:18px;font-size:12px"></div><div id="mTotal" class="section-title"><span>Total líquido</span><b>R$ 0,00</b></div>
+  <div class="field"><label>Valor pago</label><input id="mPaid" type="number" min="0" step="0.01" value="0"></div>
+  <div class="field"><label>Forma de pagamento</label><select id="mMethod"><option>Pendente</option><option>Dinheiro</option><option>Cartão</option><option>PIX</option><option>Pagamento no salário</option></select></div>
+  <div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="confirmSale">Confirmar venda</button></div></div>`);
+ const update=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,c=data.clients.find(x=>x.id===$("mClient").value),autoDiscount=String(c?.status||"normal").toLowerCase()==="otimo"?0.10:0;const field=$("mTotalValue");if(autoDiscount>0){field.value=(original*(1-autoDiscount)).toFixed(2);field.readOnly=true;field.title="Desconto automático de 10% para cliente Ótimo";}else{field.readOnly=false;if(document.activeElement!==field)field.value=original.toFixed(2);field.title="";}$("mTotal").innerHTML=`<span>Total líquido</span><b>${money(Number(field.value)||0)}</b>`;updateSaleDiscount(original,Number(field.value)||0)};
+ const updateSaleDiscount=(original,finalValue)=>{const el=$("mDiscount");if(!el)return;const pct=original>0?Math.max(0,(original-finalValue)/original*100):0;el.innerHTML=pct>0?`<span style="color:var(--green,#2f8f68);font-weight:800">🟢 Desconto ${money(Math.max(0,original-finalValue))} (${pct.toFixed(2).replace('.',',')}%)</span>`:finalValue>original?`<span style="color:var(--muted)">Valor acima do preço original</span>`:""};
+ $("mClient").onchange=update;$("mProduct").onchange=update;$("mQty").oninput=update;$("mTotalValue").oninput=()=>{let p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Number($("mQty").value)||1),original=(p?.price||0)*q,val=Math.max(0,Number($("mTotalValue").value)||0);$("mTotal").innerHTML=`<span>Total líquido</span><b>${money(val)}</b>`;updateSaleDiscount(original,val)};update();
+ $("cancelModal").onclick=closeModal;$ ("confirmSale");
+ $("confirmSale").onclick=async()=>{
+  const btn=$("confirmSale");if(!btn||btn.dataset.busy==="1")return;btn.dataset.busy="1";btn.disabled=true;
+  const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Confirmando venda...</b><small>Atualizando estoque com segurança...</small></div>';document.body.appendChild(overlay);
+  try{
+   const clientId=$("mClient").value||"",c=data.clients.find(x=>x.id===clientId),p=data.products.find(x=>x.id===$("mProduct").value),q=Math.max(1,Math.floor(Number($("mQty").value)||1)),total=Math.max(0,Number($("mTotalValue").value)||0),originalTotal=(p?.price||0)*q,paid=Math.min(total,Math.max(0,Number($("mPaid").value)||0));if(!p||total<=0)throw Error("Produto e valor são obrigatórios.");
+   const discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal?discountAmount/originalTotal*100:0,saleRef=doc(col("sales")),paymentRef=paid>0?doc(col("payments")):null;
+   await runTransaction(db,async tx=>{
+    const pref=doc(col("products"),p.id),snap=await tx.get(pref);if(!snap.exists())throw Error("Produto não encontrado.");const stock=numBR(snap.data().stock||0);if(stock<q)throw Error(`Estoque insuficiente. Disponível: ${stock}.`);
+    tx.set(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:numBR(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    tx.update(pref,{stock:stock-q});
+    if(paymentRef)tx.set(paymentRef,{saleId:saleRef.id,clientId,clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
+   });
+   await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`);
+   overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b><small>Estoque atualizado.</small></div>';await new Promise(r=>setTimeout(r,700));overlay.remove();closeModal();render();go("home");toast("Venda confirmada!");
+  }catch(e){console.error(e);overlay.remove();toast(e.message||"Não foi possível registrar a venda.")}finally{btn.dataset.busy="0";btn.disabled=false}
+ };
 }
 function clientPending(c){
  const salesPending=data.sales.filter(s=>s.clientId===c.id).reduce((a,s)=>a+Math.max(0,numBR(s.total||0)-Number(s.paid||0)),0);
@@ -1300,40 +1312,22 @@ function openPaymentForClient(c){
 function openAddStock(p){
  if(!p)return;const current=numBR(p.stock||0),oldCost=numBR(p.cost||0);
  openModal("Adicionar estoque",`<div class="form"><div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque: ${current} un. • custo atual: ${money(oldCost)}</small></div></div>
- <div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="number" min="1" value="1"></div>
- <div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="text" inputmode="decimal" placeholder="Ex.: 25,00"></div>
- <div id="addStockPreview" style="font-size:12px;color:var(--muted)">Informe os valores para calcular o custo.</div>
- <div class="actions"><button type="button" class="secondary" id="cancelAddStock">Cancelar</button><button type="button" class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
- const preview=()=>{const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q>0&&t>0){const unit=t/q,avg=(oldCost*current+t)/(current+q);$("addStockPreview").textContent=`Custo desta compra: ${money(unit)}/un. • novo custo médio: ${money(avg)} • total: ${money(t)}`}};
- $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$("cancelAddStock").onclick=closeModal;
- $("confirmAddStock").onclick=async()=>{const btn=$("confirmAddStock");if(btn.dataset.busy==="1")return;const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q<1)return toast("Informe a quantidade.");if(t<=0)return toast("Informe o valor total.");const unit=Math.round(t/q*100)/100,avg=Math.round(((oldCost*current)+t)/(current+q)*100)/100;btn.dataset.busy="1";btn.disabled=true;try{await updateDoc(doc(col("products"),p.id),{stock:current+q,cost:avg});await addDoc(col("purchases"),{productId:p.id,productName:p.name,quantity:q,total:t,unitCost:unit,previousUnitCost:oldCost,newAverageCost:avg,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction("Entrada de estoque",`${p.name} • +${q} un. • ${money(t)} • custo ${money(unit)}`);closeModal();render();toast(`+${q} unidades adicionadas!`)}catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.message||""));btn.disabled=false;btn.dataset.busy="0"}};
- preview();
+ <div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="number" min="1" value="1"></div><div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="text" inputmode="decimal" placeholder="Ex.: 25,00"></div><div id="addStockPreview" style="font-size:12px;color:var(--muted)">Informe os valores para calcular o custo.</div><div class="actions"><button type="button" class="secondary" id="cancelAddStock">Cancelar</button><button type="button" class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
+ const preview=()=>{const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q>0&&t>0){const unit=t/q;$("addStockPreview").textContent=`Custo desta compra: ${money(unit)}/un.`}};$("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$("cancelAddStock").onclick=closeModal;
+ $("confirmAddStock").onclick=async()=>{const btn=$("confirmAddStock");if(btn.dataset.busy==="1")return;const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q<1)return toast("Informe a quantidade.");if(t<=0)return toast("Informe o valor total.");btn.dataset.busy="1";btn.disabled=true;try{const ref=doc(col("products"),p.id);let avg=0;await runTransaction(db,async tx=>{const snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");const d=snap.data(),stock=numBR(d.stock||0),cost=numBR(d.cost||0),unit=Math.round(t/q*100)/100;avg=Math.round(((cost*stock)+t)/(stock+q)*100)/100;tx.update(ref,{stock:stock+q,cost:avg});});await addDoc(col("purchases"),{productId:p.id,productName:p.name,quantity:q,total:t,unitCost:Math.round(t/q*100)/100,previousUnitCost:oldCost,newAverageCost:avg,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction("Entrada de estoque",`${p.name} • +${q} un. • ${money(t)}`);closeModal();render();toast(`+${q} unidades adicionadas!`)}catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.message||""));btn.disabled=false;btn.dataset.busy="0"}};
 }
 function openAvulsaStockPicker(){
- const products=data.products||[];
- if(!products.length)return toast("Cadastre um produto primeiro.");
+ const products=data.products||[];if(!products.length)return toast("Cadastre um produto primeiro.");
  openModal("Entrada avulsa",`<div class="form"><div style="padding:12px 13px;border-radius:14px;background:var(--soft,#faf6f2);color:var(--muted);font-size:12px;line-height:1.45">Use quando entrou produto a mais ou você precisa apenas ajustar o estoque. <b>Não registra compra nem altera o custo.</b></div><div class="field"><label>Produto</label><select id="avulsaProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${numBR(p.stock||0)} un.</option>`).join("")}</select></div><div class="field"><label>Quantidade a adicionar</label><input id="avulsaQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="actions"><button type="button" class="secondary" id="cancelAvulsa">Cancelar</button><button type="button" class="primary" id="confirmAvulsa">Adicionar ao estoque</button></div></div>`);
- $("cancelAvulsa").onclick=closeModal;
- $("confirmAvulsa").onclick=async()=>{const btn=$("confirmAvulsa");if(btn.dataset.busy==="1")return;const qty=Math.floor(numBR($("avulsaQty").value)||0);if(qty<1)return toast("Informe uma quantidade válida.");const p=data.products.find(x=>x.id===$("avulsaProduct").value);if(!p)return toast("Selecione um produto.");const current=numBR(p.stock||0);btn.dataset.busy="1";btn.disabled=true;try{await updateDoc(doc(col("products"),p.id),{stock:current+qty});await logAction("Entrada avulsa",`${p.name} • +${qty} un. • estoque ${current} → ${current+qty}`);closeModal();render();toast(`+${qty} unidades adicionadas ao estoque!`)}catch(e){console.error(e);toast("Erro ao adicionar ao estoque: "+(e.code||e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}};
+ $("cancelAvulsa").onclick=closeModal;$("confirmAvulsa").onclick=async()=>{const btn=$("confirmAvulsa");if(btn.dataset.busy==="1")return;const qty=Math.floor(numBR($("avulsaQty").value)||0);if(qty<1)return toast("Informe uma quantidade válida.");const ref=doc(col("products"),$("avulsaProduct").value),p=products.find(x=>x.id===$("avulsaProduct").value);if(!p)return toast("Selecione um produto.");btn.dataset.busy="1";btn.disabled=true;try{let before=0,after=0;await runTransaction(db,async tx=>{const snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");before=numBR(snap.data().stock||0);after=before+qty;tx.update(ref,{stock:after});});await logAction("Entrada avulsa",`${p.name} • +${qty} un. • estoque ${before} → ${after}`);closeModal();render();toast(`+${qty} unidades adicionadas ao estoque!`)}catch(e){console.error(e);toast("Erro ao adicionar ao estoque: "+(e.code||e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}};
 }
 function openAvulsaStock(p){
- if(!p)return;
- const current=numBR(p.stock||0);
- openModal("Entrada avulsa",`<div class="form"><div class="item"><div class="avatar">➕</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} un.</small></div></div><div style="padding:12px 13px;border-radius:14px;background:var(--soft,#faf6f2);color:var(--muted);font-size:12px;line-height:1.45">Use quando entrou produto a mais ou você precisa apenas ajustar o estoque. <b>Não registra compra nem altera o custo.</b></div><div class="field"><label>Quantidade a adicionar</label><input id="avulsaQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="actions"><button type="button" class="secondary" id="cancelAvulsa">Cancelar</button><button type="button" class="primary" id="confirmAvulsa">Adicionar ao estoque</button></div></div>`);
- $("cancelAvulsa").onclick=closeModal;
- $("confirmAvulsa").onclick=async()=>{const btn=$("confirmAvulsa");if(btn.dataset.busy==="1")return;const qty=Math.floor(numBR($("avulsaQty").value)||0);if(qty<1)return toast("Informe uma quantidade válida.");btn.dataset.busy="1";btn.disabled=true;try{await updateDoc(doc(col("products"),p.id),{stock:current+qty});await logAction("Entrada avulsa",`${p.name} • +${qty} un. • estoque ${current} → ${current+qty}`);closeModal();render();toast(`+${qty} unidades adicionadas ao estoque!`)}catch(e){console.error(e);toast("Erro ao adicionar ao estoque: "+(e.code||e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}};
+ if(!p)return;const current=numBR(p.stock||0);openModal("Entrada avulsa",`<div class="form"><div class="item"><div class="avatar">➕</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} un.</small></div></div><div style="padding:12px 13px;border-radius:14px;background:var(--soft,#faf6f2);color:var(--muted);font-size:12px;line-height:1.45">Use quando entrou produto a mais ou você precisa apenas ajustar o estoque. <b>Não registra compra nem altera o custo.</b></div><div class="field"><label>Quantidade a adicionar</label><input id="avulsaQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="actions"><button type="button" class="secondary" id="cancelAvulsa">Cancelar</button><button type="button" class="primary" id="confirmAvulsa">Adicionar ao estoque</button></div></div>`);
+ $("cancelAvulsa").onclick=closeModal;$("confirmAvulsa").onclick=async()=>{const btn=$("confirmAvulsa");if(btn.dataset.busy==="1")return;const qty=Math.floor(numBR($("avulsaQty").value)||0);if(qty<1)return toast("Informe uma quantidade válida.");btn.dataset.busy="1";btn.disabled=true;try{const ref=doc(col("products"),p.id);let before=0,after=0;await runTransaction(db,async tx=>{const snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");before=numBR(snap.data().stock||0);after=before+qty;tx.update(ref,{stock:after});});await logAction("Entrada avulsa",`${p.name} • +${qty} un. • estoque ${before} → ${after}`);closeModal();render();toast(`+${qty} unidades adicionadas ao estoque!`)}catch(e){console.error(e);toast("Erro ao adicionar ao estoque: "+(e.code||e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}};
 }
 function openRemoveStock(p){
- if(!p)return;
- const current=numBR(p.stock||0);
- openModal("Remover do estoque",`<div class="form"><div class="section-title"><b>📦 ${esc(p.name)}</b><span>${current} un.</span></div><div class="field"><label>Quantidade a remover</label><input id="removeQty" type="number" min="1" max="${current}" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="field"><label>Motivo (opcional)</label><input id="removeReason" placeholder="Ex.: produto danificado"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmRemoveStock">Remover</button></div></div>`);
- $("cancelModal").onclick=closeModal;
- $("confirmRemoveStock").onclick=async()=>{
-  const qty=Math.floor(Number($("removeQty").value)||0),reason=$("removeReason").value.trim();
-  if(qty<1)return toast("Informe uma quantidade válida.");
-  if(qty>current)return toast("A quantidade não pode ser maior que o estoque atual.");
-  try{await updateDoc(doc(col("products"),p.id),{stock:current-qty});await logAction("Ajuste de estoque",`-${qty} ${p.name} • estoque ${current} → ${current-qty}${reason?` • ${reason}`:""}`);closeModal();toast("Estoque atualizado!");}catch(e){console.error(e);toast("Erro ao remover do estoque: "+(e.code||"verifique a conexão."));}
- };
+ if(!p)return;const current=numBR(p.stock||0);openModal("Remover do estoque",`<div class="form"><div class="section-title"><b>📦 ${esc(p.name)}</b><span>${current} un.</span></div><div class="field"><label>Quantidade a remover</label><input id="removeQty" type="number" min="1" max="${current}" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="field"><label>Motivo (opcional)</label><input id="removeReason" placeholder="Ex.: produto danificado"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="confirmRemoveStock">Remover</button></div></div>`);$("cancelModal").onclick=closeModal;
+ $("confirmRemoveStock").onclick=async()=>{const btn=$("confirmRemoveStock");if(btn.dataset.busy==="1")return;const qty=Math.floor(numBR($("removeQty").value)||0),reason=$("removeReason").value.trim();if(qty<1)return toast("Informe uma quantidade válida.");btn.dataset.busy="1";btn.disabled=true;try{const ref=doc(col("products"),p.id);let before=0,after=0;await runTransaction(db,async tx=>{const snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");before=numBR(snap.data().stock||0);if(qty>before)throw Error(`A quantidade não pode ser maior que o estoque atual (${before}).`);after=before-qty;tx.update(ref,{stock:after});});await logAction("Ajuste de estoque",`-${qty} ${p.name} • estoque ${before} → ${after}${reason?` • ${reason}`:""}`);closeModal();render();toast("Estoque atualizado!")}catch(e){console.error(e);toast("Erro ao remover do estoque: "+(e.code||e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}};
 }
 async function deleteProductConfirm(p){
  if(!p)return;
@@ -1343,59 +1337,10 @@ async function deleteProductConfirm(p){
 }
 
 function openProduct(p=null){
- const currentStock=Number(p?.stock||0);
- const currentCost=Number(p?.cost||0);
- openModal(p?"Editar produto":"Novo produto",`<div class="form">
-  <div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}" placeholder="Nome do doce"></div>
-  <div class="field"><label>Fornecedor (opcional)</label><input id="pSupplier" value="${esc(p?.supplier||"")}" placeholder="Nome do fornecedor"></div>
-  <div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" min="0" inputmode="decimal" value="${p?.price||""}"></div>
-  <div style="margin-top:4px;padding:13px;border-radius:15px;background:#fff8ef;border:1px solid #ecd9c3">
-   <b style="display:block;margin-bottom:8px">📦 Registrar compra / entrada de estoque</b>
-   <div class="row"><div class="field"><label>Quantidade comprada</label><input id="pPurchaseQty" type="number" min="0" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total da compra</label><input id="pPurchaseTotal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 17,99"></div></div>
-   <div id="pUnitPreview" style="font-size:13px;color:var(--muted);margin-top:3px">Informe quantidade e valor total para calcular o custo unitário automaticamente.</div>
-  </div>
-  <div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div>
-  <div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div>
- </div>`);
- $("cancelModal").onclick=closeModal;
- const updatePurchasePreview=()=>{
-  const qty=Number($("pPurchaseQty")?.value)||0, total=Number($("pPurchaseTotal")?.value)||0;
-  const preview=$("pUnitPreview");
-  if(qty>0&&total>0){preview.textContent=`Custo unitário calculado: ${money(Math.round((total/qty)*100)/100)} por doce.`;preview.style.color="var(--green,#2f8f68)";}
-  else {preview.textContent="Informe quantidade e valor total para calcular o custo unitário automaticamente.";preview.style.color="var(--muted)";}
- };
- $("pPurchaseQty").oninput=updatePurchasePreview;$("pPurchaseTotal").oninput=updatePurchasePreview;
- $("saveProduct").onclick=async()=>{
-  const name=$("pName").value.trim();
-  const supplier=$("pSupplier").value.trim();
-  const price=Number($("pPrice").value)||0;
-  const purchaseQty=Number($("pPurchaseQty").value)||0;
-  const purchaseTotal=Number($("pPurchaseTotal").value)||0;
-  const minStock=Number($("pMin").value)||0;
-  if(!name||price<=0)return toast("Preencha nome e preço.");
-  if(purchaseQty<0||purchaseTotal<0)return toast("Os valores da compra não podem ser negativos.");
-  if((purchaseQty>0&&purchaseTotal<=0)||(purchaseTotal>0&&purchaseQty<=0))return toast("Informe a quantidade e o valor total da compra.");
-  let stock=currentStock;
-  let cost=currentCost;
-  if(purchaseQty>0){
-    cost=Math.round((purchaseTotal/purchaseQty)*100)/100;
-    stock=currentStock+purchaseQty;
-  }
-  const obj={name,price,cost,stock,minStock,supplier};
-  try{
-   if(p){
-    await updateDoc(doc(col("products"),p.id),obj);
-    if(purchaseQty>0) await addDoc(col("purchases"),{productId:p.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-    await logAction(purchaseQty>0?"Entrada de estoque":"Produto alterado",purchaseQty>0?`${name} • +${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • preço ${money(price)} • estoque ${stock}`);
-   }else{
-    const productRef=await addDoc(col("products"),{...obj,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-    if(purchaseQty>0) await addDoc(col("purchases"),{productId:productRef.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-    await logAction(purchaseQty>0?"Entrada de estoque":"Produto adicionado",purchaseQty>0?`${name} • ${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • estoque ${stock}`);
-   }
-   closeModal();toast("Produto salvo!");
-  }catch(e){console.error(e);toast("Erro ao salvar produto: "+(e.code||"verifique a conexão."));}
- };
- updatePurchasePreview();
+ const currentStock=Number(p?.stock||0),currentCost=Number(p?.cost||0);
+ openModal(p?"Editar produto":"Novo produto",`<div class="form"><div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}" placeholder="Nome do doce"></div><div class="field"><label>Fornecedor (opcional)</label><input id="pSupplier" value="${esc(p?.supplier||"")}" placeholder="Nome do fornecedor"></div><div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" min="0" inputmode="decimal" value="${p?.price||""}"></div><div style="margin-top:4px;padding:13px;border-radius:15px;background:#fff8ef;border:1px solid #ecd9c3"><b style="display:block;margin-bottom:8px">📦 Registrar compra / entrada de estoque</b><div class="row"><div class="field"><label>Quantidade comprada</label><input id="pPurchaseQty" type="number" min="0" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total da compra</label><input id="pPurchaseTotal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 17,99"></div></div><div id="pUnitPreview" style="font-size:13px;color:var(--muted);margin-top:3px">Informe quantidade e valor total para calcular o custo unitário automaticamente.</div></div><div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div><div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div></div>`);
+ $("cancelModal").onclick=closeModal;const updatePurchasePreview=()=>{const qty=Number($("pPurchaseQty")?.value)||0,total=Number($("pPurchaseTotal")?.value)||0,preview=$("pUnitPreview");if(qty>0&&total>0)preview.textContent=`Custo unitário calculado: ${money(Math.round(total/qty*100)/100)} por doce.`;else preview.textContent="Informe quantidade e valor total para calcular o custo unitário automaticamente."};$("pPurchaseQty").oninput=updatePurchasePreview;$("pPurchaseTotal").oninput=updatePurchasePreview;
+ $("saveProduct").onclick=async()=>{const btn=$("saveProduct");if(btn.dataset.busy==="1")return;const name=$("pName").value.trim(),supplier=$("pSupplier").value.trim(),price=Number($("pPrice").value)||0,purchaseQty=Number($("pPurchaseQty").value)||0,purchaseTotal=Number($("pPurchaseTotal").value)||0,minStock=Number($("pMin").value)||0;if(!name||price<=0)return toast("Preencha nome e preço.");if(purchaseQty<0||purchaseTotal<0)return toast("Os valores da compra não podem ser negativos.");if((purchaseQty>0&&purchaseTotal<=0)||(purchaseTotal>0&&purchaseQty<=0))return toast("Informe a quantidade e o valor total da compra.");btn.dataset.busy="1";btn.disabled=true;try{if(p){const ref=doc(col("products"),p.id);let cost=0,stock=0;await runTransaction(db,async tx=>{const snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");const d=snap.data(),oldStock=numBR(d.stock||0),oldCost=numBR(d.cost||0);stock=oldStock;cost=oldCost;if(purchaseQty>0){cost=Math.round((purchaseTotal/purchaseQty)*100)/100;stock=oldStock+purchaseQty;}tx.update(ref,{name,price,cost,stock,minStock,supplier});});if(purchaseQty>0)await addDoc(col("purchases"),{productId:p.id,productName:name,quantity:purchaseQty,total:purchaseTotal,unitCost:Math.round(purchaseTotal/purchaseQty*100)/100,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction(purchaseQty>0?"Entrada de estoque":"Produto alterado",purchaseQty>0?`${name} • +${purchaseQty} un. • compra ${money(purchaseTotal)}`:`${name} • preço ${money(price)}`);}else{const obj={name,price,cost:purchaseQty>0?Math.round(purchaseTotal/purchaseQty*100)/100:0,stock:purchaseQty,minStock,supplier,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()},productRef=await addDoc(col("products"),obj);if(purchaseQty>0)await addDoc(col("purchases"),{productId:productRef.id,productName:name,quantity:purchaseQty,total:purchaseTotal,unitCost:Math.round(purchaseTotal/purchaseQty*100)/100,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction(purchaseQty>0?"Entrada de estoque":"Produto adicionado",purchaseQty>0?`${name} • ${purchaseQty} un. • compra ${money(purchaseTotal)}`:`${name} • estoque ${purchaseQty}`);}closeModal();render();toast("Produto salvo!")}catch(e){console.error(e);toast("Erro ao salvar produto: "+(e.code||e.message||"verifique a conexão."))}finally{btn.dataset.busy="0";btn.disabled=false}};updatePurchasePreview();
 }
 function openClientForm(){
  openModal("Novo cliente",`<div class="form"><div class="field"><label>Nome</label><input id="cName" autocomplete="name" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="cPhone" autocomplete="tel" placeholder="(47) 99999-9999"></div><div class="field"><label>Foto (opcional)</label><div class="client-photo-picker"><div class="client-photo-preview" id="clientPhotoPreview">👤</div><div><input id="cPhotoGallery" type="file" accept="image/*" style="display:none"><input id="cPhotoCamera" type="file" accept="image/*" capture="environment" style="display:none"><div class="client-photo-actions" style="margin-top:0"><button type="button" class="secondary" id="chooseClientPhotoGallery">🖼️ Galeria</button><button type="button" class="secondary" id="chooseClientPhotoCamera">📷 Câmera</button></div><div class="client-photo-actions"><button type="button" class="secondary" id="removeClientPhoto" style="display:none">🗑️ Remover</button></div><small class="client-photo-note">Escolha uma foto da galeria ou tire uma nova com a câmera.</small></div></div></div><div class="actions"><button type="button" class="secondary" id="cancelModal">Cancelar</button><button type="button" class="primary" id="saveClient">Salvar</button></div></div>`);
@@ -1653,38 +1598,13 @@ function openSaleDetail(s){
 }
 function openEditSale(s){
  const products=data.products||[],clients=data.clients||[],old=s.items?.[0]||{};
- openModal("Editar venda",`<div class="form">
-  <div class="field"><label>Cliente</label><select id="esClient"><option value="">Venda balcão</option>${clients.map(c=>`<option value="${c.id}" ${c.id===s.clientId?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div>
-  <div class="field"><label>Produto</label><select id="esProduct">${products.map(p=>`<option value="${p.id}" ${p.id===old.productId?'selected':''}>${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join('')}</select></div>
-  <div class="row"><div class="field"><label>Quantidade</label><input id="esQty" type="number" min="1" value="${Number(old.qty||1)}"></div><div class="field"><label>Valor</label><input id="esTotal" type="number" min="0" step="0.01" value="${numBR(s.total||0).toFixed(2)}"></div></div>
-  <div class="field"><label>Valor pago</label><input id="esPaid" type="number" min="0" step="0.01" value="${Number(s.paid||0).toFixed(2)}"></div>
-  <div class="actions"><button class="secondary" id="esCancel">Cancelar</button><button class="primary" id="esSave">Salvar alterações</button></div>
- </div>`);
- $("esCancel").onclick=closeModal;
- $("esSave").onclick=async()=>{
-  const btn=$("esSave");if(btn.dataset.busy)return;btn.dataset.busy="1";
-  try{
-   const np=products.find(p=>p.id===$("esProduct").value),nq=Math.max(1,Number($("esQty").value)||1),nt=Math.max(0,Number($("esTotal").value)||0),paid=Math.min(nt,Math.max(0,Number($("esPaid").value)||0)),nc=clients.find(c=>c.id===$("esClient").value),oi=s.items?.[0]||{},op=products.find(p=>p.id===oi.productId),oq=Number(oi.qty||0);
-   if(!np||!nt)throw Error("Produto e valor são obrigatórios.");
-   const ops=[];
-   if(op&&op.id===np.id){const available=Number(op.stock||0)+oq;if(nq>available)throw Error("Estoque insuficiente.");ops.push(updateDoc(doc(col("products"),op.id),{stock:available-nq}));}
-   else{if(nq>Number(np.stock||0))throw Error("Estoque insuficiente.");if(op)ops.push(updateDoc(doc(col("products"),op.id),{stock:Number(op.stock||0)+oq}));ops.push(updateDoc(doc(col("products"),np.id),{stock:Number(np.stock||0)-nq}));}
-   const originalTotal=Number(np.price||0)*nq,discountAmount=Math.max(0,originalTotal-nt),discountPct=originalTotal?discountAmount/originalTotal*100:0;
-   ops.push(updateDoc(doc(col("sales"),s.id),{clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",items:[{productId:np.id,name:np.name,qty:nq,price:nt/nq,originalPrice:np.price,cost:Number(np.cost||0)}],originalTotal,total:nt,discountAmount,discountPct,paid,updatedAt:serverTimestamp()}));
-   const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));
-   if(paid>0)ops.push(addDoc(col("payments"),{saleId:s.id,clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",amount:paid,createdAt:serverTimestamp(),method:s.paymentMethod||"Pagamento"}));
-   await Promise.all(ops);closeModal();render();toast("Venda alterada com sucesso!");
-  }catch(e){console.error(e);toast(e.message||"Não foi possível alterar a venda.")}finally{btn.dataset.busy=""}
- };
+ openModal("Editar venda",`<div class="form"><div class="field"><label>Cliente</label><select id="esClient"><option value="">Venda balcão</option>${clients.map(c=>`<option value="${c.id}" ${c.id===s.clientId?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="field"><label>Produto</label><select id="esProduct">${products.map(p=>`<option value="${p.id}" ${p.id===old.productId?'selected':''}>${esc(p.name)} • ${money(p.price)} • ${p.stock} un.</option>`).join('')}</select></div><div class="row"><div class="field"><label>Quantidade</label><input id="esQty" type="number" min="1" value="${Number(old.qty||1)}"></div><div class="field"><label>Valor</label><input id="esTotal" type="number" min="0" step="0.01" value="${numBR(s.total||0).toFixed(2)}"></div></div><div class="field"><label>Valor pago</label><input id="esPaid" type="number" min="0" step="0.01" value="${Number(s.paid||0).toFixed(2)}"></div><div class="actions"><button class="secondary" id="esCancel">Cancelar</button><button class="primary" id="esSave">Salvar alterações</button></div></div>`);$("esCancel").onclick=closeModal;
+ $("esSave").onclick=async()=>{const btn=$("esSave");if(btn.dataset.busy==="1")return;btn.dataset.busy="1";btn.disabled=true;try{const np=products.find(p=>p.id===$("esProduct").value),nq=Math.max(1,Math.floor(Number($("esQty").value)||1)),nt=Math.max(0,Number($("esTotal").value)||0),paid=Math.min(nt,Math.max(0,Number($("esPaid").value)||0)),nc=clients.find(c=>c.id===$("esClient").value);if(!np||!nt)throw Error("Produto e valor são obrigatórios.");const saleRef=doc(col("sales"),s.id),newRef=doc(col("products"),np.id),originalTotal=Number(np.price||0)*nq,discountAmount=Math.max(0,originalTotal-nt),discountPct=originalTotal?discountAmount/originalTotal*100:0;let oldProductId="",oldQty=0;await runTransaction(db,async tx=>{const saleSnap=await tx.get(saleRef);if(!saleSnap.exists())throw Error("Venda não encontrada.");const sale=saleSnap.data(),oi=sale.items?.[0]||{};oldProductId=oi.productId;oldQty=Number(oi.qty||0);const oldRef=doc(col("products"),oldProductId),refs=oldProductId===np.id?[oldRef]:[oldRef,newRef],snaps=[];for(const ref of refs)snaps.push(await tx.get(ref));const oldSnap=snaps[0];if(oldSnap.exists()){const stock=numBR(oldSnap.data().stock||0);if(oldProductId===np.id){const available=stock+oldQty;if(nq>available)throw Error(`Estoque insuficiente. Disponível para esta alteração: ${available}.`);tx.update(oldRef,{stock:available-nq});}else{tx.update(oldRef,{stock:stock+oldQty});const newSnap=snaps[1];if(!newSnap.exists())throw Error("Novo produto não encontrado.");const newStock=numBR(newSnap.data().stock||0);if(nq>newStock)throw Error(`Estoque insuficiente. Disponível: ${newStock}.`);tx.update(newRef,{stock:newStock-nq});}}else if(oldProductId!==np.id){const newSnap=snaps[1];if(!newSnap.exists())throw Error("Novo produto não encontrado.");const newStock=numBR(newSnap.data().stock||0);if(nq>newStock)throw Error(`Estoque insuficiente. Disponível: ${newStock}.`);tx.update(newRef,{stock:newStock-nq});}else throw Error("Produto da venda não encontrado.");tx.update(saleRef,{clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",items:[{productId:np.id,name:np.name,qty:nq,price:nt/nq,originalPrice:np.price,cost:Number(np.cost||0)}],originalTotal,total:nt,discountAmount,discountPct,paid,updatedAt:serverTimestamp()});});
+ const ps=await getDocs(col("payments"));await Promise.all(ps.docs.filter(d=>d.data()?.saleId===s.id).map(d=>deleteDoc(doc(col("payments"),d.id))));if(paid>0)await addDoc(col("payments"),{saleId:s.id,clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",amount:paid,createdAt:serverTimestamp(),method:s.paymentMethod||"Pagamento"});closeModal();render();toast("Venda alterada com sucesso!")}catch(e){console.error(e);toast(e.message||"Não foi possível alterar a venda.")}finally{btn.dataset.busy="0";btn.disabled=false}};
 }
 function confirmDeleteSale(s){
- openModal("Excluir venda?",`<div class="form"><p>Tem certeza que deseja excluir <b>${esc(s.clientName||"Venda balcão")}</b> no valor de <b>${money(s.total)}</b>?</p><p><small>O estoque será devolvido e os pagamentos vinculados serão removidos.</small></p><div class="field"><label>Digite EXCLUIR para confirmar</label><input id="delSaleText" autocomplete="off"></div><div class="actions"><button class="secondary" id="delCancel">Cancelar</button><button class="primary" id="delDo" disabled>Excluir venda</button></div></div>`);
- $("delCancel").onclick=closeModal;
- $("delSaleText").oninput=e=>$("delDo").disabled=e.target.value.trim().toUpperCase()!=="EXCLUIR";
- $("delDo").onclick=async()=>{
-  const btn=$("delDo");if(btn.dataset.busy)return;btn.dataset.busy="1";
-  try{const ops=[];for(const i of(s.items||[])){const p=data.products.find(x=>x.id===i.productId);if(p)ops.push(updateDoc(doc(col("products"),p.id),{stock:numBR(p.stock||0)+Number(i.qty||0)}));}const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));ops.push(deleteDoc(doc(col("sales"),s.id)));ops.push(logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`));await Promise.all(ops);closeModal();render();toast("Venda excluída com sucesso!");}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy=""}
- };
+ openModal("Excluir venda?",`<div class="form"><p>Tem certeza que deseja excluir <b>${esc(s.clientName||"Venda balcão")}</b> no valor de <b>${money(s.total)}</b>?</p><p><small>O estoque será devolvido e os pagamentos vinculados serão removidos.</small></p><div class="field"><label>Digite EXCLUIR para confirmar</label><input id="delSaleText" autocomplete="off"></div><div class="actions"><button class="secondary" id="delCancel">Cancelar</button><button class="primary" id="delDo" disabled>Excluir venda</button></div></div>`);$("delCancel").onclick=closeModal;$("delSaleText").oninput=e=>$("delDo").disabled=e.target.value.trim().toUpperCase()!=="EXCLUIR";
+ $("delDo").onclick=async()=>{const btn=$("delDo");if(btn.dataset.busy)return;btn.dataset.busy="1";btn.disabled=true;try{const saleRef=doc(col("sales"),s.id);let saleData=null;await runTransaction(db,async tx=>{const saleSnap=await tx.get(saleRef);if(!saleSnap.exists())throw Error("Venda não encontrada.");saleData=saleSnap.data();const grouped=new Map();for(const i of(saleData.items||[])){if(!i.productId)continue;grouped.set(i.productId,(grouped.get(i.productId)||0)+Number(i.qty||0));}const refs=[...grouped.keys()].map(id=>doc(col("products"),id)),snaps=[];for(const ref of refs)snaps.push(await tx.get(ref));refs.forEach((ref,idx)=>{const snap=snaps[idx];if(snap.exists()){const stock=numBR(snap.data().stock||0);tx.update(ref,{stock:stock+(grouped.get(ref.id)||0)});}});tx.delete(saleRef);});const ps=await getDocs(col("payments"));await Promise.all(ps.docs.filter(d=>d.data()?.saleId===s.id).map(d=>deleteDoc(doc(col("payments"),d.id))));await logAction("Venda excluída",`${saleData?.clientName||s.clientName||"Venda balcão"} • ${money(saleData?.total||s.total)}`);closeModal();render();toast("Venda excluída com sucesso!")}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy="";btn.disabled=false}};
 }
 
 async function resetBusinessData(){
