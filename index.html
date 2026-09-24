@@ -199,6 +199,33 @@ body.theme-dark .vitu-settings-icon{background:#302b27}
 body.theme-dark .goal-setting-row{background:#1b1816;border-color:#3a3531}
 body.theme-dark .vitu-composer input{color:#f5ede6!important}
 
+/* V1.5.14 • Configurações realmente responsivas */
+.settings-form{width:100%;box-sizing:border-box;overflow:hidden}
+.settings-form .item{min-width:0}
+.settings-form .theme-toggle{width:100%;min-width:0;box-sizing:border-box}
+.settings-form .vitu-settings-card{width:100%;box-sizing:border-box;min-width:0}
+.settings-form .vitu-settings-card>div:nth-child(2){min-width:0;flex:1 1 auto;overflow:hidden}
+.settings-form .vitu-settings-card button{width:auto;min-width:92px;max-width:140px;flex:0 0 auto;box-sizing:border-box;white-space:nowrap}
+.settings-form #activityLog{width:100%!important;min-width:0;box-sizing:border-box}
+@media(max-width:600px){
+  .modal{width:calc(100% - 16px);max-width:680px;padding:14px 12px calc(18px + env(safe-area-inset-bottom));box-sizing:border-box}
+  .settings-form{padding:13px;border-radius:19px}
+  .settings-form .item{padding:11px}
+  .settings-form .vitu-settings-card{align-items:center;padding:12px;gap:10px}
+  .settings-form .vitu-settings-card>div:nth-child(2){flex:1 1 auto;min-width:0}
+  .settings-form .vitu-settings-card b{font-size:14px;line-height:1.2}
+  .settings-form .vitu-settings-card small{font-size:10px;line-height:1.35;overflow-wrap:anywhere}
+  .settings-form .vitu-settings-card button{width:96px;min-width:96px;max-width:96px;padding:11px 8px!important;font-size:11px!important;min-height:44px!important}
+  .settings-form #activityLog{min-height:48px!important}
+}
+@media(max-width:430px){
+  .modal{width:calc(100% - 10px);padding-left:10px;padding-right:10px}
+  .settings-form{padding:11px}
+  .settings-form .vitu-settings-card{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center}
+  .settings-form .vitu-settings-card>div:nth-child(2){grid-column:2}
+  .settings-form .vitu-settings-card button{grid-column:1/-1;width:100%;max-width:none;min-width:0}
+}
+
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -1902,7 +1929,7 @@ function toggleTheme(){
 applyTheme(localStorage.getItem("dv-theme")==="dark" ? "dark" : "light");
 
 function openAccount(){
- openModal("Configurações",`<div class="form">
+ openModal("Configurações",`<div class="form settings-form">
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
   <button class="secondary" id="customerStatuses" style="width:100%;margin-top:10px">👥 Status dos clientes</button>
   <button type="button" class="theme-toggle" id="themeToggle">🌙  Modo escuro</button>
