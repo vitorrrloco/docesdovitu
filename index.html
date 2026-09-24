@@ -166,6 +166,39 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 /* V1.5.12 • Vitu IA + Meta do mês + Próxima compra */
 .purchase-builder{display:grid;gap:10px}.purchase-builder-head{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff;border-radius:18px;padding:15px}.purchase-builder-head h3{margin:0;font-size:19px}.purchase-builder-head p{margin:5px 0 0;font-size:11px;opacity:.78}.purchase-list{display:grid;gap:7px}.purchase-row{display:grid;grid-template-columns:minmax(0,1fr) 78px 92px;gap:8px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:15px;padding:10px}.purchase-row-main{min-width:0}.purchase-row-main b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.purchase-row-main small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.purchase-row input{width:78px;height:40px;border:1px solid var(--line);border-radius:10px;text-align:center;background:var(--cream);color:var(--text);font-weight:900}.purchase-row-cost{text-align:right;font-size:12px;font-weight:900;white-space:nowrap}.purchase-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.purchase-summary .stat-mini{background:var(--cream2);border-radius:13px;padding:10px}.purchase-summary small{display:block;color:var(--muted);font-size:9px}.purchase-summary b{display:block;margin-top:4px;font-size:15px}.purchase-actions{display:flex;gap:8px}.purchase-actions button{flex:1}.purchase-note{padding:10px 12px;border-radius:13px;background:var(--cream2);color:var(--muted);font-size:11px;line-height:1.4}
 @media(max-width:600px){.vitu-tools{grid-template-columns:1fr}.vitu-card{padding:14px}.goal-value{font-size:19px}.purchase-row{grid-template-columns:minmax(0,1fr) 68px 76px}.purchase-row input{width:68px}.purchase-row-cost{font-size:11px}.purchase-summary{grid-template-columns:1fr 1fr}.purchase-summary .stat-mini:last-child{grid-column:1/-1}}
+
+/* V1.5.13 • Vitu IA como chat real + metas configuráveis */
+.vitu-chat-shell{display:flex;flex-direction:column;gap:12px;min-height:0}
+.vitu-chat-window{height:min(54dvh,470px);min-height:320px;overflow:auto;padding:14px 8px 10px;background:var(--cream);border:1px solid var(--line);border-radius:20px;scroll-behavior:smooth}
+.vitu-chat-window::-webkit-scrollbar{width:6px}.vitu-chat-window::-webkit-scrollbar-thumb{background:var(--line);border-radius:20px}
+.vitu-chat-row{display:flex;margin:8px 0}.vitu-chat-row.ai{justify-content:flex-start}.vitu-chat-row.user{justify-content:flex-end}
+.vitu-bubble{max-width:min(84%,460px);padding:11px 13px;border-radius:18px;font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.vitu-chat-row.ai .vitu-bubble{background:var(--white);border:1px solid var(--line);border-bottom-left-radius:6px;color:var(--text)}
+.vitu-chat-row.user .vitu-bubble{background:var(--dark);color:var(--cream);border-bottom-right-radius:6px}
+.vitu-avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;margin:2px 7px 0 0;background:var(--cream2);font-size:17px}
+.vitu-chat-row.ai .vitu-bubble-wrap{display:flex;align-items:flex-start;max-width:90%}
+.vitu-chat-row.user .vitu-bubble{margin-left:auto}
+.vitu-quick-title{font-size:11px;font-weight:850;color:var(--muted);margin:1px 2px -4px}
+.vitu-quick{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 5px;scrollbar-width:none}.vitu-quick::-webkit-scrollbar{display:none}
+.vitu-quick button{flex:0 0 auto;border:1px solid var(--line);background:var(--white);color:var(--text);border-radius:999px;padding:8px 11px;font:inherit;font-size:11px;font-weight:800;white-space:nowrap;box-shadow:none}
+.vitu-quick button:active{transform:scale(.97)}
+.vitu-composer{display:flex;gap:7px;align-items:flex-end;padding:7px;border:1px solid var(--line);background:var(--white);border-radius:17px;box-shadow:0 4px 14px rgba(0,0,0,.05)}
+.vitu-composer input{flex:1;min-width:0;border:0!important;outline:none!important;background:transparent!important;color:var(--text)!important;padding:9px 8px!important;font:inherit;font-size:13px!important;box-shadow:none!important}
+.vitu-composer button{width:42px;height:42px;min-height:42px!important;border:0!important;border-radius:13px!important;background:var(--dark)!important;color:var(--cream)!important;display:grid!important;place-items:center!important;padding:0!important;font-size:17px!important}
+.vitu-typing-bubble{display:flex;align-items:center;gap:4px;min-width:48px;height:18px}.vitu-typing-bubble i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.35;animation:vituTyping2 1s infinite}.vitu-typing-bubble i:nth-child(2){animation-delay:.16s}.vitu-typing-bubble i:nth-child(3){animation-delay:.32s}
+@keyframes vituTyping2{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-4px);opacity:1}}
+.vitu-settings-card{border:1px solid var(--line);background:var(--white);border-radius:17px;padding:13px;margin-top:10px;display:flex;align-items:center;gap:11px}.vitu-settings-icon{width:42px;height:42px;border-radius:13px;background:var(--cream2);display:grid;place-items:center;font-size:21px;flex:0 0 auto}.vitu-settings-card>div:nth-child(2){min-width:0;flex:1}.vitu-settings-card b{display:block;font-size:14px}.vitu-settings-card small{display:block;color:var(--muted);font-size:10px;line-height:1.35;margin-top:3px}.vitu-settings-card button{flex:0 0 auto}
+.goals-settings{display:grid;gap:10px}.goal-setting-row{display:grid;grid-template-columns:1fr 145px;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);background:var(--cream);border-radius:15px}.goal-setting-row b{display:block;font-size:13px}.goal-setting-row small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.goal-setting-row input{width:100%;height:43px;border:1px solid var(--line);border-radius:11px;background:var(--white);color:var(--text);padding:0 10px;font:inherit;font-weight:850;text-align:right}
+.finance-goals-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}.finance-daily-goal-card{margin:0}.finance-daily-goal-card .finance-goal-fill{background:var(--brown)}
+@media(max-width:600px){.vitu-chat-window{height:52dvh;min-height:300px;padding:11px 6px}.vitu-bubble{max-width:86%;font-size:12.5px}.vitu-quick button{font-size:10px;padding:8px 10px}.goal-setting-row{grid-template-columns:1fr 118px}.finance-goals-grid{grid-template-columns:1fr}}
+body.theme-dark .vitu-chat-window{background:#1b1816}
+body.theme-dark .vitu-bubble{box-shadow:none}
+body.theme-dark .vitu-chat-row.ai .vitu-bubble,body.theme-dark .vitu-quick button,body.theme-dark .vitu-composer,body.theme-dark .vitu-settings-card,body.theme-dark .goal-setting-row input{background:#24211f;color:#f5ede6;border-color:#3a3531}
+body.theme-dark .vitu-chat-row.user .vitu-bubble{background:#e8d8c8;color:#201b18}
+body.theme-dark .vitu-settings-icon{background:#302b27}
+body.theme-dark .goal-setting-row{background:#1b1816;border-color:#3a3531}
+body.theme-dark .vitu-composer input{color:#f5ede6!important}
+
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -596,7 +629,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.12</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.13</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -609,7 +642,6 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
   <button data-page="finance"><span class="ni">📊</span><small>Financeiro</small></button>
  </nav>
 </div>
-<button type="button" id="vituFab" class="vitu-fab" aria-label="Abrir Vitu IA" title="Vitu IA"><span>🧠</span><span class="vitu-fab-label">Vitu IA</span></button>
 <div id="modalRoot"></div>
 <div id="toastRoot"></div>
 
@@ -758,16 +790,18 @@ function monthSalesData(){
  return {sales,revenue,cost,profit:revenue-cost,days:n.getDate()};
 }
 function getMonthlyGoal(){const raw=Number(localStorage.getItem('docesDoVituMonthlyGoal')||3000);return Number.isFinite(raw)&&raw>0?raw:3000}
+function getDailyGoal(){const raw=Number(localStorage.getItem('docesDoVituDailyGoal')||100);return Number.isFinite(raw)&&raw>0?raw:100}
 function goalCardHtml(){
- const g=getMonthlyGoal(),m=monthSalesData(),pct=Math.min(100,m.revenue/g*100),remaining=Math.max(0,g-m.revenue),lastDay=new Date(now().getFullYear(),now().getMonth()+1,0).getDate(),daysLeft=Math.max(1,lastDay-m.days),daily=remaining/daysLeft;
- return `<div class="finance-goal-card"><button class="finance-goal-edit" id="editMonthlyGoal">✏️ Alterar</button><div class="finance-goal-top"><div><h3>🎯 Meta do mês</h3><p>${esc(now().toLocaleDateString('pt-BR',{month:'long',year:'numeric'}))}</p></div><strong class="finance-goal-value private-number money-large">${money(m.revenue)}</strong></div><div class="finance-goal-bar"><div class="finance-goal-fill" style="width:${pct.toFixed(2)}%"></div></div><div class="finance-goal-foot"><span>${pct.toFixed(1).replace('.',',')}% da meta</span><span>Meta: ${money(g)}</span></div><p style="margin:7px 0 0;color:var(--muted);font-size:11px">${remaining>0?`Faltam <b style="color:var(--text)">${money(remaining)}</b> • média necessária: <b style="color:var(--text)">${money(daily)}/dia</b>`:`🎉 Meta atingida! Excedente: <b style="color:var(--text)">${money(m.revenue-g)}</b>`}</p></div>`;
+ const g=getMonthlyGoal(),dg=getDailyGoal(),m=monthSalesData(),t=totals(),pct=Math.min(100,m.revenue/g*100),dailyPct=Math.min(100,t.todaySales/dg*100),remaining=Math.max(0,g-m.revenue),lastDay=new Date(now().getFullYear(),now().getMonth()+1,0).getDate(),daysLeft=Math.max(1,lastDay-m.days),daily=remaining/daysLeft;
+ return `<div class="finance-goals-grid"><div class="finance-goal-card"><div class="finance-goal-top"><div><h3>🎯 Meta do mês</h3><p>${esc(now().toLocaleDateString('pt-BR',{month:'long',year:'numeric'}))}</p></div><strong class="finance-goal-value private-number money-large">${money(m.revenue)}</strong></div><div class="finance-goal-bar"><div class="finance-goal-fill" style="width:${pct.toFixed(2)}%"></div></div><div class="finance-goal-foot"><span>${pct.toFixed(1).replace('.',',')}% da meta</span><span>Meta: ${money(g)}</span></div><p style="margin:7px 0 0;color:var(--muted);font-size:11px">${remaining>0?`Faltam <b style="color:var(--text)">${money(remaining)}</b> • média necessária: <b style="color:var(--text)">${money(daily)}/dia</b>`:`🎉 Meta atingida! Excedente: <b style="color:var(--text)">${money(m.revenue-g)}</b>`}</p></div><div class="finance-goal-card finance-daily-goal-card"><div class="finance-goal-top"><div><h3>📅 Meta de hoje</h3><p>${now().toLocaleDateString('pt-BR')}</p></div><strong class="finance-goal-value private-number money-large">${money(t.todaySales)}</strong></div><div class="finance-goal-bar"><div class="finance-goal-fill" style="width:${dailyPct.toFixed(2)}%"></div></div><div class="finance-goal-foot"><span>${dailyPct.toFixed(1).replace('.',',')}% da meta</span><span>Meta: ${money(dg)}</span></div><p style="margin:7px 0 0;color:var(--muted);font-size:11px">${t.todaySales<dg?`Faltam <b style="color:var(--text)">${money(dg-t.todaySales)}</b> para a meta de hoje.`:`🎉 Meta diária atingida!`}</p></div></div>`;
 }
-function setMonthlyGoal(){
- const current=getMonthlyGoal();
- openModal('🎯 Meta do mês',`<div class="form"><div class="field"><label>Meta de faturamento</label><input id="monthlyGoalInput" type="number" min="1" step="0.01" value="${current.toFixed(2)}"></div><p style="color:var(--muted);font-size:12px">A meta fica salva neste aparelho e é recalculada conforme novas vendas entram.</p><div class="actions"><button class="secondary" id="goalCancel">Cancelar</button><button class="primary" id="goalSave">Salvar meta</button></div></div>`);
+function setGoals(){
+ const monthly=getMonthlyGoal(),daily=getDailyGoal();
+ openModal('🎯 Configurar metas',`<div class="form"><div class="goals-settings"><div class="goal-setting-row"><div><b>🎯 Meta mensal</b><small>Faturamento que você quer alcançar no mês.</small></div><input id="monthlyGoalInput" type="number" min="1" step="0.01" value="${monthly.toFixed(2)}"></div><div class="goal-setting-row"><div><b>📅 Meta diária</b><small>Faturamento desejado por dia.</small></div><input id="dailyGoalInput" type="number" min="1" step="0.01" value="${daily.toFixed(2)}"></div></div><p style="color:var(--muted);font-size:11px;line-height:1.4">As metas ficam salvas neste aparelho e o Financeiro acompanha automaticamente o seu progresso.</p><div class="actions"><button class="secondary" id="goalCancel">Cancelar</button><button class="primary" id="goalSave">Salvar metas</button></div></div>`);
  $('goalCancel').onclick=closeModal;
- $('goalSave').onclick=()=>{const v=Number($('monthlyGoalInput').value);if(!v||v<=0)return toast('Digite uma meta válida.');localStorage.setItem('docesDoVituMonthlyGoal',String(v));closeModal();render();toast('Meta do mês atualizada!')};
+ $('goalSave').onclick=()=>{const m=Number($('monthlyGoalInput').value),d=Number($('dailyGoalInput').value);if(!m||m<=0||!d||d<=0)return toast('Digite metas válidas.');localStorage.setItem('docesDoVituMonthlyGoal',String(m));localStorage.setItem('docesDoVituDailyGoal',String(d));closeModal();render();toast('Metas atualizadas!')};
 }
+function setMonthlyGoal(){setGoals()}
 function vituInsights(){
  const m=monthSalesData(),products=data.products||[],sales=data.sales||[],qtyBy={};
  sales.forEach(s=>(s.items||[]).forEach(i=>{const n=i.name||'Produto';qtyBy[n]=(qtyBy[n]||0)+numBR(i.qty||0)}));
@@ -782,6 +816,7 @@ function vituInsights(){
 }
 function vituAnswer(q){
  const text=String(q||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''),m=monthSalesData(),g=getMonthlyGoal(),remaining=Math.max(0,g-m.revenue),daysLeft=Math.max(1,new Date(now().getFullYear(),now().getMonth()+1,0).getDate()-m.days),daily=remaining/daysLeft;
+ if(/meta.*(dia|diaria)|meta de hoje|objetivo.*dia/.test(text)){const dg=getDailyGoal(),todayRevenue=totals().todaySales,left=Math.max(0,dg-todayRevenue);return `📅 Meta diária: ${money(dg)}\nFaturado hoje: ${money(todayRevenue)} (${(todayRevenue/dg*100).toFixed(1).replace('.',',')}%).\n${left>0?`Faltam ${money(left)} para a meta de hoje.`:'Meta diária atingida! 🎉'}`;}
  if(/meta|objetivo/.test(text))return `🎯 Meta do mês: ${money(g)}\nFaturado: ${money(m.revenue)} (${(m.revenue/g*100).toFixed(1).replace('.',',')}%).\n${remaining>0?`Faltam ${money(remaining)} e a média necessária é ${money(daily)}/dia.`:'Meta atingida! 🎉'}`;
  if(/compra|comprar|reposi|estoque/.test(text))return `🛒 Use “Montar próxima compra” para eu calcular a reposição com base no ritmo de vendas e no estoque atual.`;
  if(/lucro|ganhei|ganho/.test(text))return `💰 Neste mês: faturamento ${money(m.revenue)}, custo estimado ${money(m.cost)} e lucro bruto ${money(m.profit)}.`;
@@ -790,14 +825,15 @@ function vituAnswer(q){
  return `🧠 Posso analisar vendas, lucro, estoque, produtos, meta do mês e próxima compra.\n\nTente perguntar: “Como estão minhas vendas?”, “Quanto falta para minha meta?” ou “O que eu preciso comprar?”`;
 }
 function openVituIA(){
- openModal('🧠 Vitu IA',`<div class="vitu-modal"><div class="vitu-chat" id="vituChat"><div class="vitu-msg ai">Olá! Eu sou o Vitu IA. 🧠🍬\nPosso analisar os dados que já estão no seu sistema e te ajudar a entender o negócio.</div></div><div class="vitu-prompts"><button data-vitu-prompt="Como estão minhas vendas?">📊 Como estão minhas vendas?</button><button data-vitu-prompt="Quanto falta para minha meta?">🎯 Quanto falta para a meta?</button><button data-vitu-prompt="O que eu preciso comprar?">🛒 O que preciso comprar?</button><button data-vitu-prompt="Qual produto mais vende?">🔥 O que mais vende?</button><button data-vitu-prompt="Quanto eu lucrei?">💰 Quanto eu lucrei?</button><button id="vituFullAnalysis">🔎 Análise completa</button></div><div class="vitu-input-row"><input id="vituInput" placeholder="Digite sua pergunta..."><button id="vituSend">➤</button></div></div>`);
+ openModal('🧠 Vitu IA',`<div class="vitu-chat-shell"><div class="vitu-chat-window" id="vituChat"><div class="vitu-chat-row ai"><div class="vitu-bubble-wrap"><div class="vitu-avatar">🧠</div><div class="vitu-bubble">Olá! Eu sou o Vitu IA. 👋\nPosso analisar os dados do seu DOCES DO VITU e ajudar com vendas, estoque, lucro e metas.</div></div></div></div><div class="vitu-quick-title">Sugestões</div><div class="vitu-quick"><button data-vitu-prompt="Como estão minhas vendas?">📊 Vendas</button><button data-vitu-prompt="Quanto falta para minha meta?">🎯 Meta</button><button data-vitu-prompt="O que eu preciso comprar?">🛒 Compras</button><button data-vitu-prompt="Qual produto mais vende?">🔥 Mais vendido</button><button data-vitu-prompt="Quanto eu lucrei?">💰 Lucro</button><button data-vitu-prompt="Faça uma análise completa.">🔎 Análise</button></div><div class="vitu-composer"><input id="vituInput" autocomplete="off" placeholder="Digite uma mensagem..."><button id="vituSend" aria-label="Enviar">➤</button></div></div>`);
  const chat=$('vituChat');
- const appendAnswer=(question,answer)=>{chat.insertAdjacentHTML('beforeend',`<div class="vitu-msg user">${esc(question)}</div><div class="vitu-msg ai vitu-typing" aria-label="Vitu IA digitando"><i></i><i></i><i></i></div>`);chat.scrollTop=chat.scrollHeight;setTimeout(()=>{const typing=chat.querySelector('.vitu-typing');if(typing){typing.classList.remove('vitu-typing');typing.removeAttribute('aria-label');typing.textContent=answer;chat.scrollTop=chat.scrollHeight}},520);};
+ const appendAnswer=(question,answer)=>{chat.insertAdjacentHTML('beforeend',`<div class="vitu-chat-row user"><div class="vitu-bubble">${esc(question)}</div></div><div class="vitu-chat-row ai vitu-pending"><div class="vitu-bubble-wrap"><div class="vitu-avatar">🧠</div><div class="vitu-bubble"><span class="vitu-typing-bubble"><i></i><i></i><i></i></span></div></div></div>`);chat.scrollTop=chat.scrollHeight;setTimeout(()=>{const pending=chat.querySelector('.vitu-pending');if(pending){pending.outerHTML=`<div class="vitu-chat-row ai"><div class="vitu-bubble-wrap"><div class="vitu-avatar">🧠</div><div class="vitu-bubble">${esc(answer)}</div></div></div>`;chat.scrollTop=chat.scrollHeight}},620);};
  const send=q=>{const question=String(q||'').trim();if(!question)return;appendAnswer(question,vituAnswer(question));};
  document.querySelectorAll('[data-vitu-prompt]').forEach(b=>b.onclick=()=>send(b.dataset.vituPrompt));
- $('vituFullAnalysis').onclick=()=>appendAnswer('Faça uma análise completa.',vituInsights());
- $('vituSend').onclick=()=>{const i=$('vituInput');send(i.value);i.value='';i.focus()};$('vituInput').onkeydown=e=>{if(e.key==='Enter')$('vituSend').click()};
+ $('vituSend').onclick=()=>{const i=$('vituInput');send(i.value);i.value='';i.focus()};
+ $('vituInput').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('vituSend').click()}};
 }
+
 function buildPurchaseSuggestion(){
  const products=data.products||[],sales=data.sales||[],today=now();
  return products.map(p=>{const items=[];sales.forEach(s=>(s.items||[]).forEach(i=>{if((i.productId&&i.productId===p.id)||String(i.name||'').trim().toLowerCase()===String(p.name||'').trim().toLowerCase()){const d=dt(s.createdAt);if(d)items.push({i,d})}}));const first=items.map(x=>x.d).sort((a,b)=>a-b)[0],days=Math.max(1,Math.ceil((today-(first||today))/86400000)+1),qty=items.reduce((a,x)=>a+numBR(x.i.qty||0),0),avg=qty/days,stock=Math.max(0,numBR(p.stock||0)),safety=Math.max(Number(p.minStock||2),Math.ceil(avg*3)),target=Math.ceil(avg*30)+safety,buy=Math.max(0,target-stock),cost=Math.max(0,numBR(p.cost||0)),coverage=avg>0?stock/avg:null;return {p,avg,stock,buy,cost,coverage,total:buy*cost}}).filter(x=>x.buy>0).sort((a,b)=>b.buy-a.buy);
@@ -1671,7 +1707,7 @@ function bindPage(){
  $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
  $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());
  $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
- $("vituFab")?.addEventListener("click",()=>{const b=$("vituFab");b.classList.remove("is-opening");void b.offsetWidth;b.classList.add("is-opening");setTimeout(()=>b.classList.remove("is-opening"),520);openVituIA()});$("editMonthlyGoal")?.addEventListener("click",setMonthlyGoal);$("qPurchaseBuilder")?.addEventListener("click",openPurchaseBuilder);
+ $("qPurchaseBuilder")?.addEventListener("click",openPurchaseBuilder);
  $("seeSales")?.addEventListener("click",()=>go("sales"));
  $("logout")?.addEventListener("click",()=>signOut(auth));
  $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
@@ -1870,6 +1906,8 @@ function openAccount(){
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
   <button class="secondary" id="customerStatuses" style="width:100%;margin-top:10px">👥 Status dos clientes</button>
   <button type="button" class="theme-toggle" id="themeToggle">🌙  Modo escuro</button>
+  <div class="vitu-settings-card"><div class="vitu-settings-icon">🧠</div><div><b>Vitu IA</b><small>Converse com o assistente e consulte vendas, estoque, lucro e metas.</small></div><button class="primary" id="openVituSettings">Abrir</button></div>
+  <div class="vitu-settings-card"><div class="vitu-settings-icon">🎯</div><div><b>Metas do negócio</b><small>Configure sua meta diária e sua meta mensal.</small></div><button class="secondary" id="openGoalsSettings">Configurar</button></div>
   <button class="secondary" id="activityLog" style="width:100%;margin-top:10px">📋 Log de atividades</button>
   <details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
    <summary style="cursor:pointer;color:var(--muted);font-weight:800;font-size:13px">Configurações avançadas</summary>
@@ -1882,6 +1920,8 @@ function openAccount(){
   </details>
  </div>`);
  $("themeToggle").onclick=toggleTheme;
+ $("openVituSettings").onclick=()=>{closeModal();setTimeout(openVituIA,120)};
+ $("openGoalsSettings").onclick=()=>{closeModal();setTimeout(setGoals,120)};
  $("customerStatuses").onclick=openCustomerStatuses;
  $("activityLog").onclick=openActivityLog;
  $("resetBusiness").onclick=()=>{
