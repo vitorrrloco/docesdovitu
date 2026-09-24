@@ -146,8 +146,25 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
 }
 
 
-/* V1.5.11 • Vitu IA + Meta do mês + Próxima compra */
-.vitu-tools{display:grid;grid-template-columns:1.25fr 1fr;gap:10px;margin:0 0 16px}.vitu-card{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:15px;box-shadow:var(--shadow);min-width:0}.vitu-card h3{margin:0;font-size:16px}.vitu-card p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.4}.vitu-card button{margin-top:11px;width:100%;min-height:44px;border-radius:13px;background:var(--cream2);color:var(--dark);font-weight:900}.vitu-ai-card{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff}.vitu-ai-card p{color:#fff;opacity:.78}.vitu-ai-card button{background:#fff;color:var(--dark)}.goal-card{position:relative;overflow:hidden}.goal-head{display:flex;justify-content:space-between;gap:10px;align-items:start}.goal-value{font-size:21px;font-weight:950;white-space:nowrap}.goal-bar{height:10px;background:var(--cream2);border-radius:99px;overflow:hidden;margin:11px 0 7px}.goal-fill{height:100%;background:var(--dark);border-radius:99px}.goal-foot{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px}.goal-edit{position:absolute!important;right:10px;top:9px;width:auto!important;min-height:0!important;margin:0!important;padding:6px 8px;background:transparent!important;color:var(--brown)!important;font-size:11px}.vitu-modal{padding:0 2px 4px}.vitu-chat{display:flex;flex-direction:column;gap:10px;max-height:min(62vh,520px);overflow:auto;padding:4px 2px 8px}.vitu-msg{max-width:88%;padding:11px 13px;border-radius:16px;font-size:13px;line-height:1.45;white-space:pre-line}.vitu-msg.ai{align-self:flex-start;background:var(--cream2);color:var(--text);border-bottom-left-radius:5px}.vitu-msg.user{align-self:flex-end;background:var(--dark);color:#fff;border-bottom-right-radius:5px}.vitu-prompts{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:6px 0}.vitu-prompts button{min-height:42px;border:1px solid var(--line);border-radius:12px;background:var(--white);color:var(--dark);font-size:11px;font-weight:850;text-align:left;padding:8px 10px}.vitu-input-row{display:grid;grid-template-columns:1fr 48px;gap:7px;border-top:1px solid var(--line);padding-top:10px}.vitu-input-row input{height:48px;border:1px solid var(--line);border-radius:13px;padding:0 12px;background:var(--white);color:var(--text);outline:none}.vitu-input-row button{height:48px;border-radius:13px;background:var(--dark);color:#fff;font-weight:900}.purchase-builder{display:grid;gap:10px}.purchase-builder-head{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff;border-radius:18px;padding:15px}.purchase-builder-head h3{margin:0;font-size:19px}.purchase-builder-head p{margin:5px 0 0;font-size:11px;opacity:.78}.purchase-list{display:grid;gap:7px}.purchase-row{display:grid;grid-template-columns:minmax(0,1fr) 78px 92px;gap:8px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:15px;padding:10px}.purchase-row-main{min-width:0}.purchase-row-main b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.purchase-row-main small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.purchase-row input{width:78px;height:40px;border:1px solid var(--line);border-radius:10px;text-align:center;background:var(--cream);color:var(--text);font-weight:900}.purchase-row-cost{text-align:right;font-size:12px;font-weight:900;white-space:nowrap}.purchase-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.purchase-summary .stat-mini{background:var(--cream2);border-radius:13px;padding:10px}.purchase-summary small{display:block;color:var(--muted);font-size:9px}.purchase-summary b{display:block;margin-top:4px;font-size:15px}.purchase-actions{display:flex;gap:8px}.purchase-actions button{flex:1}.purchase-note{padding:10px 12px;border-radius:13px;background:var(--cream2);color:var(--muted);font-size:11px;line-height:1.4}
+
+/* V1.5.12 • Vitu IA flutuante + Meta no Financeiro */
+.vitu-fab{position:fixed;right:18px;bottom:88px;width:58px;height:58px;border:1px solid rgba(255,255,255,.18);border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,var(--dark),var(--dark2));color:var(--cream);box-shadow:0 12px 30px rgba(0,0,0,.22);z-index:1200;cursor:pointer;font-size:25px;transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s}
+.vitu-fab:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 16px 34px rgba(0,0,0,.28)}
+.vitu-fab.is-opening{animation:vituFabPop .48s ease-out}
+.vitu-fab::after{content:"";position:absolute;inset:-5px;border:2px solid currentColor;border-radius:50%;opacity:0;animation:vituFabPulse 2.8s infinite}
+@keyframes vituFabPop{0%{transform:scale(1)}45%{transform:scale(.78) rotate(-10deg)}75%{transform:scale(1.12) rotate(5deg)}100%{transform:scale(1)}}
+@keyframes vituFabPulse{0%,65%{transform:scale(.86);opacity:0}75%{opacity:.18}100%{transform:scale(1.2);opacity:0}}
+.vitu-fab-label{position:absolute;right:68px;white-space:nowrap;background:var(--white);color:var(--text);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:12px;padding:7px 10px;font-size:10px;font-weight:900;opacity:0;transform:translateX(5px);pointer-events:none;transition:.2s}
+.vitu-fab:hover .vitu-fab-label{opacity:1;transform:none}
+.vitu-typing{display:inline-flex;align-items:center;gap:4px;min-width:42px}
+.vitu-typing i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.35;animation:vituTyping 1s infinite}
+.vitu-typing i:nth-child(2){animation-delay:.16s}.vitu-typing i:nth-child(3){animation-delay:.32s}
+@keyframes vituTyping{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-4px);opacity:1}}
+.finance-goal-card{margin:0 0 12px;background:var(--white);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.finance-goal-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.finance-goal-top h3{margin:0;font-size:16px}.finance-goal-top p{margin:4px 0 0;color:var(--muted);font-size:11px}.finance-goal-value{font-size:21px;font-weight:950;white-space:nowrap}.finance-goal-bar{height:10px;background:var(--cream2);border-radius:99px;overflow:hidden;margin:12px 0 8px}.finance-goal-fill{height:100%;background:var(--dark);border-radius:99px;transition:width .45s ease}.finance-goal-foot{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px}.finance-goal-edit{position:absolute;right:10px;top:9px;border:0!important;background:transparent!important;color:var(--brown)!important;font-size:11px;padding:6px 8px!important;min-height:0!important}
+@media(max-width:600px){.vitu-fab{right:14px;bottom:82px;width:54px;height:54px;font-size:23px}.vitu-fab-label{display:none}.finance-goal-card{padding:14px}.finance-goal-value{font-size:19px}}
+/* V1.5.12 • Vitu IA + Meta do mês + Próxima compra */
+.purchase-builder{display:grid;gap:10px}.purchase-builder-head{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff;border-radius:18px;padding:15px}.purchase-builder-head h3{margin:0;font-size:19px}.purchase-builder-head p{margin:5px 0 0;font-size:11px;opacity:.78}.purchase-list{display:grid;gap:7px}.purchase-row{display:grid;grid-template-columns:minmax(0,1fr) 78px 92px;gap:8px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:15px;padding:10px}.purchase-row-main{min-width:0}.purchase-row-main b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.purchase-row-main small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.purchase-row input{width:78px;height:40px;border:1px solid var(--line);border-radius:10px;text-align:center;background:var(--cream);color:var(--text);font-weight:900}.purchase-row-cost{text-align:right;font-size:12px;font-weight:900;white-space:nowrap}.purchase-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.purchase-summary .stat-mini{background:var(--cream2);border-radius:13px;padding:10px}.purchase-summary small{display:block;color:var(--muted);font-size:9px}.purchase-summary b{display:block;margin-top:4px;font-size:15px}.purchase-actions{display:flex;gap:8px}.purchase-actions button{flex:1}.purchase-note{padding:10px 12px;border-radius:13px;background:var(--cream2);color:var(--muted);font-size:11px;line-height:1.4}
 @media(max-width:600px){.vitu-tools{grid-template-columns:1fr}.vitu-card{padding:14px}.goal-value{font-size:19px}.purchase-row{grid-template-columns:minmax(0,1fr) 68px 76px}.purchase-row input{width:68px}.purchase-row-cost{font-size:11px}.purchase-summary{grid-template-columns:1fr 1fr}.purchase-summary .stat-mini:last-child{grid-column:1/-1}}
 </style>
 
@@ -579,7 +596,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.11</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.12</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -592,6 +609,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
   <button data-page="finance"><span class="ni">📊</span><small>Financeiro</small></button>
  </nav>
 </div>
+<button type="button" id="vituFab" class="vitu-fab" aria-label="Abrir Vitu IA" title="Vitu IA"><span>🧠</span><span class="vitu-fab-label">Vitu IA</span></button>
 <div id="modalRoot"></div>
 <div id="toastRoot"></div>
 
@@ -742,7 +760,7 @@ function monthSalesData(){
 function getMonthlyGoal(){const raw=Number(localStorage.getItem('docesDoVituMonthlyGoal')||3000);return Number.isFinite(raw)&&raw>0?raw:3000}
 function goalCardHtml(){
  const g=getMonthlyGoal(),m=monthSalesData(),pct=Math.min(100,m.revenue/g*100),remaining=Math.max(0,g-m.revenue),lastDay=new Date(now().getFullYear(),now().getMonth()+1,0).getDate(),daysLeft=Math.max(1,lastDay-m.days),daily=remaining/daysLeft;
- return `<div class="vitu-card goal-card"><button class="goal-edit" id="editMonthlyGoal">✏️ Alterar</button><div class="goal-head"><div><h3>🎯 Meta do mês</h3><p>${esc(now().toLocaleDateString('pt-BR',{month:'long',year:'numeric'}))}</p></div><strong class="goal-value private-number money-large">${money(m.revenue)}</strong></div><div class="goal-bar"><div class="goal-fill" style="width:${pct.toFixed(2)}%"></div></div><div class="goal-foot"><span>${pct.toFixed(1).replace('.',',')}% da meta</span><span>Meta: ${money(g)}</span></div><p>${remaining>0?`Faltam <b>${money(remaining)}</b> • média necessária: <b>${money(daily)}/dia</b>`:`🎉 Meta atingida! Excedente: <b>${money(m.revenue-g)}</b>`}</p></div>`;
+ return `<div class="finance-goal-card"><button class="finance-goal-edit" id="editMonthlyGoal">✏️ Alterar</button><div class="finance-goal-top"><div><h3>🎯 Meta do mês</h3><p>${esc(now().toLocaleDateString('pt-BR',{month:'long',year:'numeric'}))}</p></div><strong class="finance-goal-value private-number money-large">${money(m.revenue)}</strong></div><div class="finance-goal-bar"><div class="finance-goal-fill" style="width:${pct.toFixed(2)}%"></div></div><div class="finance-goal-foot"><span>${pct.toFixed(1).replace('.',',')}% da meta</span><span>Meta: ${money(g)}</span></div><p style="margin:7px 0 0;color:var(--muted);font-size:11px">${remaining>0?`Faltam <b style="color:var(--text)">${money(remaining)}</b> • média necessária: <b style="color:var(--text)">${money(daily)}/dia</b>`:`🎉 Meta atingida! Excedente: <b style="color:var(--text)">${money(m.revenue-g)}</b>`}</p></div>`;
 }
 function setMonthlyGoal(){
  const current=getMonthlyGoal();
@@ -774,9 +792,10 @@ function vituAnswer(q){
 function openVituIA(){
  openModal('🧠 Vitu IA',`<div class="vitu-modal"><div class="vitu-chat" id="vituChat"><div class="vitu-msg ai">Olá! Eu sou o Vitu IA. 🧠🍬\nPosso analisar os dados que já estão no seu sistema e te ajudar a entender o negócio.</div></div><div class="vitu-prompts"><button data-vitu-prompt="Como estão minhas vendas?">📊 Como estão minhas vendas?</button><button data-vitu-prompt="Quanto falta para minha meta?">🎯 Quanto falta para a meta?</button><button data-vitu-prompt="O que eu preciso comprar?">🛒 O que preciso comprar?</button><button data-vitu-prompt="Qual produto mais vende?">🔥 O que mais vende?</button><button data-vitu-prompt="Quanto eu lucrei?">💰 Quanto eu lucrei?</button><button id="vituFullAnalysis">🔎 Análise completa</button></div><div class="vitu-input-row"><input id="vituInput" placeholder="Digite sua pergunta..."><button id="vituSend">➤</button></div></div>`);
  const chat=$('vituChat');
- const send=q=>{const question=String(q||'').trim();if(!question)return;chat.insertAdjacentHTML('beforeend',`<div class="vitu-msg user">${esc(question)}</div><div class="vitu-msg ai">${esc(vituAnswer(question))}</div>`);chat.scrollTop=chat.scrollHeight};
+ const appendAnswer=(question,answer)=>{chat.insertAdjacentHTML('beforeend',`<div class="vitu-msg user">${esc(question)}</div><div class="vitu-msg ai vitu-typing" aria-label="Vitu IA digitando"><i></i><i></i><i></i></div>`);chat.scrollTop=chat.scrollHeight;setTimeout(()=>{const typing=chat.querySelector('.vitu-typing');if(typing){typing.classList.remove('vitu-typing');typing.removeAttribute('aria-label');typing.textContent=answer;chat.scrollTop=chat.scrollHeight}},520);};
+ const send=q=>{const question=String(q||'').trim();if(!question)return;appendAnswer(question,vituAnswer(question));};
  document.querySelectorAll('[data-vitu-prompt]').forEach(b=>b.onclick=()=>send(b.dataset.vituPrompt));
- $('vituFullAnalysis').onclick=()=>{chat.insertAdjacentHTML('beforeend',`<div class="vitu-msg user">Faça uma análise completa.</div><div class="vitu-msg ai">${esc(vituInsights())}</div>`);chat.scrollTop=chat.scrollHeight};
+ $('vituFullAnalysis').onclick=()=>appendAnswer('Faça uma análise completa.',vituInsights());
  $('vituSend').onclick=()=>{const i=$('vituInput');send(i.value);i.value='';i.focus()};$('vituInput').onkeydown=e=>{if(e.key==='Enter')$('vituSend').click()};
 }
 function buildPurchaseSuggestion(){
@@ -804,7 +823,6 @@ function home(){
   <div class="stat"><small>RECEBIDO</small><strong class="green private-number money-large">${money(t.received)}</strong></div>
   <div class="stat"><small>PRODUTOS</small><strong>${data.products.length}</strong></div>
  </div>
- <div class="vitu-tools">${goalCardHtml()}<div class="vitu-card vitu-ai-card"><h3>🧠 Vitu IA</h3><p>Analise vendas, lucro, estoque e metas com perguntas simples.</p><button id="openVituIA">Conversar com o Vitu IA</button></div></div>
  <div class="quick">
   <button class="quick-launch" id="qQuickSale"><span>⚡️</span><b>Lançamentos rápidos</b></button>
   <button id="qSale"><span>🛒</span><b>Nova venda</b></button>
@@ -1076,6 +1094,7 @@ function finance(){
    <div><h1>Financeiro</h1><p>Resumo financeiro do negócio • ${monthLabel}</p></div>
    <div style="display:flex;align-items:center;gap:8px">${privacyButton()}</div>
   </div>
+  ${goalCardHtml()}
   <div class="finance-actions">
    <button type="button" class="finance-option" id="financeAnalysis"><b>📈 Análise de vendas</b><small>Veja quando e quanto você vende.</small></button>
    <button type="button" class="finance-option" id="financeReceivables"><b>💰 A receber</b><small>Clientes e valores pendentes.</small></button>
@@ -1652,7 +1671,7 @@ function bindPage(){
  $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
  $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());
  $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
- $("openVituIA")?.addEventListener("click",openVituIA);$("editMonthlyGoal")?.addEventListener("click",setMonthlyGoal);$("qPurchaseBuilder")?.addEventListener("click",openPurchaseBuilder);
+ $("vituFab")?.addEventListener("click",()=>{const b=$("vituFab");b.classList.remove("is-opening");void b.offsetWidth;b.classList.add("is-opening");setTimeout(()=>b.classList.remove("is-opening"),520);openVituIA()});$("editMonthlyGoal")?.addEventListener("click",setMonthlyGoal);$("qPurchaseBuilder")?.addEventListener("click",openPurchaseBuilder);
  $("seeSales")?.addEventListener("click",()=>go("sales"));
  $("logout")?.addEventListener("click",()=>signOut(auth));
  $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
