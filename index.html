@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.5.3</title>
+<title>DOCES DO VITU 1.5.10</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -145,6 +145,10 @@ input:focus,select:focus,textarea:focus{font-size:16px!important}button{border:0
  .purchase-status{font-size:9px}
 }
 
+
+/* V1.5.11 • Vitu IA + Meta do mês + Próxima compra */
+.vitu-tools{display:grid;grid-template-columns:1.25fr 1fr;gap:10px;margin:0 0 16px}.vitu-card{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:15px;box-shadow:var(--shadow);min-width:0}.vitu-card h3{margin:0;font-size:16px}.vitu-card p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.4}.vitu-card button{margin-top:11px;width:100%;min-height:44px;border-radius:13px;background:var(--cream2);color:var(--dark);font-weight:900}.vitu-ai-card{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff}.vitu-ai-card p{color:#fff;opacity:.78}.vitu-ai-card button{background:#fff;color:var(--dark)}.goal-card{position:relative;overflow:hidden}.goal-head{display:flex;justify-content:space-between;gap:10px;align-items:start}.goal-value{font-size:21px;font-weight:950;white-space:nowrap}.goal-bar{height:10px;background:var(--cream2);border-radius:99px;overflow:hidden;margin:11px 0 7px}.goal-fill{height:100%;background:var(--dark);border-radius:99px}.goal-foot{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px}.goal-edit{position:absolute!important;right:10px;top:9px;width:auto!important;min-height:0!important;margin:0!important;padding:6px 8px;background:transparent!important;color:var(--brown)!important;font-size:11px}.vitu-modal{padding:0 2px 4px}.vitu-chat{display:flex;flex-direction:column;gap:10px;max-height:min(62vh,520px);overflow:auto;padding:4px 2px 8px}.vitu-msg{max-width:88%;padding:11px 13px;border-radius:16px;font-size:13px;line-height:1.45;white-space:pre-line}.vitu-msg.ai{align-self:flex-start;background:var(--cream2);color:var(--text);border-bottom-left-radius:5px}.vitu-msg.user{align-self:flex-end;background:var(--dark);color:#fff;border-bottom-right-radius:5px}.vitu-prompts{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:6px 0}.vitu-prompts button{min-height:42px;border:1px solid var(--line);border-radius:12px;background:var(--white);color:var(--dark);font-size:11px;font-weight:850;text-align:left;padding:8px 10px}.vitu-input-row{display:grid;grid-template-columns:1fr 48px;gap:7px;border-top:1px solid var(--line);padding-top:10px}.vitu-input-row input{height:48px;border:1px solid var(--line);border-radius:13px;padding:0 12px;background:var(--white);color:var(--text);outline:none}.vitu-input-row button{height:48px;border-radius:13px;background:var(--dark);color:#fff;font-weight:900}.purchase-builder{display:grid;gap:10px}.purchase-builder-head{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff;border-radius:18px;padding:15px}.purchase-builder-head h3{margin:0;font-size:19px}.purchase-builder-head p{margin:5px 0 0;font-size:11px;opacity:.78}.purchase-list{display:grid;gap:7px}.purchase-row{display:grid;grid-template-columns:minmax(0,1fr) 78px 92px;gap:8px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:15px;padding:10px}.purchase-row-main{min-width:0}.purchase-row-main b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.purchase-row-main small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.purchase-row input{width:78px;height:40px;border:1px solid var(--line);border-radius:10px;text-align:center;background:var(--cream);color:var(--text);font-weight:900}.purchase-row-cost{text-align:right;font-size:12px;font-weight:900;white-space:nowrap}.purchase-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.purchase-summary .stat-mini{background:var(--cream2);border-radius:13px;padding:10px}.purchase-summary small{display:block;color:var(--muted);font-size:9px}.purchase-summary b{display:block;margin-top:4px;font-size:15px}.purchase-actions{display:flex;gap:8px}.purchase-actions button{flex:1}.purchase-note{padding:10px 12px;border-radius:13px;background:var(--cream2);color:var(--muted);font-size:11px;line-height:1.4}
+@media(max-width:600px){.vitu-tools{grid-template-columns:1fr}.vitu-card{padding:14px}.goal-value{font-size:19px}.purchase-row{grid-template-columns:minmax(0,1fr) 68px 76px}.purchase-row input{width:68px}.purchase-row-cost{font-size:11px}.purchase-summary{grid-template-columns:1fr 1fr}.purchase-summary .stat-mini:last-child{grid-column:1/-1}}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -575,7 +579,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.9</small></div></div>
+  <div class="brand"><div class="brand-mark">🍫</div><div><b>DOCES DO VITU</b><small>V1.5.11</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -594,7 +598,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {getFirestore,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc,runTransaction} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
@@ -728,6 +732,67 @@ function bindPrivacy(){
  b.onclick=()=>{localStorage.setItem("docesDoVituHideValues",document.body.classList.contains("privacy-hidden")?"0":"1");sync()};sync();
 }
 
+
+function monthSalesData(){
+ const n=now(), y=n.getFullYear(), m=n.getMonth();
+ const sales=(data.sales||[]).filter(s=>{const d=dt(s.createdAt);return d&&d.getFullYear()===y&&d.getMonth()===m});
+ const revenue=sales.reduce((a,s)=>a+numBR(s.total||0),0),cost=sales.reduce((a,s)=>a+saleCostAmount(s),0);
+ return {sales,revenue,cost,profit:revenue-cost,days:n.getDate()};
+}
+function getMonthlyGoal(){const raw=Number(localStorage.getItem('docesDoVituMonthlyGoal')||3000);return Number.isFinite(raw)&&raw>0?raw:3000}
+function goalCardHtml(){
+ const g=getMonthlyGoal(),m=monthSalesData(),pct=Math.min(100,m.revenue/g*100),remaining=Math.max(0,g-m.revenue),lastDay=new Date(now().getFullYear(),now().getMonth()+1,0).getDate(),daysLeft=Math.max(1,lastDay-m.days),daily=remaining/daysLeft;
+ return `<div class="vitu-card goal-card"><button class="goal-edit" id="editMonthlyGoal">✏️ Alterar</button><div class="goal-head"><div><h3>🎯 Meta do mês</h3><p>${esc(now().toLocaleDateString('pt-BR',{month:'long',year:'numeric'}))}</p></div><strong class="goal-value private-number money-large">${money(m.revenue)}</strong></div><div class="goal-bar"><div class="goal-fill" style="width:${pct.toFixed(2)}%"></div></div><div class="goal-foot"><span>${pct.toFixed(1).replace('.',',')}% da meta</span><span>Meta: ${money(g)}</span></div><p>${remaining>0?`Faltam <b>${money(remaining)}</b> • média necessária: <b>${money(daily)}/dia</b>`:`🎉 Meta atingida! Excedente: <b>${money(m.revenue-g)}</b>`}</p></div>`;
+}
+function setMonthlyGoal(){
+ const current=getMonthlyGoal();
+ openModal('🎯 Meta do mês',`<div class="form"><div class="field"><label>Meta de faturamento</label><input id="monthlyGoalInput" type="number" min="1" step="0.01" value="${current.toFixed(2)}"></div><p style="color:var(--muted);font-size:12px">A meta fica salva neste aparelho e é recalculada conforme novas vendas entram.</p><div class="actions"><button class="secondary" id="goalCancel">Cancelar</button><button class="primary" id="goalSave">Salvar meta</button></div></div>`);
+ $('goalCancel').onclick=closeModal;
+ $('goalSave').onclick=()=>{const v=Number($('monthlyGoalInput').value);if(!v||v<=0)return toast('Digite uma meta válida.');localStorage.setItem('docesDoVituMonthlyGoal',String(v));closeModal();render();toast('Meta do mês atualizada!')};
+}
+function vituInsights(){
+ const m=monthSalesData(),products=data.products||[],sales=data.sales||[],qtyBy={};
+ sales.forEach(s=>(s.items||[]).forEach(i=>{const n=i.name||'Produto';qtyBy[n]=(qtyBy[n]||0)+numBR(i.qty||0)}));
+ const top=Object.entries(qtyBy).sort((a,b)=>b[1]-a[1])[0],low=products.filter(p=>numBR(p.stock||0)<=Number(p.minStock||2));
+ const urgent=products.map(p=>{const q=qtyBy[p.name]||0,avg=q/Math.max(1,m.days);return {...p,avg,coverage:avg>0?numBR(p.stock||0)/avg:null}}).filter(p=>p.coverage!==null).sort((a,b)=>a.coverage-b.coverage)[0];
+ const g=getMonthlyGoal(),remaining=Math.max(0,g-m.revenue),daysLeft=Math.max(1,new Date(now().getFullYear(),now().getMonth()+1,0).getDate()-m.days),daily=remaining/daysLeft;
+ const lines=[`📊 Neste mês você faturou ${money(m.revenue)} em ${m.sales.length} venda(s).`,`💰 Lucro bruto estimado: ${money(m.profit)}.`,`📦 ${products.length} produto(s) cadastrados e ${low.length} no limite mínimo.`];
+ if(top)lines.push(`🔥 Mais vendido em quantidade: ${top[0]} (${top[1]} un.).`);
+ if(urgent)lines.push(`⚠️ ${urgent.name} tem cerca de ${Math.max(0,Math.floor(urgent.coverage))} dia(s) de cobertura.`);
+ lines.push(remaining>0?`🎯 Para bater sua meta de ${money(g)}, faltam ${money(remaining)}. Média necessária: ${money(daily)}/dia.`:`🎉 Sua meta de ${money(g)} já foi atingida.`);
+ return lines.join('\n');
+}
+function vituAnswer(q){
+ const text=String(q||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''),m=monthSalesData(),g=getMonthlyGoal(),remaining=Math.max(0,g-m.revenue),daysLeft=Math.max(1,new Date(now().getFullYear(),now().getMonth()+1,0).getDate()-m.days),daily=remaining/daysLeft;
+ if(/meta|objetivo/.test(text))return `🎯 Meta do mês: ${money(g)}\nFaturado: ${money(m.revenue)} (${(m.revenue/g*100).toFixed(1).replace('.',',')}%).\n${remaining>0?`Faltam ${money(remaining)} e a média necessária é ${money(daily)}/dia.`:'Meta atingida! 🎉'}`;
+ if(/compra|comprar|reposi|estoque/.test(text))return `🛒 Use “Montar próxima compra” para eu calcular a reposição com base no ritmo de vendas e no estoque atual.`;
+ if(/lucro|ganhei|ganho/.test(text))return `💰 Neste mês: faturamento ${money(m.revenue)}, custo estimado ${money(m.cost)} e lucro bruto ${money(m.profit)}.`;
+ if(/venda|fatur|movimento|mes/.test(text))return vituInsights();
+ if(/produto|mais vende|vendido/.test(text)){const arr={};(data.sales||[]).forEach(s=>(s.items||[]).forEach(i=>arr[i.name]=(arr[i.name]||0)+numBR(i.qty||0)));const top=Object.entries(arr).sort((a,b)=>b[1]-a[1])[0];return top?`🔥 O produto com mais unidades vendidas é ${top[0]}, com ${top[1]} unidade(s).`:'Ainda não tenho vendas suficientes para analisar.'}
+ return `🧠 Posso analisar vendas, lucro, estoque, produtos, meta do mês e próxima compra.\n\nTente perguntar: “Como estão minhas vendas?”, “Quanto falta para minha meta?” ou “O que eu preciso comprar?”`;
+}
+function openVituIA(){
+ openModal('🧠 Vitu IA',`<div class="vitu-modal"><div class="vitu-chat" id="vituChat"><div class="vitu-msg ai">Olá! Eu sou o Vitu IA. 🧠🍬\nPosso analisar os dados que já estão no seu sistema e te ajudar a entender o negócio.</div></div><div class="vitu-prompts"><button data-vitu-prompt="Como estão minhas vendas?">📊 Como estão minhas vendas?</button><button data-vitu-prompt="Quanto falta para minha meta?">🎯 Quanto falta para a meta?</button><button data-vitu-prompt="O que eu preciso comprar?">🛒 O que preciso comprar?</button><button data-vitu-prompt="Qual produto mais vende?">🔥 O que mais vende?</button><button data-vitu-prompt="Quanto eu lucrei?">💰 Quanto eu lucrei?</button><button id="vituFullAnalysis">🔎 Análise completa</button></div><div class="vitu-input-row"><input id="vituInput" placeholder="Digite sua pergunta..."><button id="vituSend">➤</button></div></div>`);
+ const chat=$('vituChat');
+ const send=q=>{const question=String(q||'').trim();if(!question)return;chat.insertAdjacentHTML('beforeend',`<div class="vitu-msg user">${esc(question)}</div><div class="vitu-msg ai">${esc(vituAnswer(question))}</div>`);chat.scrollTop=chat.scrollHeight};
+ document.querySelectorAll('[data-vitu-prompt]').forEach(b=>b.onclick=()=>send(b.dataset.vituPrompt));
+ $('vituFullAnalysis').onclick=()=>{chat.insertAdjacentHTML('beforeend',`<div class="vitu-msg user">Faça uma análise completa.</div><div class="vitu-msg ai">${esc(vituInsights())}</div>`);chat.scrollTop=chat.scrollHeight};
+ $('vituSend').onclick=()=>{const i=$('vituInput');send(i.value);i.value='';i.focus()};$('vituInput').onkeydown=e=>{if(e.key==='Enter')$('vituSend').click()};
+}
+function buildPurchaseSuggestion(){
+ const products=data.products||[],sales=data.sales||[],today=now();
+ return products.map(p=>{const items=[];sales.forEach(s=>(s.items||[]).forEach(i=>{if((i.productId&&i.productId===p.id)||String(i.name||'').trim().toLowerCase()===String(p.name||'').trim().toLowerCase()){const d=dt(s.createdAt);if(d)items.push({i,d})}}));const first=items.map(x=>x.d).sort((a,b)=>a-b)[0],days=Math.max(1,Math.ceil((today-(first||today))/86400000)+1),qty=items.reduce((a,x)=>a+numBR(x.i.qty||0),0),avg=qty/days,stock=Math.max(0,numBR(p.stock||0)),safety=Math.max(Number(p.minStock||2),Math.ceil(avg*3)),target=Math.ceil(avg*30)+safety,buy=Math.max(0,target-stock),cost=Math.max(0,numBR(p.cost||0)),coverage=avg>0?stock/avg:null;return {p,avg,stock,buy,cost,coverage,total:buy*cost}}).filter(x=>x.buy>0).sort((a,b)=>b.buy-a.buy);
+}
+function openPurchaseBuilder(){
+ const rows=buildPurchaseSuggestion();
+ if(!rows.length){openModal('🛒 Próxima compra',`<div class="purchase-builder"><div class="purchase-note">🎉 Nenhum produto precisa de reposição com base no estoque atual e no ritmo de vendas registrado.</div><div class="actions"><button class="primary" id="closePurchaseBuilder">Fechar</button></div></div>`);$('closePurchaseBuilder').onclick=closeModal;return;}
+ const html=`<div class="purchase-builder"><div class="purchase-builder-head"><h3>🛒 Monte minha próxima compra</h3><p>Calculado pelo ritmo de vendas, estoque atual e segurança de aproximadamente 3 dias.</p></div><div class="purchase-list">${rows.map((r,i)=>`<div class="purchase-row"><div class="purchase-row-main"><b>${esc(r.p.name)}</b><small>${r.stock} em estoque • ${r.avg.toFixed(1).replace('.',',')}/dia • cobertura ${r.coverage===null?'sem giro':Math.floor(r.coverage)+'d'}</small></div><input type="number" min="0" step="1" value="${r.buy}" data-buy-index="${i}" data-cost="${r.cost}"><div class="purchase-row-cost" data-cost-total="${i}">${money(r.total)}</div></div>`).join('')}</div><div class="purchase-summary"><div class="stat-mini"><small>Itens</small><b id="pbQty">0</b></div><div class="stat-mini"><small>Investimento</small><b id="pbCost">R$ 0,00</b></div><div class="stat-mini"><small>Produtos</small><b>${rows.length}</b></div></div><div class="purchase-note">💡 Edite as quantidades antes de copiar. Nada é lançado no estoque automaticamente.</div><div class="purchase-actions"><button class="secondary" id="pbCancel">Cancelar</button><button class="primary" id="pbCopy">📋 Copiar lista</button></div></div>`;
+ openModal('🛒 Próxima compra',html);
+ const recalc=()=>{let qty=0,cost=0;document.querySelectorAll('[data-buy-index]').forEach((input,i)=>{const q=Math.max(0,Math.floor(Number(input.value)||0)),c=numBR(input.dataset.cost||0);qty+=q;cost+=q*c;const cell=document.querySelector(`[data-cost-total="${i}"]`);if(cell)cell.textContent=money(q*c)});$('pbQty').textContent=qty;$('pbCost').textContent=money(cost)};
+ document.querySelectorAll('[data-buy-index]').forEach(i=>i.oninput=recalc);recalc();$('pbCancel').onclick=closeModal;
+ $('pbCopy').onclick=async()=>{const list=[];document.querySelectorAll('[data-buy-index]').forEach((input,i)=>{const q=Math.max(0,Math.floor(Number(input.value)||0));if(q>0)list.push(`${rows[i].p.name}: ${q} un.`)});try{await navigator.clipboard.writeText(`🛒 Próxima compra - DOCES DO VITU\n\n${list.join('\n')}`);toast('Lista copiada!')}catch(e){toast('Não foi possível copiar a lista.')}};
+}
+
 function home(){
  const t=totals(),low=data.products.filter(p=>numBR(p.stock||0)<=Number(p.minStock||2));
  return `<div class="page">
@@ -739,12 +804,14 @@ function home(){
   <div class="stat"><small>RECEBIDO</small><strong class="green private-number money-large">${money(t.received)}</strong></div>
   <div class="stat"><small>PRODUTOS</small><strong>${data.products.length}</strong></div>
  </div>
+ <div class="vitu-tools">${goalCardHtml()}<div class="vitu-card vitu-ai-card"><h3>🧠 Vitu IA</h3><p>Analise vendas, lucro, estoque e metas com perguntas simples.</p><button id="openVituIA">Conversar com o Vitu IA</button></div></div>
  <div class="quick">
   <button class="quick-launch" id="qQuickSale"><span>⚡️</span><b>Lançamentos rápidos</b></button>
   <button id="qSale"><span>🛒</span><b>Nova venda</b></button>
   <button id="qClient"><span>👤</span><b>Novo cliente</b></button>
   <button id="qProduct"><span>📦</span><b>Novo produto</b></button>
   <button id="qAnalysis"><span>📈</span><b>Analisar vendas</b></button>
+  <button id="qPurchaseBuilder"><span>🛒</span><b>Montar próxima compra</b></button>
  </div>
  <div class="section"><div class="section-title"><b>Últimas vendas</b><button class="link" id="seeSales">Ver todas</button></div>
  <div class="list">${data.sales.slice().sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0)).slice(0,5).map(s=>saleItem(s)).join("")||'<div class="empty">Nenhuma venda registrada ainda.</div>'}</div></div>
@@ -1082,7 +1149,7 @@ function openQuickSale(){
  $("fqAddProduct").onclick=()=>{const p=selected(),q=Math.floor(numBR($("fqQty").value)||0);if(!p)return toast("Selecione um produto.");if(q<1)return toast("Informe uma quantidade válida.");const ex=cart.find(i=>i.productId===p.id),already=ex?numBR(ex.qty):0;if(already+q>numBR(p.stock))return toast(`Estoque insuficiente para ${p.name}.`);if(ex)ex.qty=already+q;else cart.push({productId:p.id,name:p.name,qty:q,price:numBR(p.price),cost:numBR(p.cost)});$("fqQty").value=1;draw()};
  $("fqQty").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("fqAddProduct").click()}};
  $("fqDiscountValue").oninput=draw;$("cancelModal").onclick=closeModal;draw();selectProduct(products[0].id);
- $("fqConfirm").onclick=async()=>{const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;if(!cart.length)return toast("Adicione pelo menos um produto.");const clientId=$("fqClient").value||"",c=data.clients.find(x=>x.id===clientId),originalTotal=totalOriginal(),discountAmount=discount(),total=totalFinal();if(total<=0)return toast("O total da venda precisa ser maior que zero.");for(const i of cart){const p=data.products.find(x=>x.id===i.productId);if(!p||numBR(p.stock)<numBR(i.qty))return toast(`Estoque insuficiente para ${i.name}.`)}btn.dataset.busy="1";btn.disabled=true;const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Confirmando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);try{const ratio=originalTotal?discountAmount/originalTotal:0,items=cart.map(i=>({...i,price:Math.round(numBR(i.price)*(1-ratio)*100)/100})),saleRef=doc(col("sales"));await setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await Promise.all(cart.map(i=>{const p=data.products.find(x=>x.id===i.productId);return updateDoc(doc(col("products"),i.productId),{stock:numBR(p.stock)-numBR(i.qty)})}));closeModal();render();go("home");overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';setTimeout(()=>overlay.remove(),700)}catch(e){console.error(e);overlay.remove();toast(e.message||"Erro ao registrar venda")}finally{btn.dataset.busy="0"}};
+ $("fqConfirm").onclick=async()=>{const btn=$("fqConfirm");if(btn.dataset.busy==="1")return;if(!cart.length)return toast("Adicione pelo menos um produto.");const clientId=$("fqClient").value||"",c=data.clients.find(x=>x.id===clientId),originalTotal=totalOriginal(),discountAmount=discount(),total=totalFinal();if(total<=0)return toast("O total da venda precisa ser maior que zero.");for(const i of cart){const p=data.products.find(x=>x.id===i.productId);if(!p||numBR(p.stock)<numBR(i.qty))return toast(`Estoque insuficiente para ${i.name}.`)}btn.dataset.busy="1";btn.disabled=true;const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Confirmando venda...</b><small>Salvando no sistema...</small></div>';document.body.appendChild(overlay);try{const ratio=originalTotal?discountAmount/originalTotal:0,items=cart.map(i=>({...i,price:Math.round(numBR(i.price)*(1-ratio)*100)/100})),saleRef=doc(col("sales"));await runTransaction(db,async tx=>{for(const i of cart){const ref=doc(col("products"),i.productId),snap=await tx.get(ref);if(!snap.exists())throw Error(`Produto não encontrado: ${i.name}.`);const stock=numBR(snap.data().stock||0),qty=numBR(i.qty);if(stock<qty)throw Error(`Estoque insuficiente para ${i.name}.`);tx.update(ref,{stock:stock-qty});}tx.set(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});});closeModal();render();go("home");overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';setTimeout(()=>overlay.remove(),700)}catch(e){console.error(e);overlay.remove();toast(e.message||"Erro ao registrar venda")}finally{btn.dataset.busy="0"}};
  const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");
  let fqActiveIndex=-1;
  const fqShow=()=>{fqActiveIndex=-1;results.querySelectorAll("[data-fq-client]").forEach(b=>b.classList.remove("active"))};
@@ -1130,11 +1197,8 @@ function openSale(){
   if(q>numBR(p.stock||0))throw Error("Estoque insuficiente.");
   const c=data.clients.find(x=>x.id===clientId),paid=Math.max(0,Math.min(total,Number($("mPaid").value)||0)),originalTotal=numBR(p.price||0)*q,discountAmount=Math.max(0,originalTotal-total),discountPct=originalTotal>0?discountAmount/originalTotal*100:0;
   const saleRef=doc(col("sales"));
-  await Promise.all([
-   setDoc(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:p.name,qty:q,price:total/q,originalPrice:p.price,cost:numBR(p.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()}),
-   updateDoc(doc(col("products"),p.id),{stock:numBR(p.stock||0)-q}),
-   logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`)
-  ]);
+  await runTransaction(db,async tx=>{const productRef=doc(col("products"),p.id),productSnap=await tx.get(productRef);if(!productSnap.exists())throw Error("Produto não encontrado.");const fresh=productSnap.data(),freshStock=numBR(fresh.stock||0);if(q>freshStock)throw Error("Estoque insuficiente.");tx.update(productRef,{stock:freshStock-q});tx.set(saleRef,{clientId,clientName:c?.name||"Venda balcão",items:[{productId:p.id,name:fresh.name||p.name,qty:q,price:total/q,originalPrice:numBR(fresh.price||p.price||0),cost:numBR(fresh.cost||0)}],originalTotal,total,discountAmount,discountPct,paid,paymentMethod:$("mMethod").value,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});});
+  await logAction("Nova venda",`${c?.name||"Venda balcão"} • ${money(total)} • ${p.name} x${q}`);
   if(paid>0)await addDoc(col("payments"),{saleId:saleRef.id,clientId,clientName:c?.name||"Venda balcão",amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method:$("mMethod").value});
   closeModal();render();go("home");
   overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check">✓</div><b>Venda confirmada</b></div>';
@@ -1315,7 +1379,7 @@ function openAddStock(p){
  <div class="actions"><button type="button" class="secondary" id="cancelAddStock">Cancelar</button><button type="button" class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
  const preview=()=>{const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q>0&&t>0){const unit=t/q,avg=(oldCost*current+t)/(current+q);$("addStockPreview").textContent=`Custo desta compra: ${money(unit)}/un. • novo custo médio: ${money(avg)} • total: ${money(t)}`}};
  $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$("cancelAddStock").onclick=closeModal;
- $("confirmAddStock").onclick=async()=>{const btn=$("confirmAddStock");if(btn.dataset.busy==="1")return;const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q<1)return toast("Informe a quantidade.");if(t<=0)return toast("Informe o valor total.");const unit=Math.round(t/q*100)/100,avg=Math.round(((oldCost*current)+t)/(current+q)*100)/100;btn.dataset.busy="1";btn.disabled=true;try{await updateDoc(doc(col("products"),p.id),{stock:current+q,cost:avg});await addDoc(col("purchases"),{productId:p.id,productName:p.name,quantity:q,total:t,unitCost:unit,previousUnitCost:oldCost,newAverageCost:avg,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});await logAction("Entrada de estoque",`${p.name} • +${q} un. • ${money(t)} • custo ${money(unit)}`);closeModal();render();toast(`+${q} unidades adicionadas!`)}catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.message||""));btn.disabled=false;btn.dataset.busy="0"}};
+ $("confirmAddStock").onclick=async()=>{const btn=$("confirmAddStock");if(btn.dataset.busy==="1")return;const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q<1)return toast("Informe a quantidade.");if(t<=0)return toast("Informe o valor total.");const unit=Math.round(t/q*100)/100;btn.dataset.busy="1";btn.disabled=true;try{const purchaseRef=doc(col("purchases"));await runTransaction(db,async tx=>{const ref=doc(col("products"),p.id),snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");const fresh=snap.data(),freshStock=numBR(fresh.stock||0),freshCost=numBR(fresh.cost||0),avg=Math.round(((freshCost*freshStock)+t)/(freshStock+q)*100)/100;tx.update(ref,{stock:freshStock+q,cost:avg});tx.set(purchaseRef,{productId:p.id,productName:fresh.name||p.name,quantity:q,total:t,unitCost:unit,previousUnitCost:freshCost,newAverageCost:avg,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});});await logAction("Entrada de estoque",`${p.name} • +${q} un. • ${money(t)} • custo ${money(unit)}`);closeModal();render();toast(`+${q} unidades adicionadas!`)}catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.message||""));btn.disabled=false;btn.dataset.busy="0"}};
  preview();
 }
 function openAvulsaStockPicker(){
@@ -1323,14 +1387,14 @@ function openAvulsaStockPicker(){
  if(!products.length)return toast("Cadastre um produto primeiro.");
  openModal("Entrada avulsa",`<div class="form"><div style="padding:12px 13px;border-radius:14px;background:var(--soft,#faf6f2);color:var(--muted);font-size:12px;line-height:1.45">Use quando entrou produto a mais ou você precisa apenas ajustar o estoque. <b>Não registra compra nem altera o custo.</b></div><div class="field"><label>Produto</label><select id="avulsaProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${numBR(p.stock||0)} un.</option>`).join("")}</select></div><div class="field"><label>Quantidade a adicionar</label><input id="avulsaQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="actions"><button type="button" class="secondary" id="cancelAvulsa">Cancelar</button><button type="button" class="primary" id="confirmAvulsa">Adicionar ao estoque</button></div></div>`);
  $("cancelAvulsa").onclick=closeModal;
- $("confirmAvulsa").onclick=async()=>{const btn=$("confirmAvulsa");if(btn.dataset.busy==="1")return;const qty=Math.floor(numBR($("avulsaQty").value)||0);if(qty<1)return toast("Informe uma quantidade válida.");const p=data.products.find(x=>x.id===$("avulsaProduct").value);if(!p)return toast("Selecione um produto.");const current=numBR(p.stock||0);btn.dataset.busy="1";btn.disabled=true;try{await updateDoc(doc(col("products"),p.id),{stock:current+qty});await logAction("Entrada avulsa",`${p.name} • +${qty} un. • estoque ${current} → ${current+qty}`);closeModal();render();toast(`+${qty} unidades adicionadas ao estoque!`)}catch(e){console.error(e);toast("Erro ao adicionar ao estoque: "+(e.code||e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}};
+ $("confirmAvulsa").onclick=async()=>{const btn=$("confirmAvulsa");if(btn.dataset.busy==="1")return;const qty=Math.floor(numBR($("avulsaQty").value)||0);if(qty<1)return toast("Informe uma quantidade válida.");const p=data.products.find(x=>x.id===$("avulsaProduct").value);if(!p)return toast("Selecione um produto.");btn.dataset.busy="1";btn.disabled=true;try{let before=0,after=0,name=p.name;await runTransaction(db,async tx=>{const ref=doc(col("products"),p.id),snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");before=numBR(snap.data().stock||0);after=before+qty;name=snap.data().name||name;tx.update(ref,{stock:after});});await logAction("Entrada avulsa",`${name} • +${qty} un. • estoque ${before} → ${after}`);closeModal();render();toast(`+${qty} unidades adicionadas ao estoque!`)}catch(e){console.error(e);toast("Erro ao adicionar ao estoque: "+(e.code||e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}};
 }
 function openAvulsaStock(p){
  if(!p)return;
  const current=numBR(p.stock||0);
  openModal("Entrada avulsa",`<div class="form"><div class="item"><div class="avatar">➕</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} un.</small></div></div><div style="padding:12px 13px;border-radius:14px;background:var(--soft,#faf6f2);color:var(--muted);font-size:12px;line-height:1.45">Use quando entrou produto a mais ou você precisa apenas ajustar o estoque. <b>Não registra compra nem altera o custo.</b></div><div class="field"><label>Quantidade a adicionar</label><input id="avulsaQty" type="number" min="1" step="1" inputmode="numeric" placeholder="Ex.: 5"></div><div class="actions"><button type="button" class="secondary" id="cancelAvulsa">Cancelar</button><button type="button" class="primary" id="confirmAvulsa">Adicionar ao estoque</button></div></div>`);
  $("cancelAvulsa").onclick=closeModal;
- $("confirmAvulsa").onclick=async()=>{const btn=$("confirmAvulsa");if(btn.dataset.busy==="1")return;const qty=Math.floor(numBR($("avulsaQty").value)||0);if(qty<1)return toast("Informe uma quantidade válida.");btn.dataset.busy="1";btn.disabled=true;try{await updateDoc(doc(col("products"),p.id),{stock:current+qty});await logAction("Entrada avulsa",`${p.name} • +${qty} un. • estoque ${current} → ${current+qty}`);closeModal();render();toast(`+${qty} unidades adicionadas ao estoque!`)}catch(e){console.error(e);toast("Erro ao adicionar ao estoque: "+(e.code||e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}};
+ $("confirmAvulsa").onclick=async()=>{const btn=$("confirmAvulsa");if(btn.dataset.busy==="1")return;const qty=Math.floor(numBR($("avulsaQty").value)||0);if(qty<1)return toast("Informe uma quantidade válida.");btn.dataset.busy="1";btn.disabled=true;try{let before=0,after=0,name=p.name;await runTransaction(db,async tx=>{const ref=doc(col("products"),p.id),snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");before=numBR(snap.data().stock||0);after=before+qty;name=snap.data().name||name;tx.update(ref,{stock:after});});await logAction("Entrada avulsa",`${name} • +${qty} un. • estoque ${before} → ${after}`);closeModal();render();toast(`+${qty} unidades adicionadas ao estoque!`)}catch(e){console.error(e);toast("Erro ao adicionar ao estoque: "+(e.code||e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}};
 }
 function openRemoveStock(p){
  if(!p)return;
@@ -1341,7 +1405,7 @@ function openRemoveStock(p){
   const qty=Math.floor(Number($("removeQty").value)||0),reason=$("removeReason").value.trim();
   if(qty<1)return toast("Informe uma quantidade válida.");
   if(qty>current)return toast("A quantidade não pode ser maior que o estoque atual.");
-  try{await updateDoc(doc(col("products"),p.id),{stock:current-qty});await logAction("Ajuste de estoque",`-${qty} ${p.name} • estoque ${current} → ${current-qty}${reason?` • ${reason}`:""}`);closeModal();toast("Estoque atualizado!");}catch(e){console.error(e);toast("Erro ao remover do estoque: "+(e.code||"verifique a conexão."));}
+  try{let before=0,after=0,name=p.name;await runTransaction(db,async tx=>{const ref=doc(col("products"),p.id),snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");before=numBR(snap.data().stock||0);if(qty>before)throw Error("A quantidade não pode ser maior que o estoque atual.");after=before-qty;name=snap.data().name||name;tx.update(ref,{stock:after});});await logAction("Ajuste de estoque",`-${qty} ${name} • estoque ${before} → ${after}${reason?` • ${reason}`:""}`);closeModal();toast("Estoque atualizado!");}catch(e){console.error(e);toast("Erro ao remover do estoque: "+(e.code||"verifique a conexão."));}
  };
 }
 async function deleteProductConfirm(p){
@@ -1393,9 +1457,9 @@ function openProduct(p=null){
   const obj={name,price,cost,stock,minStock,supplier};
   try{
    if(p){
-    await updateDoc(doc(col("products"),p.id),obj);
-    if(purchaseQty>0) await addDoc(col("purchases"),{productId:p.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-    await logAction(purchaseQty>0?"Entrada de estoque":"Produto alterado",purchaseQty>0?`${name} • +${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • preço ${money(price)} • estoque ${stock}`);
+    const productRef=doc(col("products"),p.id);
+    if(purchaseQty>0){const purchaseRef=doc(col("purchases"));let finalCost=0;await runTransaction(db,async tx=>{const snap=await tx.get(productRef);if(!snap.exists())throw Error("Produto não encontrado.");const fresh=snap.data(),freshStock=numBR(fresh.stock||0),freshCost=numBR(fresh.cost||0);finalCost=Math.round((purchaseTotal/purchaseQty)*100)/100;const finalStock=freshStock+purchaseQty,avg=Math.round(((freshCost*freshStock)+purchaseTotal)/finalStock*100)/100;tx.update(productRef,{name,price,cost:avg,stock:finalStock,minStock,supplier});tx.set(purchaseRef,{productId:p.id,productName:name,quantity:purchaseQty,total:purchaseTotal,unitCost:finalCost,previousUnitCost:freshCost,newAverageCost:avg,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});});await logAction("Entrada de estoque",`${name} • +${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(finalCost)}`);
+    }else{await runTransaction(db,async tx=>{const snap=await tx.get(productRef);if(!snap.exists())throw Error("Produto não encontrado.");const fresh=snap.data();tx.update(productRef,{name,price,cost:numBR(fresh.cost||0),stock:numBR(fresh.stock||0),minStock,supplier});});await logAction("Produto alterado",`${name} • preço ${money(price)} • estoque preservado`);}
    }else{
     const productRef=await addDoc(col("products"),{...obj,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
     if(purchaseQty>0) await addDoc(col("purchases"),{productId:productRef.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
@@ -1588,6 +1652,7 @@ function bindPage(){
  $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
  $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());
  $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
+ $("openVituIA")?.addEventListener("click",openVituIA);$("editMonthlyGoal")?.addEventListener("click",setMonthlyGoal);$("qPurchaseBuilder")?.addEventListener("click",openPurchaseBuilder);
  $("seeSales")?.addEventListener("click",()=>go("sales"));
  $("logout")?.addEventListener("click",()=>signOut(auth));
  $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
@@ -1676,10 +1741,8 @@ function openEditSale(s){
    const np=products.find(p=>p.id===$("esProduct").value),nq=Math.max(1,Number($("esQty").value)||1),nt=Math.max(0,Number($("esTotal").value)||0),paid=Math.min(nt,Math.max(0,Number($("esPaid").value)||0)),nc=clients.find(c=>c.id===$("esClient").value),oi=s.items?.[0]||{},op=products.find(p=>p.id===oi.productId),oq=Number(oi.qty||0);
    if(!np||!nt)throw Error("Produto e valor são obrigatórios.");
    const ops=[];
-   if(op&&op.id===np.id){const available=Number(op.stock||0)+oq;if(nq>available)throw Error("Estoque insuficiente.");ops.push(updateDoc(doc(col("products"),op.id),{stock:available-nq}));}
-   else{if(nq>Number(np.stock||0))throw Error("Estoque insuficiente.");if(op)ops.push(updateDoc(doc(col("products"),op.id),{stock:Number(op.stock||0)+oq}));ops.push(updateDoc(doc(col("products"),np.id),{stock:Number(np.stock||0)-nq}));}
    const originalTotal=Number(np.price||0)*nq,discountAmount=Math.max(0,originalTotal-nt),discountPct=originalTotal?discountAmount/originalTotal*100:0;
-   ops.push(updateDoc(doc(col("sales"),s.id),{clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",items:[{productId:np.id,name:np.name,qty:nq,price:nt/nq,originalPrice:np.price,cost:Number(np.cost||0)}],originalTotal,total:nt,discountAmount,discountPct,paid,updatedAt:serverTimestamp()}));
+   await runTransaction(db,async tx=>{const oldRef=op?doc(col("products"),op.id):null,newRef=doc(col("products"),np.id),saleRef=doc(col("sales"),s.id);const refs=oldRef&&op.id===np.id?[oldRef]:oldRef?[oldRef,newRef]:[newRef];const snaps=[];for(const ref of refs)snaps.push(await tx.get(ref));const oldSnap=oldRef?snaps[0]:null,newSnap=oldRef?(op.id===np.id?snaps[0]:snaps[1]):snaps[0];if(!newSnap.exists())throw Error("Produto não encontrado.");if(oldRef&&op.id===np.id){const available=numBR(newSnap.data().stock||0)+oq;if(nq>available)throw Error("Estoque insuficiente.");tx.update(newRef,{stock:available-nq});}else{if(nq>numBR(newSnap.data().stock||0))throw Error("Estoque insuficiente.");if(oldRef&&oldSnap?.exists())tx.update(oldRef,{stock:numBR(oldSnap.data().stock||0)+oq});tx.update(newRef,{stock:numBR(newSnap.data().stock||0)-nq});}tx.update(saleRef,{clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",items:[{productId:np.id,name:np.name,qty:nq,price:nt/nq,originalPrice:np.price,cost:numBR(newSnap.data().cost||0)}],originalTotal,total:nt,discountAmount,discountPct,paid,updatedAt:serverTimestamp()});});
    const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));
    if(paid>0)ops.push(addDoc(col("payments"),{saleId:s.id,clientId:nc?.id||"",clientName:nc?.name||"Venda balcão",amount:paid,createdAt:serverTimestamp(),method:s.paymentMethod||"Pagamento"}));
    await Promise.all(ops);closeModal();render();toast("Venda alterada com sucesso!");
@@ -1692,7 +1755,7 @@ function confirmDeleteSale(s){
  $("delSaleText").oninput=e=>$("delDo").disabled=e.target.value.trim().toUpperCase()!=="EXCLUIR";
  $("delDo").onclick=async()=>{
   const btn=$("delDo");if(btn.dataset.busy)return;btn.dataset.busy="1";
-  try{const ops=[];for(const i of(s.items||[])){const p=data.products.find(x=>x.id===i.productId);if(p)ops.push(updateDoc(doc(col("products"),p.id),{stock:numBR(p.stock||0)+Number(i.qty||0)}));}const ps=await getDocs(col("payments"));ps.docs.filter(d=>d.data()?.saleId===s.id).forEach(d=>ops.push(deleteDoc(doc(col("payments"),d.id))));ops.push(deleteDoc(doc(col("sales"),s.id)));ops.push(logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`));await Promise.all(ops);closeModal();render();toast("Venda excluída com sucesso!");}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy=""}
+  try{await runTransaction(db,async tx=>{const saleRef=doc(col("sales"),s.id),saleSnap=await tx.get(saleRef);if(!saleSnap.exists())throw Error("Venda não encontrada.");const sale=saleSnap.data(),byProduct=new Map();for(const i of(sale.items||[])){const qty=numBR(i.qty||0);if(qty>0)byProduct.set(i.productId,(byProduct.get(i.productId)||0)+qty);}for(const [pid,qty] of byProduct){const ref=doc(col("products"),pid),snap=await tx.get(ref);if(snap.exists())tx.update(ref,{stock:numBR(snap.data().stock||0)+qty});}tx.delete(saleRef);});const ps=await getDocs(col("payments"));await Promise.all(ps.docs.filter(d=>d.data()?.saleId===s.id).map(d=>deleteDoc(d.ref)));await logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`);closeModal();render();toast("Venda excluída com sucesso!");}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy=""}
  };
 }
 
