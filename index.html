@@ -226,6 +226,9 @@ body.theme-dark .vitu-composer input{color:#f5ede6!important}
   .settings-form .vitu-settings-card button{grid-column:1/-1;width:100%;max-width:none;min-width:0}
 }
 
+
+/* V1.6.1 • Recebimento profissional por NFC-e/foto */
+.nfc-menu{display:grid;gap:10px}.nfc-menu-card{border:1px solid var(--line);background:var(--white);border-radius:18px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:.18s}.nfc-menu-card:hover{transform:translateY(-1px);box-shadow:var(--shadow)}.nfc-menu-icon{width:46px;height:46px;border-radius:14px;background:var(--cream2);display:grid;place-items:center;font-size:22px;flex:0 0 auto}.nfc-menu-card b{display:block;font-size:14px}.nfc-menu-card small{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:3px}.nfc-import{display:grid;gap:12px}.nfc-drop{border:1.5px dashed var(--line);border-radius:18px;padding:22px 16px;text-align:center;background:var(--cream);cursor:pointer}.nfc-drop strong{display:block;font-size:15px}.nfc-drop small{display:block;color:var(--muted);margin-top:5px;line-height:1.4}.nfc-preview-img{width:100%;max-height:280px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#111}.nfc-status{padding:11px 12px;border-radius:13px;background:var(--cream2);font-size:12px;color:var(--muted);line-height:1.4}.nfc-items{display:grid;gap:8px}.nfc-item{border:1px solid var(--line);border-radius:15px;padding:11px;background:var(--white);display:grid;grid-template-columns:minmax(0,1fr) 74px 100px 34px;gap:8px;align-items:end}.nfc-item .field{margin:0}.nfc-item small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}.nfc-match{font-size:10px;color:var(--green);margin-top:4px}.nfc-unmatched{color:var(--orange)}.nfc-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.nfc-summary .stat-mini{background:var(--cream);border:1px solid var(--line);border-radius:13px;padding:10px}.nfc-summary .stat-mini small{display:block;color:var(--muted);font-size:10px}.nfc-summary .stat-mini b{display:block;font-size:15px;margin-top:2px}.nfc-raw{width:100%;min-height:90px;resize:vertical;font:12px/1.4 monospace;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--cream);color:var(--text)}.nfc-add-row{display:flex;justify-content:space-between;align-items:center;gap:8px}.nfc-add-row button{white-space:nowrap}@media(max-width:700px){.nfc-item{grid-template-columns:minmax(0,1fr) 72px 92px 34px}.nfc-summary{grid-template-columns:1fr}.nfc-preview-img{max-height:220px}}@media(max-width:520px){.nfc-item{grid-template-columns:1fr 1fr}.nfc-item .field:first-child{grid-column:1/-1}.nfc-item .nfc-remove{grid-column:2;justify-self:end}.nfc-add-row{align-items:stretch;flex-direction:column}.nfc-add-row button{width:100%}}body.theme-dark .nfc-menu-card,body.theme-dark .nfc-item{background:#211e1c;border-color:#403832}body.theme-dark .nfc-drop,body.theme-dark .nfc-status,body.theme-dark .nfc-raw,body.theme-dark .nfc-summary .stat-mini{background:#292521;border-color:#403832}.stock-add-menu{width:min(520px,calc(100vw - 28px))}.stock-add-menu .modal-body{padding:14px}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -684,6 +687,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 <div id="modalRoot"></div>
 <div id="toastRoot"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
@@ -965,7 +969,7 @@ function compressClientPhoto(file){
 function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),pending=clientPending(c),isOtimo=String(c.status||"normal").toLowerCase()==="otimo";return `<div class="item" data-client="${c.id}">${clientAvatar(c)}<div class="item-main"><b>${esc(c.name)}</b>${isOtimo?`<small class="client-status-otimo">Ótimo</small>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
- return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><div class="stock-head-actions"><button type="button" class="stock-avulsa-head" id="stockAvulsaHead">＋ Avulsa</button><button class="top-action" id="newProduct">＋</button></div></div>
+ return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><div class="stock-head-actions"><button type="button" class="stock-avulsa-head" id="stockAddMenu">＋ Adicionar</button><button class="top-action" id="newProduct">＋</button></div></div>
  <input class="search" id="stockSearch" placeholder="🔎 Procurar produto">
  <div class="list" id="stockList">${productRows(data.products)}</div></div>`
 }
@@ -1464,6 +1468,62 @@ function openPaymentForClient(c){
   finally{if(overlay.isConnected)overlay.remove();btn.disabled=false;btn.dataset.busy="0";}
  }
 }
+function openStockAddMenu(){
+ openModal("＋ Adicionar estoque",`<div class="nfc-menu stock-add-menu">
+  <div class="nfc-menu-card" id="addMenuNfc"><div class="nfc-menu-icon">🧾</div><div><b>Recebimento por NFC-e</b><small>Fotografe ou escolha a foto da nota. O sistema tenta ler produtos, quantidades e valores e mostra tudo para você confirmar.</small></div></div>
+  <div class="nfc-menu-card" id="addMenuManual"><div class="nfc-menu-icon">📦</div><div><b>Receber mercadoria</b><small>Entrada manual de compra, com kits/caixas convertidos em unidades de estoque.</small></div></div>
+  <div class="nfc-menu-card" id="addMenuAvulsa"><div class="nfc-menu-icon">➕</div><div><b>Entrada avulsa</b><small>Ajuste uma quantidade sem registrar uma compra ou alterar o custo.</small></div></div>
+ </div>`);
+ $("addMenuNfc").onclick=()=>openNfcReceipt();
+ $("addMenuManual").onclick=()=>{closeModal();openProductStockPicker()};
+ $("addMenuAvulsa").onclick=()=>{closeModal();openAvulsaStockPicker()};
+}
+function openProductStockPicker(){
+ const products=data.products||[]; if(!products.length)return toast("Cadastre um produto primeiro.");
+ openModal("Receber mercadoria",`<div class="form"><div class="field"><label>Produto</label><select id="manualStockProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${numBR(p.stock||0)} un.</option>`).join("")}</select></div><div class="actions"><button type="button" class="secondary" id="cancelManualStock">Cancelar</button><button type="button" class="primary" id="continueManualStock">Continuar</button></div></div>`);
+ $("cancelManualStock").onclick=closeModal;$("continueManualStock").onclick=()=>{const p=products.find(x=>x.id===$("manualStockProduct").value);if(p)openAddStock(p)};
+}
+function parseNfcText(text){
+ const lines=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+ const moneyVals=[]; for(const l of lines){const ms=l.match(/\b\d{1,5}[.,]\d{2}\b/g)||[];for(const m of ms){const n=numBR(m);if(n>0&&n<100000)moneyVals.push(n)}}
+ let total=moneyVals.length?moneyVals[moneyVals.length-1]:0;
+ const date=(text.match(/\b\d{2}[\/]\d{2}[\/]\d{4}\b/)||[])[0]||'';
+ const items=[];
+ const products=data.products||[];
+ for(let i=0;i<lines.length;i++){
+  const l=lines[i];
+  if(/total|subtotal|troco|forma de pagamento|valor pago|desconto|cpf|cnpj|chave|consulta|tributos/i.test(l))continue;
+  const qmatch=l.match(/(?:^|\s)(\d{1,4})\s*(?:UN|UND|UNID|CX|CXS|KIT|KITS)?\s+(?:x\s*)?(?:R?\$?\s*)?(\d+[.,]\d{2})\b/i);
+  if(!qmatch)continue;
+  const qty=Math.max(1,parseInt(qmatch[1],10)), price=numBR(qmatch[2]);
+  const name=l.replace(qmatch[0],' ').replace(/\s{2,}/g,' ').trim(); if(!name||price<=0)continue;
+  let best=null,bestScore=0; for(const p of products){const a=norm(name),b=norm(p.name);let score=0;if(a===b)score=1;else{const aa=a.split(/\s+/),bb=b.split(/\s+/);const common=aa.filter(w=>w.length>2&&bb.includes(w)).length;score=common/Math.max(1,Math.min(aa.length,bb.length))}if(score>bestScore){bestScore=score;best=p}}
+  items.push({rawName:name,qty,price,total:qty*price,productId:best&&bestScore>=.45?best.id:'',productName:best&&bestScore>=.45?best.name:'',confidence:bestScore>=.75?'Alta':bestScore>=.45?'Média':'Baixa'});
+ }
+ return {lines,date,total,items};
+}
+async function openNfcReceipt(){
+ closeModal();
+ openModal("🧾 Recebimento por NFC-e",`<div class="nfc-import"><div class="nfc-status">📸 <b>Importe uma foto da NFC-e.</b><br>O sistema fará uma leitura automática e depois você poderá conferir e corrigir tudo antes de alterar o estoque.</div><label class="nfc-drop" for="nfcPhoto"><div style="font-size:32px;margin-bottom:5px">📷</div><strong>Escolher ou tirar foto da NFC-e</strong><small>JPG, PNG ou HEIC • quanto mais nítida a foto, melhor a leitura</small></label><input id="nfcPhoto" type="file" accept="image/*" capture="environment" style="display:none"><div id="nfcReaderArea"></div></div>`);
+ $("nfcPhoto").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const area=$("nfcReaderArea");area.innerHTML='<div class="nfc-status">🔎 Lendo a nota... <b>Isso pode levar alguns segundos.</b></div><div style="height:4px;background:var(--line);border-radius:9px;overflow:hidden"><div id="nfcProgress" style="height:100%;width:4%;background:var(--green);transition:.2s"></div></div>';const url=URL.createObjectURL(file);const img=document.createElement('img');img.src=url;img.className='nfc-preview-img';area.prepend(img);try{if(!window.Tesseract)throw Error('Leitor OCR não carregou. Verifique sua conexão e tente novamente.');const result=await Tesseract.recognize(file,'por',{logger:m=>{if(m.progress&&$("nfcProgress"))$("nfcProgress").style.width=Math.max(4,Math.round(m.progress*100))+'%'}});const parsed=parseNfcText(result.data.text);renderNfcReview(parsed,result.data.text,file); }catch(err){console.error(err);area.innerHTML+=`<div class="nfc-status" style="color:var(--red)">Não foi possível ler a foto automaticamente. Você ainda pode conferir a imagem e lançar a entrada manualmente.<br><small>${esc(err.message||'Erro de leitura')}</small></div>`}}
+}
+function renderNfcReview(parsed,rawText,file){
+ const area=$("nfcReaderArea");if(!area)return;const items=parsed.items||[];
+ const options=data.products||[];
+ const rows=items.map((it,i)=>`<div class="nfc-item" data-nfc-index="${i}"><div class="field"><small>Produto da nota</small><input id="nfcName${i}" value="${esc(it.rawName)}"><div class="nfc-match ${it.productId?'':'nfc-unmatched'}">${it.productId?'✓ '+esc(it.productName)+' • correspondência '+it.confidence:'⚠️ Não vinculado ao estoque'}</div></div><div class="field"><small>Qtd. nota</small><input id="nfcQty${i}" type="number" min="1" step="1" value="${it.qty}"></div><div class="field"><small>Total item</small><input id="nfcTotal${i}" type="text" inputmode="decimal" value="${it.total.toFixed(2).replace('.',',')}"></div><button type="button" class="secondary nfc-remove" data-nfc-remove="${i}" title="Remover item">✕</button><div class="field" style="grid-column:1/-1"><small>Produto no estoque</small><select id="nfcProduct${i}"><option value="">Não vincular</option>${options.map(p=>`<option value="${p.id}" ${p.id===it.productId?'selected':''}>${esc(p.name)} • ${numBR(p.stock||0)} un.</option>`).join('')}</select></div><div class="field" style="grid-column:1/-1"><small>Conversão para estoque</small><div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px"><input id="nfcPacks${i}" type="number" min="1" step="1" value="${it.qty}" placeholder="Qtd. comprada"><input id="nfcSize${i}" type="number" min="1" step="1" value="1" placeholder="Unidades por kit"></div></div></div>`).join('');
+ area.innerHTML=`<div class="nfc-status">✅ Leitura concluída. <b>Confira cada item antes de confirmar.</b><br>${parsed.date?`Data encontrada: ${esc(parsed.date)} • `:''}${parsed.total?`valor detectado: ${money(parsed.total)}`:'o total não foi identificado com segurança.'}</div><div class="nfc-items">${rows||'<div class="empty">Nenhum item foi identificado automaticamente. Use a imagem acima e adicione os produtos manualmente.</div>'}</div><div class="nfc-add-row"><button type="button" class="secondary" id="nfcAddItem">＋ Adicionar item manualmente</button><button type="button" class="secondary" id="nfcShowRaw">Ver texto lido</button></div><textarea id="nfcRaw" class="nfc-raw" style="display:none" readonly>${esc(rawText||'')}</textarea><div class="nfc-summary"><div class="stat-mini"><small>Itens</small><b id="nfcItemCount">${items.length}</b></div><div class="stat-mini"><small>Unidades de estoque</small><b id="nfcUnitCount">0</b></div><div class="stat-mini"><small>Total da entrada</small><b id="nfcGrandTotal">${parsed.total?money(parsed.total):'R$ 0,00'}</b></div></div><div class="actions"><button type="button" class="secondary" id="nfcCancel">Cancelar</button><button type="button" class="primary" id="nfcConfirm">🔒 Conferi e lançar no estoque</button></div>`;
+ const updateSummary=()=>{let units=0,total=0;items.forEach((_,i)=>{const q=Math.max(0,Math.floor(numBR($("nfcPacks"+i)?.value)||0)),size=Math.max(1,Math.floor(numBR($("nfcSize"+i)?.value)||1)),t=numBR($("nfcTotal"+i)?.value)||0;units+=q*size;total+=t});$("nfcUnitCount").textContent=String(units);$("nfcGrandTotal").textContent=money(total)};
+ items.forEach((_,i)=>[$("nfcQty"+i),$("nfcTotal"+i),$("nfcPacks"+i),$("nfcSize"+i)].forEach(el=>el?.addEventListener('input',updateSummary)));
+ area.querySelectorAll('[data-nfc-remove]').forEach(btn=>btn.onclick=()=>{items.splice(Number(btn.dataset.nfcRemove),1);renderNfcReview(parsed,rawText,file)});
+ $("nfcShowRaw").onclick=()=>{$("nfcRaw").style.display=$('nfcRaw').style.display==='none'?'block':'none'};$("nfcAddItem").onclick=()=>{items.push({rawName:'Novo produto',qty:1,price:0,total:0,productId:'',productName:'',confidence:'Baixa'});renderNfcReview(parsed,rawText,file)};$("nfcCancel").onclick=closeModal;$("nfcConfirm").onclick=()=>confirmNfcReceipt(items);
+ updateSummary();
+}
+async function confirmNfcReceipt(items){
+ const btn=$("nfcConfirm");if(btn.dataset.busy==='1')return;const prepared=[];
+ for(let i=0;i<items.length;i++){const productId=$("nfcProduct"+i)?.value||'';const packs=Math.floor(numBR($("nfcPacks"+i)?.value)||0),size=Math.max(1,Math.floor(numBR($("nfcSize"+i)?.value)||1)),total=numBR($("nfcTotal"+i)?.value)||0;if(!productId){toast(`Vincule o produto do item ${i+1} ou remova-o.`);return}if(packs<1||size<1||total<=0){toast(`Confira quantidade, conversão e valor do item ${i+1}.`);return}prepared.push({productId,packs,size,total})}
+ if(!prepared.length)return toast('Nenhum item para lançar.');btn.dataset.busy='1';btn.disabled=true;
+ try{const refs=prepared.map(()=>doc(col('purchases')));await runTransaction(db,async tx=>{for(let i=0;i<prepared.length;i++){const x=prepared[i],ref=doc(col('products'),x.productId),snap=await tx.get(ref);if(!snap.exists())throw Error('Produto não encontrado.');const p=snap.data(),before=numBR(p.stock||0),oldCost=numBR(p.cost||0),units=x.packs*x.size,unit=x.total/units,after=before+units,avg=((oldCost*before)+x.total)/after;tx.update(ref,{stock:after,cost:Math.round(avg*10000)/10000,purchaseUnit:String(p.purchaseUnit||'kit'),unitsPerPackage:x.size});tx.set(refs[i],{productId:x.productId,productName:p.name||'',quantity:units,total:x.total,unitCost:Math.round(unit*10000)/10000,purchaseQuantity:x.packs,purchaseUnit:String(p.purchaseUnit||'kit'),unitsPerPackage:x.size,source:'nfce_photo',createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()})}});await logAction('Recebimento por NFC-e',`${prepared.length} item(ns) conferido(s) • ${prepared.reduce((a,x)=>a+x.packs*x.size,0)} unidades adicionadas`);closeModal();render();toast('NFC-e conferida e estoque atualizado!')}catch(e){console.error(e);toast('Não foi possível lançar a NFC-e: '+(e.message||'verifique a conexão.'))}finally{btn.disabled=false;btn.dataset.busy='0'}
+}
 function openAddStock(p){
  if(!p)return;
  const current=numBR(p.stock||0),oldCost=numBR(p.cost||0);
@@ -1779,7 +1839,7 @@ function bindV140Month(){
 
 function bindPage(){
  $("newSale")?.addEventListener("click",openSale);
- $("salesPeriod")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituSalesDays",e.target.value);render()});$("qSale")?.addEventListener("click",openSale);$("qQuickSale")?.addEventListener("click",openQuickSale);$("stockAvulsaHead")?.addEventListener("click",openAvulsaStockPicker);
+ $("salesPeriod")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituSalesDays",e.target.value);render()});$("qSale")?.addEventListener("click",openSale);$("qQuickSale")?.addEventListener("click",openQuickSale);$("stockAddMenu")?.addEventListener("click",openStockAddMenu);
  $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
  $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());
  $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
