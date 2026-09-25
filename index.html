@@ -227,7 +227,7 @@ body.theme-dark .vitu-composer input{color:#f5ede6!important}
 }
 
 
-/* V1.6.1 • Recebimento profissional por NFC-e/foto */
+/* V1.6.2 • Correção OCR NFC-e + recebimento profissional */
 .nfc-menu{display:grid;gap:10px}.nfc-menu-card{border:1px solid var(--line);background:var(--white);border-radius:18px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:.18s}.nfc-menu-card:hover{transform:translateY(-1px);box-shadow:var(--shadow)}.nfc-menu-icon{width:46px;height:46px;border-radius:14px;background:var(--cream2);display:grid;place-items:center;font-size:22px;flex:0 0 auto}.nfc-menu-card b{display:block;font-size:14px}.nfc-menu-card small{display:block;color:var(--muted);font-size:11px;line-height:1.35;margin-top:3px}.nfc-import{display:grid;gap:12px}.nfc-drop{border:1.5px dashed var(--line);border-radius:18px;padding:22px 16px;text-align:center;background:var(--cream);cursor:pointer}.nfc-drop strong{display:block;font-size:15px}.nfc-drop small{display:block;color:var(--muted);margin-top:5px;line-height:1.4}.nfc-preview-img{width:100%;max-height:280px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#111}.nfc-status{padding:11px 12px;border-radius:13px;background:var(--cream2);font-size:12px;color:var(--muted);line-height:1.4}.nfc-items{display:grid;gap:8px}.nfc-item{border:1px solid var(--line);border-radius:15px;padding:11px;background:var(--white);display:grid;grid-template-columns:minmax(0,1fr) 74px 100px 34px;gap:8px;align-items:end}.nfc-item .field{margin:0}.nfc-item small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}.nfc-match{font-size:10px;color:var(--green);margin-top:4px}.nfc-unmatched{color:var(--orange)}.nfc-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.nfc-summary .stat-mini{background:var(--cream);border:1px solid var(--line);border-radius:13px;padding:10px}.nfc-summary .stat-mini small{display:block;color:var(--muted);font-size:10px}.nfc-summary .stat-mini b{display:block;font-size:15px;margin-top:2px}.nfc-raw{width:100%;min-height:90px;resize:vertical;font:12px/1.4 monospace;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--cream);color:var(--text)}.nfc-add-row{display:flex;justify-content:space-between;align-items:center;gap:8px}.nfc-add-row button{white-space:nowrap}@media(max-width:700px){.nfc-item{grid-template-columns:minmax(0,1fr) 72px 92px 34px}.nfc-summary{grid-template-columns:1fr}.nfc-preview-img{max-height:220px}}@media(max-width:520px){.nfc-item{grid-template-columns:1fr 1fr}.nfc-item .field:first-child{grid-column:1/-1}.nfc-item .nfc-remove{grid-column:2;justify-self:end}.nfc-add-row{align-items:stretch;flex-direction:column}.nfc-add-row button{width:100%}}body.theme-dark .nfc-menu-card,body.theme-dark .nfc-item{background:#211e1c;border-color:#403832}body.theme-dark .nfc-drop,body.theme-dark .nfc-status,body.theme-dark .nfc-raw,body.theme-dark .nfc-summary .stat-mini{background:#292521;border-color:#403832}.stock-add-menu{width:min(520px,calc(100vw - 28px))}.stock-add-menu .modal-body{padding:14px}
 </style>
 
@@ -1483,6 +1483,10 @@ function openProductStockPicker(){
  openModal("Receber mercadoria",`<div class="form"><div class="field"><label>Produto</label><select id="manualStockProduct">${products.map(p=>`<option value="${p.id}">${esc(p.name)} • ${numBR(p.stock||0)} un.</option>`).join("")}</select></div><div class="actions"><button type="button" class="secondary" id="cancelManualStock">Cancelar</button><button type="button" class="primary" id="continueManualStock">Continuar</button></div></div>`);
  $("cancelManualStock").onclick=closeModal;$("continueManualStock").onclick=()=>{const p=products.find(x=>x.id===$("manualStockProduct").value);if(p)openAddStock(p)};
 }
+function normNfcName(value){
+ const s=String(value||'');
+ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+}
 function parseNfcText(text){
  const lines=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
  const moneyVals=[]; for(const l of lines){const ms=l.match(/\b\d{1,5}[.,]\d{2}\b/g)||[];for(const m of ms){const n=numBR(m);if(n>0&&n<100000)moneyVals.push(n)}}
@@ -1497,7 +1501,7 @@ function parseNfcText(text){
   if(!qmatch)continue;
   const qty=Math.max(1,parseInt(qmatch[1],10)), price=numBR(qmatch[2]);
   const name=l.replace(qmatch[0],' ').replace(/\s{2,}/g,' ').trim(); if(!name||price<=0)continue;
-  let best=null,bestScore=0; for(const p of products){const a=norm(name),b=norm(p.name);let score=0;if(a===b)score=1;else{const aa=a.split(/\s+/),bb=b.split(/\s+/);const common=aa.filter(w=>w.length>2&&bb.includes(w)).length;score=common/Math.max(1,Math.min(aa.length,bb.length))}if(score>bestScore){bestScore=score;best=p}}
+  let best=null,bestScore=0; for(const p of products){const a=normNfcName(name),b=normNfcName(p.name);let score=0;if(a===b)score=1;else{const aa=a.split(/\s+/),bb=b.split(/\s+/);const common=aa.filter(w=>w.length>2&&bb.includes(w)).length;score=common/Math.max(1,Math.min(aa.length,bb.length))}if(score>bestScore){bestScore=score;best=p}}
   items.push({rawName:name,qty,price,total:qty*price,productId:best&&bestScore>=.45?best.id:'',productName:best&&bestScore>=.45?best.name:'',confidence:bestScore>=.75?'Alta':bestScore>=.45?'Média':'Baixa'});
  }
  return {lines,date,total,items};
