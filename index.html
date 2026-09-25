@@ -1471,7 +1471,7 @@ function openPaymentForClient(c){
 function openStockAddMenu(){
  openModal("＋ Adicionar estoque",`<div class="nfc-menu stock-add-menu">
   <div class="nfc-menu-card" id="addMenuNfc"><div class="nfc-menu-icon">🧾</div><div><b>Recebimento por NFC-e</b><small>Fotografe ou escolha a foto da nota. O sistema tenta ler produtos, quantidades e valores e mostra tudo para você confirmar.</small></div></div>
-  <div class="nfc-menu-card" id="addMenuManual"><div class="nfc-menu-icon">📦</div><div><b>Receber mercadoria</b><small>Entrada manual de compra, com kits/caixas convertidos em unidades de estoque.</small></div></div>
+  <div class="nfc-menu-card" id="addMenuManual"><div class="nfc-menu-icon">📦</div><div><b>Receber mercadoria</b><small>Entrada manual simples, informando quantidade e valor total da compra.</small></div></div>
   <div class="nfc-menu-card" id="addMenuAvulsa"><div class="nfc-menu-icon">➕</div><div><b>Entrada avulsa</b><small>Ajuste uma quantidade sem registrar uma compra ou alterar o custo.</small></div></div>
  </div>`);
  $("addMenuNfc").onclick=()=>openNfcReceipt();
@@ -1531,48 +1531,46 @@ async function confirmNfcReceipt(items){
 function openAddStock(p){
  if(!p)return;
  const current=numBR(p.stock||0),oldCost=numBR(p.cost||0);
- const purchaseUnit=String(p.purchaseUnit||"unidade").trim()||"unidade";
- const unitsPerPackage=Math.max(1,Math.floor(numBR(p.unitsPerPackage||1)||1));
  openModal("📦 Receber mercadoria",`<div class="form">
   <div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} un. • custo médio: ${money(oldCost)}/un.</small></div></div>
   <div class="stock-entry-card">
-   <b style="display:block;margin-bottom:4px">🛒 Como esta compra foi recebida?</b>
-   <small style="color:var(--muted);display:block;margin-bottom:12px">Você pode comprar em kits/caixas e manter o estoque em unidades de venda.</small>
+   <b style="display:block;margin-bottom:4px">Entrada de estoque</b>
+   <small style="color:var(--muted);display:block;margin-bottom:12px">Informe quantas unidades entraram e o valor total pago pela compra.</small>
    <div class="stock-entry-grid">
-    <div class="field"><label>Quantidade comprada (${esc(purchaseUnit)})</label><input id="addStockQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
-    <div class="field"><label>Unidades por ${esc(purchaseUnit)}</label><input id="addStockPackSize" type="number" min="1" step="1" value="${unitsPerPackage}" inputmode="numeric"></div>
+    <div class="field"><label>Quantidade de unidades</label><input id="addStockQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
+    <div class="field"><label>Valor total pago</label><input id="addStockTotal" type="text" inputmode="decimal" placeholder="Ex.: 28,47"></div>
    </div>
-   <div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="text" inputmode="decimal" placeholder="Ex.: 28,47"></div>
-   <div id="addStockPreview" class="stock-entry-preview">Informe quantidade e valor total para calcular a entrada.</div>
+   <div id="addStockPreview" class="stock-entry-preview">Informe a quantidade e o valor total para calcular a entrada.</div>
   </div>
   <div class="actions"><button type="button" class="secondary" id="cancelAddStock">Cancelar</button><button type="button" class="primary" id="confirmAddStock">Confirmar entrada</button></div>
  </div>`);
  const preview=()=>{
-  const packs=Math.floor(numBR($("addStockQty").value)||0),size=Math.max(1,Math.floor(numBR($("addStockPackSize").value)||1)),t=numBR($("addStockTotal").value)||0,units=packs*size,el=$("addStockPreview");
-  if(packs>0&&t>0&&units>0){const unit=t/units,avg=(oldCost*current+t)/(current+units);el.innerHTML=`Entrada no estoque: <strong>+${units} unidades</strong> (${packs} ${esc(purchaseUnit)} × ${size})<br>Custo desta compra: <strong>${money(unit)}/un.</strong> • novo custo médio: <strong>${money(avg)}/un.</strong> • total: <strong>${money(t)}</strong>`;}
-  else el.textContent="Informe quantidade e valor total para calcular a entrada.";
+  const qty=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0,el=$("addStockPreview");
+  if(qty>0&&t>0){const unit=t/qty,avg=(oldCost*current+t)/(current+qty);el.innerHTML=`Entrada no estoque: <strong>+${qty} unidades</strong><br>Custo desta compra: <strong>${money(unit)}/un.</strong> • novo custo médio: <strong>${money(avg)}/un.</strong> • total: <strong>${money(t)}</strong>`;}
+  else el.textContent="Informe a quantidade e o valor total para calcular a entrada.";
  };
- $("addStockQty").oninput=preview;$("addStockPackSize").oninput=preview;$("addStockTotal").oninput=preview;$('cancelAddStock').onclick=closeModal;
+ $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$('cancelAddStock').onclick=closeModal;
  $("confirmAddStock").onclick=async()=>{
   const btn=$("confirmAddStock");if(btn.dataset.busy==="1")return;
-  const packs=Math.floor(numBR($("addStockQty").value)||0),size=Math.max(1,Math.floor(numBR($("addStockPackSize").value)||1)),t=numBR($("addStockTotal").value)||0,units=packs*size;
-  if(packs<1)return toast("Informe a quantidade comprada.");if(size<1)return toast("Informe quantas unidades há em cada embalagem.");if(t<=0)return toast("Informe o valor total da compra.");if(units<1)return toast("A quantidade final de unidades é inválida.");
-  const unit=t/units;btn.dataset.busy="1";btn.disabled=true;
+  const qty=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;
+  if(qty<1)return toast("Informe uma quantidade válida.");if(t<=0)return toast("Informe o valor total da compra.");
+  const unit=t/qty;btn.dataset.busy="1";btn.disabled=true;
   try{
    const purchaseRef=doc(col("purchases"));
-   let freshName=p.name,freshUnit=purchaseUnit,finalCost=0,avg=0,before=0,after=0;
+   let freshName=p.name,finalCost=0,avg=0,before=0,after=0;
    await runTransaction(db,async tx=>{
     const ref=doc(col("products"),p.id),snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");
-    const fresh=snap.data();freshName=fresh.name||p.name;freshUnit=String(fresh.purchaseUnit||purchaseUnit).trim()||"unidade";before=numBR(fresh.stock||0);const freshCost=numBR(fresh.cost||0);after=before+units;finalCost=t/units;avg=((freshCost*before)+t)/after;
-    tx.update(ref,{stock:after,cost:Math.round(avg*10000)/10000,purchaseUnit:freshUnit,unitsPerPackage:size});
-    tx.set(purchaseRef,{productId:p.id,productName:freshName,quantity:units,total:t,unitCost:Math.round(finalCost*10000)/10000,purchaseQuantity:packs,purchaseUnit:freshUnit,unitsPerPackage:size,previousUnitCost:freshCost,newAverageCost:Math.round(avg*10000)/10000,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    const fresh=snap.data();freshName=fresh.name||p.name;before=numBR(fresh.stock||0);const freshCost=numBR(fresh.cost||0);after=before+qty;finalCost=t/qty;avg=((freshCost*before)+t)/after;
+    tx.update(ref,{stock:after,cost:Math.round(avg*10000)/10000});
+    tx.set(purchaseRef,{productId:p.id,productName:freshName,quantity:qty,total:t,unitCost:Math.round(finalCost*10000)/10000,purchaseQuantity:qty,purchaseUnit:"unidade",unitsPerPackage:1,previousUnitCost:freshCost,newAverageCost:Math.round(avg*10000)/10000,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
    });
-   await logAction("Entrada de estoque",`${freshName} • +${after-before} un. (${packs} ${freshUnit} × ${size}) • compra ${money(t)} • custo ${money(finalCost)}/un.`);
-   closeModal();render();toast(`+${units} unidades adicionadas ao estoque!`);
-  }catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}
+   await logAction("Entrada de estoque",`${freshName} • +${after-before} un. • compra ${money(t)} • custo ${money(finalCost)}/un.`);
+   closeModal();render();toast(`+${after-before} unidades adicionadas ao estoque!`);
+  }catch(e){console.error(e);toast("Erro ao registrar entrada: "+(e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}
  };
  preview();
 }
+
 function openAvulsaStockPicker(){
  const products=data.products||[];
  if(!products.length)return toast("Cadastre um produto primeiro.");
