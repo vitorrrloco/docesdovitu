@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.5.10</title>
+<title>DOCES DO VITU 1.6.0</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -199,7 +199,7 @@ body.theme-dark .vitu-settings-icon{background:#302b27}
 body.theme-dark .goal-setting-row{background:#1b1816;border-color:#3a3531}
 body.theme-dark .vitu-composer input{color:#f5ede6!important}
 
-/* V1.5.14 • Configurações realmente responsivas */
+/* V1.6.0 • Configurações realmente responsivas */
 .settings-form{width:100%;box-sizing:border-box;overflow:hidden}
 .settings-form .item{min-width:0}
 .settings-form .theme-toggle{width:100%;min-width:0;box-sizing:border-box}
@@ -497,6 +497,18 @@ body.theme-dark .finance-month {
   .finance-page .finance-grid { grid-template-columns:1fr !important; }
 }
 
+
+<style id="V160_STOCK_PACKS">
+/* V1.6.0 • Compra em kits/caixas e estoque em unidades */
+.stock-entry-card{margin-top:4px;padding:14px;border-radius:16px;background:var(--cream);border:1px solid var(--line)}
+.stock-entry-grid{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:10px}
+.stock-entry-grid .field{margin-bottom:10px}
+.stock-entry-preview{padding:11px 12px;border-radius:13px;background:var(--white);border:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.45}
+.stock-entry-preview strong{color:var(--text)}
+.purchase-conversion{display:grid;grid-template-columns:1fr 130px;gap:10px;align-items:end}
+@media(max-width:600px){.stock-entry-grid,.purchase-conversion{grid-template-columns:1fr}.stock-entry-card{padding:12px}}
+body.theme-dark .stock-entry-card{background:#26211e;border-color:#403832}
+body.theme-dark .stock-entry-preview{background:#1f1c1a;border-color:#403832}
 </style>
 
 <style id="V130_DARK_REMAINS_FIX">
@@ -1453,15 +1465,48 @@ function openPaymentForClient(c){
  }
 }
 function openAddStock(p){
- if(!p)return;const current=numBR(p.stock||0),oldCost=numBR(p.cost||0);
- openModal("Adicionar estoque",`<div class="form"><div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque: ${current} un. • custo atual: ${money(oldCost)}</small></div></div>
- <div class="field"><label>Quantidade comprada</label><input id="addStockQty" type="number" min="1" value="1"></div>
- <div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="text" inputmode="decimal" placeholder="Ex.: 25,00"></div>
- <div id="addStockPreview" style="font-size:12px;color:var(--muted)">Informe os valores para calcular o custo.</div>
- <div class="actions"><button type="button" class="secondary" id="cancelAddStock">Cancelar</button><button type="button" class="primary" id="confirmAddStock">Adicionar ao estoque</button></div></div>`);
- const preview=()=>{const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q>0&&t>0){const unit=t/q,avg=(oldCost*current+t)/(current+q);$("addStockPreview").textContent=`Custo desta compra: ${money(unit)}/un. • novo custo médio: ${money(avg)} • total: ${money(t)}`}};
- $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$("cancelAddStock").onclick=closeModal;
- $("confirmAddStock").onclick=async()=>{const btn=$("confirmAddStock");if(btn.dataset.busy==="1")return;const q=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;if(q<1)return toast("Informe a quantidade.");if(t<=0)return toast("Informe o valor total.");const unit=Math.round(t/q*100)/100;btn.dataset.busy="1";btn.disabled=true;try{const purchaseRef=doc(col("purchases"));await runTransaction(db,async tx=>{const ref=doc(col("products"),p.id),snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");const fresh=snap.data(),freshStock=numBR(fresh.stock||0),freshCost=numBR(fresh.cost||0),avg=Math.round(((freshCost*freshStock)+t)/(freshStock+q)*100)/100;tx.update(ref,{stock:freshStock+q,cost:avg});tx.set(purchaseRef,{productId:p.id,productName:fresh.name||p.name,quantity:q,total:t,unitCost:unit,previousUnitCost:freshCost,newAverageCost:avg,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});});await logAction("Entrada de estoque",`${p.name} • +${q} un. • ${money(t)} • custo ${money(unit)}`);closeModal();render();toast(`+${q} unidades adicionadas!`)}catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.message||""));btn.disabled=false;btn.dataset.busy="0"}};
+ if(!p)return;
+ const current=numBR(p.stock||0),oldCost=numBR(p.cost||0);
+ const purchaseUnit=String(p.purchaseUnit||"unidade").trim()||"unidade";
+ const unitsPerPackage=Math.max(1,Math.floor(numBR(p.unitsPerPackage||1)||1));
+ openModal("📦 Receber mercadoria",`<div class="form">
+  <div class="item"><div class="avatar">📦</div><div class="item-main"><b>${esc(p.name)}</b><small>Estoque atual: ${current} un. • custo médio: ${money(oldCost)}/un.</small></div></div>
+  <div class="stock-entry-card">
+   <b style="display:block;margin-bottom:4px">🛒 Como esta compra foi recebida?</b>
+   <small style="color:var(--muted);display:block;margin-bottom:12px">Você pode comprar em kits/caixas e manter o estoque em unidades de venda.</small>
+   <div class="stock-entry-grid">
+    <div class="field"><label>Quantidade comprada (${esc(purchaseUnit)})</label><input id="addStockQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
+    <div class="field"><label>Unidades por ${esc(purchaseUnit)}</label><input id="addStockPackSize" type="number" min="1" step="1" value="${unitsPerPackage}" inputmode="numeric"></div>
+   </div>
+   <div class="field"><label>Valor total pago nesta compra</label><input id="addStockTotal" type="text" inputmode="decimal" placeholder="Ex.: 28,47"></div>
+   <div id="addStockPreview" class="stock-entry-preview">Informe quantidade e valor total para calcular a entrada.</div>
+  </div>
+  <div class="actions"><button type="button" class="secondary" id="cancelAddStock">Cancelar</button><button type="button" class="primary" id="confirmAddStock">Confirmar entrada</button></div>
+ </div>`);
+ const preview=()=>{
+  const packs=Math.floor(numBR($("addStockQty").value)||0),size=Math.max(1,Math.floor(numBR($("addStockPackSize").value)||1)),t=numBR($("addStockTotal").value)||0,units=packs*size,el=$("addStockPreview");
+  if(packs>0&&t>0&&units>0){const unit=t/units,avg=(oldCost*current+t)/(current+units);el.innerHTML=`Entrada no estoque: <strong>+${units} unidades</strong> (${packs} ${esc(purchaseUnit)} × ${size})<br>Custo desta compra: <strong>${money(unit)}/un.</strong> • novo custo médio: <strong>${money(avg)}/un.</strong> • total: <strong>${money(t)}</strong>`;}
+  else el.textContent="Informe quantidade e valor total para calcular a entrada.";
+ };
+ $("addStockQty").oninput=preview;$("addStockPackSize").oninput=preview;$("addStockTotal").oninput=preview;$('cancelAddStock').onclick=closeModal;
+ $("confirmAddStock").onclick=async()=>{
+  const btn=$("confirmAddStock");if(btn.dataset.busy==="1")return;
+  const packs=Math.floor(numBR($("addStockQty").value)||0),size=Math.max(1,Math.floor(numBR($("addStockPackSize").value)||1)),t=numBR($("addStockTotal").value)||0,units=packs*size;
+  if(packs<1)return toast("Informe a quantidade comprada.");if(size<1)return toast("Informe quantas unidades há em cada embalagem.");if(t<=0)return toast("Informe o valor total da compra.");if(units<1)return toast("A quantidade final de unidades é inválida.");
+  const unit=t/units;btn.dataset.busy="1";btn.disabled=true;
+  try{
+   const purchaseRef=doc(col("purchases"));
+   let freshName=p.name,freshUnit=purchaseUnit,finalCost=0,avg=0,before=0,after=0;
+   await runTransaction(db,async tx=>{
+    const ref=doc(col("products"),p.id),snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");
+    const fresh=snap.data();freshName=fresh.name||p.name;freshUnit=String(fresh.purchaseUnit||purchaseUnit).trim()||"unidade";before=numBR(fresh.stock||0);const freshCost=numBR(fresh.cost||0);after=before+units;finalCost=t/units;avg=((freshCost*before)+t)/after;
+    tx.update(ref,{stock:after,cost:Math.round(avg*10000)/10000,purchaseUnit:freshUnit,unitsPerPackage:size});
+    tx.set(purchaseRef,{productId:p.id,productName:freshName,quantity:units,total:t,unitCost:Math.round(finalCost*10000)/10000,purchaseQuantity:packs,purchaseUnit:freshUnit,unitsPerPackage:size,previousUnitCost:freshCost,newAverageCost:Math.round(avg*10000)/10000,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+   });
+   await logAction("Entrada de estoque",`${freshName} • +${after-before} un. (${packs} ${freshUnit} × ${size}) • compra ${money(t)} • custo ${money(finalCost)}/un.`);
+   closeModal();render();toast(`+${units} unidades adicionadas ao estoque!`);
+  }catch(e){console.error(e);toast("Erro ao registrar compra: "+(e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}
+ };
  preview();
 }
 function openAvulsaStockPicker(){
@@ -1500,52 +1545,56 @@ async function deleteProductConfirm(p){
 function openProduct(p=null){
  const currentStock=Number(p?.stock||0);
  const currentCost=Number(p?.cost||0);
+ const purchaseUnit=String(p?.purchaseUnit||"unidade").trim()||"unidade";
+ const unitsPerPackage=Math.max(1,Math.floor(numBR(p?.unitsPerPackage||1)||1));
  openModal(p?"Editar produto":"Novo produto",`<div class="form">
   <div class="field"><label>Nome</label><input id="pName" value="${esc(p?.name||"")}" placeholder="Nome do doce"></div>
   <div class="field"><label>Fornecedor (opcional)</label><input id="pSupplier" value="${esc(p?.supplier||"")}" placeholder="Nome do fornecedor"></div>
   <div class="field"><label>Preço de venda</label><input id="pPrice" type="number" step="0.01" min="0" inputmode="decimal" value="${p?.price||""}"></div>
-  <div style="margin-top:4px;padding:13px;border-radius:15px;background:#fff8ef;border:1px solid #ecd9c3">
-   <b style="display:block;margin-bottom:8px">📦 Registrar compra / entrada de estoque</b>
-   <div class="row"><div class="field"><label>Quantidade comprada</label><input id="pPurchaseQty" type="number" min="0" step="1" inputmode="numeric" placeholder="Ex.: 50"></div><div class="field"><label>Valor total da compra</label><input id="pPurchaseTotal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 17,99"></div></div>
-   <div id="pUnitPreview" style="font-size:13px;color:var(--muted);margin-top:3px">Informe quantidade e valor total para calcular o custo unitário automaticamente.</div>
+  <div class="stock-entry-card">
+   <b style="display:block;margin-bottom:4px">📦 Unidade de compra</b>
+   <small style="color:var(--muted);display:block;margin-bottom:12px">Defina como o fornecedor vende e quantas unidades entram no seu estoque por embalagem.</small>
+   <div class="purchase-conversion">
+    <div class="field"><label>Como você compra</label><input id="pPurchaseUnit" value="${esc(purchaseUnit)}" placeholder="kit, caixa, pacote..."></div>
+    <div class="field"><label>Unidades por ${esc(purchaseUnit)}</label><input id="pUnitsPerPackage" type="number" min="1" step="1" value="${unitsPerPackage}" inputmode="numeric"></div>
+   </div>
+   <div id="pConversionPreview" class="stock-entry-preview">Ex.: 3 ${esc(purchaseUnit)} × ${unitsPerPackage} = ${unitsPerPackage*3} unidades no estoque.</div>
+  </div>
+  <div style="margin-top:4px;padding:14px;border-radius:16px;background:var(--cream);border:1px solid var(--line)">
+   <b style="display:block;margin-bottom:8px">🛒 Registrar compra / entrada de estoque</b>
+   <div class="row"><div class="field"><label>Quantidade comprada (${esc(purchaseUnit)})</label><input id="pPurchaseQty" type="number" min="0" step="1" inputmode="numeric" placeholder="Ex.: 3"></div><div class="field"><label>Valor total da compra</label><input id="pPurchaseTotal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Ex.: 28,47"></div></div>
+   <div id="pUnitPreview" class="stock-entry-preview">A entrada será convertida automaticamente para unidades de estoque.</div>
   </div>
   <div class="field"><label>Estoque mínimo</label><input id="pMin" type="number" min="0" value="${p?.minStock||2}"></div>
   <div class="actions"><button class="secondary" id="cancelModal">Cancelar</button><button class="primary" id="saveProduct">Salvar</button></div>
  </div>`);
  $("cancelModal").onclick=closeModal;
  const updatePurchasePreview=()=>{
-  const qty=Number($("pPurchaseQty")?.value)||0, total=Number($("pPurchaseTotal")?.value)||0;
-  const preview=$("pUnitPreview");
-  if(qty>0&&total>0){preview.textContent=`Custo unitário calculado: ${money(Math.round((total/qty)*100)/100)} por doce.`;preview.style.color="var(--green,#2f8f68)";}
-  else {preview.textContent="Informe quantidade e valor total para calcular o custo unitário automaticamente.";preview.style.color="var(--muted)";}
+  const qty=Math.floor(numBR($("pPurchaseQty")?.value)||0),total=numBR($("pPurchaseTotal")?.value)||0,size=Math.max(1,Math.floor(numBR($("pUnitsPerPackage")?.value)||1)),unit=String($("pPurchaseUnit")?.value||"unidade").trim()||"unidade",units=qty*size,preview=$("pUnitPreview"),conv=$("pConversionPreview");
+  conv.textContent=`Ex.: 3 ${unit} × ${size} = ${3*size} unidades no estoque.`;
+  if(qty>0&&total>0&&units>0){preview.innerHTML=`Entrada no estoque: <strong>${units} unidades</strong> (${qty} ${esc(unit)} × ${size})<br>Custo unitário real: <strong>${money(total/units)}</strong>`;preview.style.color="var(--green,#2f8f68)";}else{preview.textContent="A entrada será convertida automaticamente para unidades de estoque.";preview.style.color="var(--muted)";}
  };
- $("pPurchaseQty").oninput=updatePurchasePreview;$("pPurchaseTotal").oninput=updatePurchasePreview;
+ $("pPurchaseQty").oninput=updatePurchasePreview;$("pPurchaseTotal").oninput=updatePurchasePreview;$("pUnitsPerPackage").oninput=updatePurchasePreview;$("pPurchaseUnit").oninput=updatePurchasePreview;
  $("saveProduct").onclick=async()=>{
-  const name=$("pName").value.trim();
-  const supplier=$("pSupplier").value.trim();
-  const price=Number($("pPrice").value)||0;
-  const purchaseQty=Number($("pPurchaseQty").value)||0;
-  const purchaseTotal=Number($("pPurchaseTotal").value)||0;
-  const minStock=Number($("pMin").value)||0;
+  const name=$("pName").value.trim(),supplier=$("pSupplier").value.trim(),price=Number($("pPrice").value)||0,purchaseQty=Math.floor(numBR($("pPurchaseQty").value)||0),purchaseTotal=numBR($("pPurchaseTotal").value)||0,minStock=Number($("pMin").value)||0,purchaseUnit=String($("pPurchaseUnit").value||"unidade").trim()||"unidade",unitsPerPackage=Math.max(1,Math.floor(numBR($("pUnitsPerPackage").value)||1));
   if(!name||price<=0)return toast("Preencha nome e preço.");
   if(purchaseQty<0||purchaseTotal<0)return toast("Os valores da compra não podem ser negativos.");
   if((purchaseQty>0&&purchaseTotal<=0)||(purchaseTotal>0&&purchaseQty<=0))return toast("Informe a quantidade e o valor total da compra.");
-  let stock=currentStock;
-  let cost=currentCost;
-  if(purchaseQty>0){
-    cost=Math.round((purchaseTotal/purchaseQty)*100)/100;
-    stock=currentStock+purchaseQty;
-  }
-  const obj={name,price,cost,stock,minStock,supplier};
+  const purchaseUnits=purchaseQty*unitsPerPackage;
+  let stock=currentStock,cost=currentCost;if(purchaseQty>0){cost=purchaseTotal/purchaseUnits;stock=currentStock+purchaseUnits;}
+  const obj={name,price,cost,stock,minStock,supplier,purchaseUnit,unitsPerPackage};
   try{
    if(p){
     const productRef=doc(col("products"),p.id);
-    if(purchaseQty>0){const purchaseRef=doc(col("purchases"));let finalCost=0;await runTransaction(db,async tx=>{const snap=await tx.get(productRef);if(!snap.exists())throw Error("Produto não encontrado.");const fresh=snap.data(),freshStock=numBR(fresh.stock||0),freshCost=numBR(fresh.cost||0);finalCost=Math.round((purchaseTotal/purchaseQty)*100)/100;const finalStock=freshStock+purchaseQty,avg=Math.round(((freshCost*freshStock)+purchaseTotal)/finalStock*100)/100;tx.update(productRef,{name,price,cost:avg,stock:finalStock,minStock,supplier});tx.set(purchaseRef,{productId:p.id,productName:name,quantity:purchaseQty,total:purchaseTotal,unitCost:finalCost,previousUnitCost:freshCost,newAverageCost:avg,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});});await logAction("Entrada de estoque",`${name} • +${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(finalCost)}`);
-    }else{await runTransaction(db,async tx=>{const snap=await tx.get(productRef);if(!snap.exists())throw Error("Produto não encontrado.");const fresh=snap.data();tx.update(productRef,{name,price,cost:numBR(fresh.cost||0),stock:numBR(fresh.stock||0),minStock,supplier});});await logAction("Produto alterado",`${name} • preço ${money(price)} • estoque preservado`);}
+    if(purchaseQty>0){
+     const purchaseRef=doc(col("purchases"));let finalCost=0,finalStock=0,avg=0;
+     await runTransaction(db,async tx=>{const snap=await tx.get(productRef);if(!snap.exists())throw Error("Produto não encontrado.");const fresh=snap.data(),freshStock=numBR(fresh.stock||0),freshCost=numBR(fresh.cost||0);finalStock=freshStock+purchaseUnits;finalCost=purchaseTotal/purchaseUnits;avg=((freshCost*freshStock)+purchaseTotal)/finalStock;tx.update(productRef,{name,price,cost:Math.round(avg*10000)/10000,stock:finalStock,minStock,supplier,purchaseUnit,unitsPerPackage});tx.set(purchaseRef,{productId:p.id,productName:name,quantity:purchaseUnits,total:purchaseTotal,unitCost:Math.round(finalCost*10000)/10000,purchaseQuantity:purchaseQty,purchaseUnit,unitsPerPackage,previousUnitCost:freshCost,newAverageCost:Math.round(avg*10000)/10000,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});});
+     await logAction("Entrada de estoque",`${name} • +${purchaseUnits} un. (${purchaseQty} ${purchaseUnit} × ${unitsPerPackage}) • compra ${money(purchaseTotal)} • custo ${money(finalCost)}/un.`);
+    }else{await runTransaction(db,async tx=>{const snap=await tx.get(productRef);if(!snap.exists())throw Error("Produto não encontrado.");const fresh=snap.data();tx.update(productRef,{name,price,cost:numBR(fresh.cost||0),stock:numBR(fresh.stock||0),minStock,supplier,purchaseUnit,unitsPerPackage});});await logAction("Produto alterado",`${name} • preço ${money(price)} • estoque preservado • compra em ${purchaseUnit} (${unitsPerPackage} un.)`);}
    }else{
     const productRef=await addDoc(col("products"),{...obj,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-    if(purchaseQty>0) await addDoc(col("purchases"),{productId:productRef.id,productName:name,quantity:purchaseQty,total:purchaseTotal,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-    await logAction(purchaseQty>0?"Entrada de estoque":"Produto adicionado",purchaseQty>0?`${name} • ${purchaseQty} un. • compra ${money(purchaseTotal)} • custo unitário ${money(cost)}`:`${name} • estoque ${stock}`);
+    if(purchaseQty>0)await addDoc(col("purchases"),{productId:productRef.id,productName:name,quantity:purchaseUnits,total:purchaseTotal,unitCost:Math.round((purchaseTotal/purchaseUnits)*10000)/10000,purchaseQuantity:purchaseQty,purchaseUnit,unitsPerPackage,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    await logAction(purchaseQty>0?"Entrada de estoque":"Produto adicionado",purchaseQty>0?`${name} • ${purchaseUnits} un. (${purchaseQty} ${purchaseUnit} × ${unitsPerPackage}) • compra ${money(purchaseTotal)} • custo ${money(purchaseTotal/purchaseUnits)}/un.`:`${name} • estoque ${stock}`);
    }
    closeModal();toast("Produto salvo!");
   }catch(e){console.error(e);toast("Erro ao salvar produto: "+(e.code||"verifique a conexão."));}
