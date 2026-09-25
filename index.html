@@ -1507,48 +1507,66 @@ function nfcLabelMoney(lines, index, patterns){
  return 0;
 }
 function nfcMatchProduct(name,products){
- const a=normNfcName(name), aa=a.split(/\s+/).filter(w=>w.length>1);
+ const a=normNfcName(name), aa=[...new Set(a.split(/\s+/).filter(w=>w.length>1 && !/^\d+$/.test(w)))];
+ if(!a)return {product:null,score:0};
  const lev=(x,y)=>{if(x===y)return 0;if(!x)return y.length;if(!y)return x.length;let prev=Array.from({length:y.length+1},(_,i)=>i);for(let i=1;i<=x.length;i++){const cur=[i];for(let j=1;j<=y.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(x[i-1]===y[j-1]?0:1));prev=cur}return prev[y.length]};
  let best=null,bestScore=0;
  for(const p of products){
-   const b=normNfcName(p.name), bb=b.split(/\s+/).filter(w=>w.length>1); if(!a||!b)continue;
-   let common=0,tokenScore=0;
-   for(const w of aa){let hit=bb.find(x=>x===w);if(hit){common++;tokenScore+=1;continue}let near=bb.some(x=>Math.max(x.length,w.length)>3 && lev(w,x)<=Math.max(1,Math.floor(Math.min(w.length,x.length)*.22)));if(near){common++;tokenScore+=.72}}
-   const overlap=common/Math.max(1,Math.min(aa.length,bb.length));
+   const b=normNfcName(p.name), bb=[...new Set(b.split(/\s+/).filter(w=>w.length>1 && !/^\d+$/.test(w)))]; if(!b)continue;
+   if(a===b){best=p;bestScore=1;break}
    const compact=1-(lev(a,b)/Math.max(a.length,b.length));
-   const score=Math.min(1,(overlap*.72)+(compact*.28));
-   if(a===b){bestScore=1;best=p;break} if(score>bestScore){bestScore=score;best=p}
+   let exact=0,near=0;
+   for(const w of aa){
+     if(bb.includes(w)){exact++;continue}
+     if(bb.some(x=>x.length>=4&&w.length>=4&&(x.includes(w)||w.includes(x)))){near+=.75;continue}
+     if(bb.some(x=>Math.max(x.length,w.length)>3 && lev(w,x)<=Math.max(1,Math.floor(Math.min(w.length,x.length)*.18))))near+=.55;
+   }
+   const tokenCoverage=(exact+near)/Math.max(1,Math.min(aa.length,bb.length));
+   const nameCoverage=aa.filter(w=>b.includes(w)).length/Math.max(1,aa.length);
+   let score=(tokenCoverage*.58)+(nameCoverage*.22)+(compact*.20);
+   if(a.includes(b)||b.includes(a))score=Math.max(score,.82);
+   if(score>bestScore){bestScore=score;best=p}
  }
- return {product:best,score:bestScore};
+ return {product:best,score:Math.min(1,bestScore)};
+}
+function cleanNfcItemName(line){
+ let name=String(line||'').replace(/[|]/g,' ').replace(/\s+/g,' ').trim();
+ name=name.replace(/^\s*\d{1,3}\s+/,'');
+ // Remove barcodes / item codes before trying to match the description.
+ name=name.replace(/\b\d{6,14}\b/g,' ');
+ name=name.replace(/\b(?:COD(?:IGO)?|EAN)\s*[:.]?\s*\d{6,14}\b/ig,' ');
+ // Remove monetary columns, quantities and unit markers from the right side.
+ name=name.replace(/(?:R\$\s*)?\d{1,6}(?:[\.,]\d{3})*[\.,]\d{2}\b/g,' ');
+ name=name.replace(/\b\d{1,4}(?:[.,]0+)?\s*(?:UN|UND|UNID|PC|PÇ|PCS|CX|CXS|KIT|KITS)\b/ig,' ');
+ name=name.replace(/\s+\d{1,4}\s*$/,' ');
+ name=name.replace(/\s+/g,' ').trim();
+ return name;
 }
 function parseNfcItemLine(line,products){
  const l=String(line||'').replace(/[|]/g,' ').replace(/\s+/g,' ').trim();
- if(!l||/^(total|subtotal|troco|desconto|desc\.?|valor pago|valor a pagar|forma de pagamento|cpf|cnpj|chave|consulta|tributos|itens|quantidade|documento|consumidor|mfc-e|nfc-e|emitente)/i.test(l))return null;
+ if(!l||/^(total|subtotal|troco|desconto|desc\.?|valor pago|valor a pagar|forma de pagamento|cpf|cnpj|chave|consulta|tributos|itens|quantidade|documento|consumidor|mfc-e|nfc-e|emitente|cartao|debito|credito|dinheiro)/i.test(l))return null;
  const low=normNfcName(l); if(/desconto|subtotal|troco|valor pago|valor a pagar|total dos itens|total da nota|forma de pagamento/.test(low))return null;
  const money=nfcMoneyTokens(l); if(!money.length)return null;
- let qty=0;
- const unitMatch=l.match(/(?:^|\s)(\d{1,4})(?:[.,]0+)?\s*(?:UN|UND|UNID|PC|PÇ|PCS|CX|CXS|KIT|KITS)\b/i);
- if(unitMatch)qty=Math.max(1,parseInt(unitMatch[1],10));
+ // Prefer the quantity immediately associated with an UN/CX/KIT marker.
+ let qty=0, unitMatch=null;
+ const unitRe=/(?:^|\s)(\d{1,4})(?:[.,]0+)?\s*(UN|UND|UNID|PC|PÇ|PCS|CX|CXS|KIT|KITS)\b/ig;
+ let um; while((um=unitRe.exec(l))){qty=Math.max(1,parseInt(um[1],10));unitMatch=um;if(um.index>l.length*.75)break;}
  if(!qty){const prefix=l.match(/^\s*(\d{1,3})\s+/);if(prefix)qty=Math.max(1,parseInt(prefix[1],10))}
  if(!qty||qty>9999)return null;
  const total=money[money.length-1];
  const previous=money.length>1?money[money.length-2]:total;
- // NFC-e often prints the original line value immediately before the discounted
- // line value. Keep that discount attached to THIS product instead of spreading
- // a note-level discount across every item.
- let grossTotal=total, lineDiscount=0;
- if(money.length>1 && previous>total){
-   const delta=Math.round((previous-total)*100)/100;
-   if(delta>0 && delta<=Math.max(100,previous*.5)){ grossTotal=previous; lineDiscount=delta; }
- }
- const price=money.length>1?previous:total;
- let name=l;
- if(unitMatch)name=l.slice(0,unitMatch.index+unitMatch[0].length).replace(/^\s*\d+\s*/,'').replace(/\b(?:UN|UND|UNID|PC|PÇ|PCS|CX|CXS|KIT|KITS)\b/i,'').trim();
- else name=l.replace(/^\s*\d{1,4}\s+/,'').trim();
- name=name.replace(/\b(?:\d{6,14})\b/g,' ').replace(/\s+\d{1,4}\s*$/,'').replace(/\s+/g,' ').trim();
+ let grossTotal=total,lineDiscount=0;
+ if(money.length>1&&previous>total){const delta=Math.round((previous-total)*100)/100;if(delta>0&&delta<=Math.max(100,previous*.5)){grossTotal=previous;lineDiscount=delta}}
+ // A line with only one money value is normally already the net line total.
+ const price=money.length>1?total:(qty?total/qty:total);
+ const name=cleanNfcItemName(l);
  if(name.length<2||/^(?:r\$|\d+[.,]?\d*)$/i.test(name))return null;
+ // Avoid treating generic numeric/administrative lines as products.
+ const nameTokens=normNfcName(name).split(/\s+/).filter(Boolean);
+ if(nameTokens.length<1||nameTokens.every(x=>/^\d+$/.test(x)))return null;
  const match=nfcMatchProduct(name,products);
- return {rawName:name,qty,price,total,grossTotal,lineDiscount,productId:match.product&&match.score>=.30?match.product.id:'',productName:match.product&&match.score>=.30?match.product.name:'',confidence:match.score>=.78?'Alta':match.score>=.48?'Média':'Baixa'};
+ const accepted=match.product&&match.score>=.44;
+ return {rawName:name,qty,price,total,grossTotal,lineDiscount,productId:accepted?match.product.id:'',productName:accepted?match.product.name:'',confidence:match.score>=.82?'Alta':match.score>=.60?'Média':'Baixa',matchScore:match.score};
 }
 function parseNfcText(text){
  const lines=String(text||'').split(/\r?\n/).map(x=>x.replace(/\|/g,' ').replace(/\s+/g,' ').trim()).filter(Boolean);
@@ -1586,6 +1604,53 @@ function parseNfcText(text){
 function nfcCanvasVariant(file,mode){
  return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{try{const max=mode==='crop'?3200:2800;const scale=Math.min(3.5,Math.max(1.8,max/Math.max(img.naturalWidth,img.naturalHeight)));let sx=0,sy=0,sw=img.naturalWidth,sh=img.naturalHeight;if(mode==='crop'){sy=Math.round(img.naturalHeight*.04);sh=Math.round(img.naturalHeight*.92)}const w=Math.round(sw*scale),h=Math.round(sh*scale);const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,sx,sy,sw,sh,0,0,w,h);const d=ctx.getImageData(0,0,w,h),px=d.data;for(let i=0;i<px.length;i+=4){const g=.299*px[i]+.587*px[i+1]+.114*px[i+2];let v=g;if(mode==='contrast')v=Math.max(0,Math.min(255,(g-132)*1.85+132));if(mode==='threshold')v=g>158?255:Math.max(0,g<105?0:255);if(mode==='sharp')v=Math.max(0,Math.min(255,(g-128)*2.05+128));px[i]=px[i+1]=px[i+2]=v}ctx.putImageData(d,0,0);c.toBlob(b=>b?resolve(b):reject(Error('Não foi possível preparar a imagem.')),'image/jpeg',.96)}catch(e){reject(e)}};img.onerror=()=>reject(Error('Não foi possível abrir a foto.'));img.src=URL.createObjectURL(file)});
 }
+function mergeNfcItems(results,products){
+ const candidates=[];
+ for(const r of results){
+   for(const it of (r.parsed.items||[])) candidates.push({...it,ocrConfidence:r.confidence||0,passScore:r.score||0});
+ }
+ const groups=[];
+ const similarity=(a,b)=>{
+   const x=normNfcName(a),y=normNfcName(b); if(!x||!y)return 0;if(x===y)return 1;
+   const xt=x.split(/\s+/),yt=y.split(/\s+/);let common=0;for(const w of xt)if(yt.some(z=>z===w||z.includes(w)||w.includes(z)))common++;return common/Math.max(1,Math.min(xt.length,yt.length));
+ };
+ for(const it of candidates){
+   let g=null;
+   if(it.productId)g=groups.find(x=>x.productId===it.productId && Math.abs(numBR(x.totalPerUnit)-numBR(it.totalPerUnit||it.total/Math.max(1,it.qty)))<0.03);
+   if(!g)g=groups.find(x=>!it.productId&&!x.productId&&similarity(x.rawName,it.rawName)>=.78&&Math.abs(numBR(x.total)-numBR(it.total))<Math.max(.05,numBR(it.total)*.03));
+   if(g){g.candidates.push(it);continue}
+   groups.push({productId:it.productId||'',rawName:it.rawName,productName:it.productName||'',total:it.total,qty:it.qty,productId0:it.productId,candidates:[it],totalPerUnit:numBR(it.total)/Math.max(1,it.qty)});
+ }
+ const merged=[];
+ for(const g of groups){
+   g.candidates.sort((a,b)=>((b.matchScore||0)*70+(b.ocrConfidence||0)*.3)-((a.matchScore||0)*70+(a.ocrConfidence||0)*.3));
+   const best=g.candidates[0];
+   // Same product/price seen on multiple OCR passes is one physical line. Sum only when
+   // the candidates came from different passes and have compatible quantities/values.
+   let qty=best.qty,total=best.total,gross=best.grossTotal||best.total,disc=best.lineDiscount||0;
+   for(const c of g.candidates.slice(1)){
+     const samePrice=Math.abs(numBR(c.total)/Math.max(1,c.qty)-numBR(best.total)/Math.max(1,best.qty))<0.05;
+     if(samePrice){
+       // Keep the highest-confidence reading rather than adding the same pass repeatedly.
+       continue;
+     }
+   }
+   // If the receipt has repeated identical product lines with the same price, collapse them
+   // only when they are genuinely separate OCR candidates from different passes. We do not
+   // know their pass identity here, so keep the best physical line to avoid multiplying stock.
+   merged.push({...best,qty,total,grossTotal:gross,lineDiscount:disc});
+ }
+ // The parser may see the same product multiple times because the receipt itself has repeated
+ // lines. Collapse adjacent/equal product+unit-price rows only when they have identical values.
+ const out=[];
+ for(const it of merged){
+   const unit=Math.round((numBR(it.total)/Math.max(1,it.qty))*100)/100;
+   const existing=out.find(x=>x.productId&&it.productId&&x.productId===it.productId&&Math.abs((numBR(x.total)/Math.max(1,x.qty))-unit)<0.03&&Math.abs(numBR(x.lineDiscount)-numBR(it.lineDiscount))<0.01);
+   if(existing){existing.qty+=it.qty;existing.total=Math.round((numBR(existing.total)+numBR(it.total))*100)/100;existing.grossTotal=Math.round((numBR(existing.grossTotal||existing.total)+numBR(it.grossTotal||it.total))*100)/100;existing.lineDiscount=Math.round((numBR(existing.lineDiscount)+numBR(it.lineDiscount))*100)/100;}
+   else out.push({...it});
+ }
+ return out;
+}
 async function nfcRunOcr(file,setProgress){
  const variants=[
   {mode:'original',image:file,psm:6,weight:1.0},
@@ -1598,27 +1663,27 @@ async function nfcRunOcr(file,setProgress){
  const results=[];
  for(let i=0;i<variants.length;i++){
   const v=variants[i];
-  const r=await Tesseract.recognize(v.image,'por',{logger:m=>{if(m.progress&&setProgress)setProgress(Math.round(((i+m.progress)/variants.length)*100))},config:{tessedit_pageseg_mode:v.psm,preserve_interword_spaces:'1'}});
+  const r=await Tesseract.recognize(v.image,'por',{logger:m=>{if(m.progress&&setProgress)setProgress(Math.round(((i+m.progress)/variants.length)*100))},config:{tessedit_pageseg_mode:v.psm,preserve_interword_spaces:'1',user_defined_dpi:'300'}});
   const text=r.data.text||'';const parsed=parseNfcText(text);const confidence=Number(r.data.confidence||0);
   const financial=(parsed.discount>0?55:0)+(parsed.total>0?25:0)+(parsed.subtotal>0?18:0);
-  const itemSignal=Math.min(30,parsed.items.length*8);const textSignal=Math.min(15,nfcMoneyTokens(text).length*1.5);
+  const itemSignal=Math.min(45,parsed.items.length*11);const textSignal=Math.min(15,nfcMoneyTokens(text).length*1.5);
   const score=(confidence*.55)+(financial+itemSignal+textSignal)*v.weight;
   results.push({text,parsed,score,confidence});
  }
- // Merge financial fields across passes. This is deliberately conservative: only choose a value
- // when the passes agree, or when one pass has a clear label and the others are blank.
  const best=results.slice().sort((a,b)=>b.score-a.score)[0];
- const consensus=(field)=>{const vals=results.map(r=>Number(r.parsed[field]||0)).filter(v=>v>0);if(!vals.length)return 0;const counts=new Map();for(const v of vals){const k=v.toFixed(2);counts.set(k,(counts.get(k)||0)+1)}let top=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0];if(top&&top[1]>=2)return Number(top[0]);return Number(top[0])};
+ const consensus=(field)=>{const vals=results.map(r=>Number(r.parsed[field]||0)).filter(v=>v>0);if(!vals.length)return 0;const counts=new Map();for(const v of vals){const k=v.toFixed(2);counts.set(k,(counts.get(k)||0)+1)}const top=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0];return top?Number(top[0]):0};
  const merged={...best.parsed,discount:consensus('discount')||best.parsed.discount,subtotal:consensus('subtotal')||best.parsed.subtotal,total:consensus('total')||best.parsed.total,totalPaid:consensus('totalPaid')||best.parsed.totalPaid};
+ merged.items=mergeNfcItems(results,data.products||[]);
+ merged.itemSubtotal=Math.round(merged.items.reduce((a,x)=>a+numBR(x.grossTotal||x.total),0)*100)/100;
+ merged.itemNetTotal=Math.round(merged.items.reduce((a,x)=>a+numBR(x.total),0)*100)/100;
+ merged.itemDiscount=Math.round(merged.items.reduce((a,x)=>a+numBR(x.lineDiscount||0),0)*100)/100;
+ if(!merged.subtotal&&merged.itemSubtotal>0)merged.subtotal=merged.itemSubtotal;
+ if(!merged.total&&merged.totalPaid>0)merged.total=merged.totalPaid;
  if(merged.subtotal>0&&merged.total>0&&merged.subtotal-merged.total>=.01&&merged.discount<=0)merged.discount=Math.round((merged.subtotal-merged.total)*100)/100;
- // Recalculate the amount actually attached to products after merging financial fields.
- merged.itemSubtotal=Math.round((merged.items||[]).reduce((a,x)=>a+numBR(x.grossTotal||x.total),0)*100)/100;
- merged.itemNetTotal=Math.round((merged.items||[]).reduce((a,x)=>a+numBR(x.total),0)*100)/100;
- merged.itemDiscount=Math.round((merged.items||[]).reduce((a,x)=>a+numBR(x.lineDiscount||0),0)*100)/100;
  merged.unallocatedDiscount=Math.max(0,Math.round((numBR(merged.discount)-merged.itemDiscount)*100)/100);
  return {text:best.text,parsed:merged,passes:results.length};
 }
-async function openNfcReceipt(){
+function openNfcReceipt(){
  closeModal();
  openModal("🧾 Recebimento por NFC-e",`<div class="nfc-import"><div class="nfc-hero"><div class="nfc-hero-top"><div class="nfc-hero-icon">🧾</div><div><b>Leia a NFC-e em segundos</b><small>A foto será tratada antes do OCR para melhorar produtos, valores, desconto e total.</small></div></div></div><label class="nfc-drop" for="nfcPhoto"><div style="font-size:30px;margin-bottom:5px">📷</div><strong>Escolher ou tirar foto da NFC-e</strong><small>Deixe a nota inteira visível e evite reflexos. Você confere tudo antes de lançar.</small></label><input id="nfcPhoto" type="file" accept="image/*" capture="environment" style="display:none"><div id="nfcReaderArea"></div></div>`);
  $("nfcPhoto").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const area=$("nfcReaderArea");area.innerHTML='<div class="nfc-status">🔎 <strong>Preparando e lendo a nota...</strong><br>Estamos melhorando a imagem e procurando itens, desconto e total.</div><div style="height:5px;background:var(--line);border-radius:9px;overflow:hidden"><div id="nfcProgress" style="height:100%;width:3%;background:var(--green);transition:.2s"></div></div>';const url=URL.createObjectURL(file);area.insertAdjacentHTML('beforeend',`<div class="nfc-preview-wrap"><img src="${url}" class="nfc-preview-img"><span class="nfc-preview-badge">Foto da NFC-e</span></div>`);try{if(!window.Tesseract)throw Error('Leitor OCR não carregou. Verifique sua conexão e tente novamente.');const result=await nfcRunOcr(file,p=>{if($("nfcProgress"))$("nfcProgress").style.width=Math.max(4,p)+'%'});const parsed=result.parsed;renderNfcReview(parsed,result.text,file); }catch(err){console.error(err);area.insertAdjacentHTML('beforeend',`<div class="nfc-status" style="color:var(--red)">Não foi possível ler a foto automaticamente. Você ainda pode conferir a imagem e lançar a entrada manualmente.<br><small>${esc(err.message||'Erro de leitura')}</small></div>`)} }
