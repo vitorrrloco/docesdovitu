@@ -1148,7 +1148,7 @@ function printDailyCash(r){
  const printClientRanking=Object.values(printClients).filter(c=>c.name!=="Venda balcão").sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,"pt-BR"));
  const printClientRows=printClientRanking.map((c,idx)=>`<tr><td>${idx+1}</td><td>${esc(c.name)}</td><td>${esc(Object.values(c.items).sort((a,b)=>b.qty-a.qty||a.name.localeCompare(b.name,"pt-BR")).map(i=>`${i.name} ${i.qty}x`).join(", ")||"-")}</td><td>${money(c.total)}</td></tr>`).join("");
  w.document.open();w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Caixa do dia</title><style>body{font-family:Arial,sans-serif;color:#222;padding:28px;font-size:12px}h1{margin:0 0 5px;font-size:22px}p{margin:0 0 18px;color:#666}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}.box{border:1px solid #ddd;border-radius:8px;padding:10px}.box small{display:block;color:#777}.box b{font-size:16px}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{padding:7px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}th{font-size:10px;color:#666;text-transform:uppercase}
-.charge-flow{gap:10px}.charge-summary{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--card)}.charge-step{display:flex;align-items:center;gap:10px;padding:8px 2px}.charge-step>span{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--text);color:var(--bg);font-weight:800;flex:0 0 28px}.charge-step div{display:flex;flex-direction:column;gap:2px}.charge-step small,.charge-note{color:var(--muted);line-height:1.35}.charge-flow textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:15px;padding:13px;resize:none;background:var(--card);color:var(--text);font:inherit;min-height:84px}.charge-flow #pixCode{min-height:125px;font-size:11px;line-height:1.35}.charge-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.charge-note{display:block;text-align:center;padding:2px 4px 4px;font-size:12px}@media(max-width:520px){.charge-summary{padding:12px}.charge-actions{grid-template-columns:1fr}.charge-flow{gap:8px}.charge-flow textarea{font-size:15px}}
+.charge-flow{gap:12px}.charge-summary{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--card)}.charge-summary-clean{margin-bottom:2px}.charge-message-preview{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.charge-message-preview>span{font-size:22px;line-height:1.2;flex:0 0 auto}.charge-message-preview b{display:block;margin-bottom:3px}.charge-message-preview p{margin:0;color:var(--muted);font-size:14px;line-height:1.35}.charge-copy-btn{width:fit-content;min-height:42px;padding:10px 16px;font-size:13px}.charge-whatsapp-btn{min-height:52px}.charge-note{display:block;text-align:center;padding:1px 8px 2px;font-size:11px;color:var(--muted);line-height:1.35}.charge-flow .item-right{margin-left:auto;text-align:right}.charge-flow .pending{font-size:22px}@media(max-width:520px){.charge-flow{gap:10px}.charge-summary{padding:12px}.charge-message-preview{padding:12px}.charge-message-preview p{font-size:13px}.charge-copy-btn{align-self:flex-start;width:auto}.charge-whatsapp-btn{width:100%;font-size:15px}.charge-note{font-size:10.5px}}
 </style></head><body><h1>DOCES DO VITU • Caixa do dia</h1><p>${start.toLocaleDateString("pt-BR")}</p><div class="summary"><div class="box"><small>Faturamento</small><b>${money(revenue)}</b></div><div class="box"><small>Recebido</small><b>${money(received)}</b></div><div class="box"><small>Custo</small><b>${money(cost)}</b></div><div class="box"><small>A receber</small><b>${money(pending)}</b></div></div><h2>Ranking de clientes</h2><table><thead><tr><th>#</th><th>Cliente</th><th>O que levou</th><th>Total gasto</th></tr></thead><tbody>${printClientRows||'<tr><td colspan="4">Nenhum cliente identificado.</td></tr>'}</tbody></table><h2>Vendas (${sales.length})</h2><table><thead><tr><th>Data/hora</th><th>Cliente</th><th>Itens</th><th>Total</th><th>Pago</th><th>Pendente</th></tr></thead><tbody>${rows||'<tr><td colspan="6">Nenhuma venda.</td></tr>'}</tbody></table><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);w.document.close();
 }
 function openDailyCashReport(){const n=now(),key=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`,r=dayData(key);openModal("Caixa do dia",dailyCashHtml(r));bindDailyCash(r)}
@@ -1505,25 +1505,19 @@ function openCharge(c){
  if(pending<=0){toast("Esse cliente não possui valor pendente.");return}
  const pix=pixPayload(pending);
  const firstMessage=`Opa, ${c.name}, os doces ficaram ${money(pending)}, segue o pagamento👇`;
- const secondMessage=pix;
  const phone=normalizeWhatsappPhone(c.phone);
- openModal("Cobrar cliente",`<div class="form charge-flow">
-  <div class="charge-summary"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>${phone?"WhatsApp cadastrado":"Sem WhatsApp cadastrado"}</small></div><div class="item-right"><b class="pending">${money(pending)}</b><small>a receber</small></div></div>
-  <div class="charge-step"><span>1</span><div><b>Mensagem inicial</b><small>O sistema prepara esta mensagem no WhatsApp.</small></div></div>
-  <div class="field"><textarea id="chargeText" aria-label="Mensagem inicial">${esc(firstMessage)}</textarea></div>
-  <div class="charge-step"><span>2</span><div><b>Pagamento</b><small>Depois de enviar a primeira mensagem, cole o PIX abaixo.</small></div></div>
-  <div class="field"><textarea id="pixCode" readonly aria-label="PIX copia e cola">${esc(secondMessage)}</textarea></div>
-  <div class="charge-actions"><button class="secondary" id="copyPix">📋 Copiar pagamento</button><button class="secondary" id="copyCharge">📋 Copiar 1ª mensagem</button></div>
-  <button class="primary" id="sendCharge">💬 ${phone?"Abrir WhatsApp do cliente":"Escolher contato no WhatsApp"}</button>
-  <small class="charge-note">${phone?"O WhatsApp será aberto diretamente na conversa cadastrada.":"Como não há telefone cadastrado, o WhatsApp será aberto para você escolher o contato."} O pagamento fica copiado para a segunda mensagem.</small>
+ openModal("Cobrar cliente",`<div class="form charge-flow charge-clean">
+  <div class="charge-summary charge-summary-clean"><div class="avatar">💰</div><div class="item-main"><b>${esc(c.name)}</b><small>${phone?"WhatsApp cadastrado":"Sem WhatsApp cadastrado"}</small></div><div class="item-right"><b class="pending">${money(pending)}</b><small>a receber</small></div></div>
+  <div class="charge-message-preview"><span>💬</span><div><b>Mensagem pronta</b><p>${esc(firstMessage)}</p></div></div>
+  <button class="secondary charge-copy-btn" id="copyPix">📋 Copiar pagamento</button>
+  <button class="primary charge-whatsapp-btn" id="sendCharge">💬 ${phone?"Abrir WhatsApp do cliente":"Escolher contato no WhatsApp"}</button>
+  <small class="charge-note">Ao abrir o WhatsApp, a mensagem já estará preenchida. O pagamento será copiado para você colar logo depois.</small>
  </div>`);
- const pixEl=$("pixCode"),chargeEl=$("chargeText");
- $("copyPix").onclick=async()=>{toast(await copyTextSafe(secondMessage,pixEl)?"Pagamento copiado!":"Não foi possível copiar automaticamente.")};
- $("copyCharge").onclick=async()=>{toast(await copyTextSafe(chargeEl.value,chargeEl)?"Mensagem copiada!":"Não foi possível copiar automaticamente.")};
+ $("copyPix").onclick=async()=>{toast(await copyTextSafe(pix)?"Pagamento copiado!":"Não foi possível copiar automaticamente.")};
  $("sendCharge").onclick=async()=>{
-   const copied=await copyTextSafe(secondMessage,pixEl);
-   openWhatsAppCharge(c,chargeEl.value.trim()||firstMessage);
-   toast(copied?"WhatsApp aberto • pagamento copiado para a 2ª mensagem":"WhatsApp aberto");
+   const copied=await copyTextSafe(pix);
+   openWhatsAppCharge(c,firstMessage);
+   toast(copied?"WhatsApp aberto • pagamento copiado":"WhatsApp aberto");
  };
 }
 function openPaymentForClient(c){
