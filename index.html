@@ -1704,48 +1704,114 @@ function mergeNfcItems(results,products){
  }
  return out;
 }
-async function nfcRunOcr(file,setProgress){
- const variants=[
-  {mode:'original',image:file,psm:6,weight:1.0},
-  {mode:'contrast',image:null,psm:6,weight:1.15},
-  {mode:'sharp',image:null,psm:11,weight:1.05},
-  {mode:'threshold',image:null,psm:6,weight:.92},
-  {mode:'crop',image:null,psm:11,weight:1.12}
- ];
- for(const v of variants.slice(1))v.image=await nfcCanvasVariant(file,v.mode);
- const results=[];
- for(let i=0;i<variants.length;i++){
-  const v=variants[i];
-  const r=await Tesseract.recognize(v.image,'por',{logger:m=>{if(m.progress&&setProgress)setProgress(Math.round(((i+m.progress)/variants.length)*100))},config:{tessedit_pageseg_mode:v.psm,preserve_interword_spaces:'1',user_defined_dpi:'300'}});
-  const text=r.data.text||'';const parsed=parseNfcText(text);const confidence=Number(r.data.confidence||0);
-  const financial=(parsed.discount>0?55:0)+(parsed.total>0?25:0)+(parsed.subtotal>0?18:0);
-  const itemSignal=Math.min(45,parsed.items.length*11);const textSignal=Math.min(15,nfcMoneyTokens(text).length*1.5);
-  const score=(confidence*.55)+(financial+itemSignal+textSignal)*v.weight;
-  results.push({text,parsed,score,confidence});
- }
- const best=results.slice().sort((a,b)=>b.score-a.score)[0];
- const consensus=(field)=>{const vals=results.map(r=>Number(r.parsed[field]||0)).filter(v=>v>0);if(!vals.length)return 0;const counts=new Map();for(const v of vals){const k=v.toFixed(2);counts.set(k,(counts.get(k)||0)+1)}const top=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0];return top?Number(top[0]):0};
- const merged={...best.parsed,discount:consensus('discount')||best.parsed.discount,subtotal:consensus('subtotal')||best.parsed.subtotal,total:consensus('total')||best.parsed.total,totalPaid:consensus('totalPaid')||best.parsed.totalPaid};
- merged.items=mergeNfcItems(results,data.products||[]);
- merged.itemSubtotal=Math.round(merged.items.reduce((a,x)=>a+numBR(x.grossTotal||x.total),0)*100)/100;
- merged.itemNetTotal=Math.round(merged.items.reduce((a,x)=>a+numBR(x.total),0)*100)/100;
- merged.itemDiscount=Math.round(merged.items.reduce((a,x)=>a+numBR(x.lineDiscount||0),0)*100)/100;
- if(!merged.subtotal&&merged.itemSubtotal>0)merged.subtotal=merged.itemSubtotal;
- if(!merged.total&&merged.totalPaid>0)merged.total=merged.totalPaid;
- if(merged.subtotal>0&&merged.total>0&&merged.subtotal-merged.total>=.01&&merged.discount<=0)merged.discount=Math.round((merged.subtotal-merged.total)*100)/100;
- merged.unallocatedDiscount=Math.max(0,Math.round((numBR(merged.discount)-merged.itemDiscount)*100)/100);
- return {text:best.text,parsed:merged,passes:results.length};
+let nfcOcrWorker=null;
+let nfcOcrBusy=false;
+async function getNfcOcrWorker(setProgress){
+ if(nfcOcrWorker)return nfcOcrWorker;
+ if(!window.Tesseract?.createWorker)throw Error('Leitor OCR não carregou. Verifique sua conexão e tente novamente.');
+ nfcOcrWorker=await Tesseract.createWorker('por',1,{logger:m=>{
+   if(m.status&&setProgress){
+     const pct=Number.isFinite(m.progress)?Math.round(m.progress*100):0;
+     setProgress(Math.min(99,pct));
+   }
+ }});
+ await nfcOcrWorker.setParameters({preserve_interword_spaces:'1',user_defined_dpi:'300'});
+ return nfcOcrWorker;
 }
+function nfcQualityScore(parsed,confidence){
+ const itemCount=(parsed.items||[]).length;
+ const financial=(parsed.total>0?25:0)+(parsed.subtotal>0?15:0)+(parsed.discount>0?10:0);
+ const itemSignal=Math.min(40,itemCount*10);
+ const confidenceSignal=Math.min(20,Math.max(0,confidence||0)*.20);
+ return financial+itemSignal+confidenceSignal;
+}
+function nfcQualityGood(parsed,confidence){
+ const items=(parsed.items||[]).length;
+ const hasTotal=Number(parsed.total||0)>0 || Number(parsed.totalPaid||0)>0;
+ const conf=Number(confidence||0);
+ return items>=2 && hasTotal && conf>=55;
+}
+async function nfcRecognize(worker,image,psm,setProgress,baseProgress,span){
+ await worker.setParameters({tessedit_pageseg_mode:String(psm),preserve_interword_spaces:'1',user_defined_dpi:'300'});
+ const r=await worker.recognize(image);
+ const text=r.data.text||'';
+ const parsed=parseNfcText(text);
+ const confidence=Number(r.data.confidence||0);
+ if(setProgress)setProgress(Math.min(99,Math.round(baseProgress+span)));
+ return {text,parsed,confidence,score:nfcQualityScore(parsed,confidence)};
+}
+async function nfcRunOcr(file,setProgress){
+ if(nfcOcrBusy)throw Error('O leitor OCR já está processando uma foto. Aguarde a leitura terminar.');
+ nfcOcrBusy=true;
+ const results=[];
+ try{
+   const worker=await getNfcOcrWorker(p=>setProgress?.(Math.min(18,p*.18)));
+   // Fast path: the original image is usually enough. We only pay for extra image
+   // processing/OCR when the first pass is not convincing.
+   const first=await nfcRecognize(worker,file,6,setProgress,18,30);
+   results.push(first);
+   if(nfcQualityGood(first.parsed,first.confidence)){
+     setProgress?.(100);
+     return {text:first.text,parsed:first.parsed,passes:1,fastPath:true};
+   }
+
+   // Second pass: crop the paper margins and upscale. This is the most useful
+   // correction for phone photos and costs much less than four extra OCR passes.
+   setProgress?.(50);
+   const crop=await nfcCanvasVariant(file,'crop');
+   const second=await nfcRecognize(worker,crop,6,setProgress,50,25);
+   results.push(second);
+
+   // Third pass only when necessary. Contrast is cheaper and tends to recover
+   // faint thermal-printer text without the expensive threshold/sharp passes.
+   const bestSoFar=results.slice().sort((a,b)=>b.score-a.score)[0];
+   if(!nfcQualityGood(bestSoFar.parsed,bestSoFar.confidence)){
+     setProgress?.(76);
+     const contrast=await nfcCanvasVariant(file,'contrast');
+     const third=await nfcRecognize(worker,contrast,11,setProgress,76,22);
+     results.push(third);
+   }
+
+   const best=results.slice().sort((a,b)=>b.score-a.score)[0];
+   const consensus=(field)=>{
+     const vals=results.map(r=>Number(r.parsed[field]||0)).filter(v=>v>0);
+     if(!vals.length)return 0;
+     const counts=new Map();
+     for(const v of vals){const k=v.toFixed(2);counts.set(k,(counts.get(k)||0)+1)}
+     const top=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0];
+     return top?Number(top[0]):0;
+   };
+   const merged={...best.parsed,
+     discount:consensus('discount')||best.parsed.discount,
+     subtotal:consensus('subtotal')||best.parsed.subtotal,
+     total:consensus('total')||best.parsed.total,
+     totalPaid:consensus('totalPaid')||best.parsed.totalPaid
+   };
+   merged.items=mergeNfcItems(results,data.products||[]);
+   merged.itemSubtotal=Math.round(merged.items.reduce((a,x)=>a+numBR(x.grossTotal||x.total),0)*100)/100;
+   merged.itemNetTotal=Math.round(merged.items.reduce((a,x)=>a+numBR(x.total),0)*100)/100;
+   merged.itemDiscount=Math.round(merged.items.reduce((a,x)=>a+numBR(x.lineDiscount||0),0)*100)/100;
+   if(!merged.subtotal&&merged.itemSubtotal>0)merged.subtotal=merged.itemSubtotal;
+   if(!merged.total&&merged.totalPaid>0)merged.total=merged.totalPaid;
+   if(merged.subtotal>0&&merged.total>0&&merged.subtotal-merged.total>=.01&&merged.discount<=0)merged.discount=Math.round((merged.subtotal-merged.total)*100)/100;
+   merged.unallocatedDiscount=Math.max(0,Math.round((numBR(merged.discount)-merged.itemDiscount)*100)/100);
+   setProgress?.(100);
+   return {text:best.text,parsed:merged,passes:results.length,fastPath:false};
+ }finally{
+   nfcOcrBusy=false;
+ }
+}
+
 function openNfcReceipt(){
  closeModal();
- openModal("🧾 Recebimento por NFC-e",`<div class="nfc-import"><div class="nfc-hero"><div class="nfc-hero-top"><div class="nfc-hero-icon">🧾</div><div><b>Leia a NFC-e em segundos</b><small>A foto será tratada antes do OCR para melhorar produtos, valores, desconto e total.</small></div></div></div><label class="nfc-drop" for="nfcPhoto"><div style="font-size:30px;margin-bottom:5px">📷</div><strong>Escolher ou tirar foto da NFC-e</strong><small>Deixe a nota inteira visível e evite reflexos. Você confere tudo antes de lançar.</small></label><input id="nfcPhoto" type="file" accept="image/*" capture="environment" style="display:none"><div id="nfcReaderArea"></div></div>`);
- $("nfcPhoto").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const area=$("nfcReaderArea");area.innerHTML='<div class="nfc-status">🔎 <strong>Preparando e lendo a nota...</strong><br>Estamos melhorando a imagem e procurando itens, desconto e total.</div><div style="height:5px;background:var(--line);border-radius:9px;overflow:hidden"><div id="nfcProgress" style="height:100%;width:3%;background:var(--green);transition:.2s"></div></div>';const url=URL.createObjectURL(file);area.insertAdjacentHTML('beforeend',`<div class="nfc-preview-wrap"><img src="${url}" class="nfc-preview-img"><span class="nfc-preview-badge">Foto da NFC-e</span></div>`);try{if(!window.Tesseract)throw Error('Leitor OCR não carregou. Verifique sua conexão e tente novamente.');const result=await nfcRunOcr(file,p=>{if($("nfcProgress"))$("nfcProgress").style.width=Math.max(4,p)+'%'});const parsed=result.parsed;renderNfcReview(parsed,result.text,file); }catch(err){console.error(err);area.insertAdjacentHTML('beforeend',`<div class="nfc-status" style="color:var(--red)">Não foi possível ler a foto automaticamente. Você ainda pode conferir a imagem e lançar a entrada manualmente.<br><small>${esc(err.message||'Erro de leitura')}</small></div>`)} }
+ openModal("🧾 Recebimento por NFC-e",`<div class="nfc-import"><div class="nfc-hero"><div class="nfc-hero-top"><div class="nfc-hero-icon">🧾</div><div><b>Leia a NFC-e em segundos</b><small>O leitor começa rápido e só faz uma segunda análise se encontrar alguma dúvida.</small></div></div></div><label class="nfc-drop" for="nfcPhoto"><div style="font-size:30px;margin-bottom:5px">📷</div><strong>Escolher ou tirar foto da NFC-e</strong><small>Deixe a nota inteira visível e evite reflexos. Você confere tudo antes de lançar.</small></label><input id="nfcPhoto" type="file" accept="image/*" capture="environment" style="display:none"><div id="nfcReaderArea"></div></div>`);
+ $("nfcPhoto").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const area=$("nfcReaderArea");area.innerHTML='<div class="nfc-status">🔎 <strong>Preparando e lendo a nota...</strong><br>Leitura rápida primeiro. Se faltar alguma informação, fazemos uma segunda análise automaticamente.</div><div style="height:5px;background:var(--line);border-radius:9px;overflow:hidden"><div id="nfcProgress" style="height:100%;width:3%;background:var(--green);transition:.2s"></div></div>';const url=URL.createObjectURL(file);area.insertAdjacentHTML('beforeend',`<div class="nfc-preview-wrap"><img src="${url}" class="nfc-preview-img"><span class="nfc-preview-badge">Foto da NFC-e</span></div>`);try{if(!window.Tesseract)throw Error('Leitor OCR não carregou. Verifique sua conexão e tente novamente.');const result=await nfcRunOcr(file,p=>{if($("nfcProgress"))$("nfcProgress").style.width=Math.max(4,p)+'%'});const parsed=result.parsed;renderNfcReview(parsed,result.text,file); }catch(err){console.error(err);area.insertAdjacentHTML('beforeend',`<div class="nfc-status" style="color:var(--red)">Não foi possível ler a foto automaticamente. Você ainda pode conferir a imagem e lançar a entrada manualmente.<br><small>${esc(err.message||'Erro de leitura')}</small></div>`)} }
 }
 function renderNfcReview(parsed,rawText,file){
  const area=$("nfcReaderArea");if(!area)return;const items=parsed.items||[],options=data.products||[];
  const rows=items.map((it,i)=>`<div class="nfc-item" data-nfc-index="${i}"><div class="field"><small>Produto identificado</small><input id="nfcName${i}" value="${esc(it.rawName)}"><div class="nfc-match ${it.productId?'':'nfc-unmatched'}">${it.productId?'✓ '+esc(it.productName)+' • '+it.confidence:'⚠️ Confira o vínculo com seu estoque'}${numBR(it.lineDiscount)>0?`<span style="display:block;color:var(--green);font-weight:800;margin-top:3px">🏷️ Desconto neste item: ${money(it.lineDiscount)}</span>`:''}</div></div><div class="field"><small>Quantidade</small><input id="nfcQty${i}" type="number" min="1" step="1" value="${it.qty}"></div><div class="field"><small>Total do item</small><input id="nfcTotal${i}" type="text" inputmode="decimal" value="${it.total.toFixed(2).replace('.',',')}"><small style="margin-top:4px;color:var(--muted)">${numBR(it.grossTotal)>numBR(it.total)?`Original ${money(it.grossTotal)}`:'Valor lido da linha'}</small></div><button type="button" class="secondary nfc-remove" data-nfc-remove="${i}" title="Remover item">✕</button><div class="field nfc-product-field" style="grid-column:1/-1"><small>Produto no estoque</small><select id="nfcProduct${i}"><option value="">Não vincular</option>${options.map(p=>`<option value="${p.id}" ${p.id===it.productId?'selected':''}>${esc(p.name)} • ${numBR(p.stock||0)} un.</option>`).join('')}</select></div><div class="field nfc-conversion-field" style="grid-column:1/-1"><small>Entrada no estoque</small><div class="nfc-conversion-grid" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px"><input id="nfcPacks${i}" type="number" min="1" step="1" value="${it.qty}" placeholder="Quantidade comprada"><input id="nfcSize${i}" type="number" min="1" step="1" value="1" placeholder="Unidades por kit"></div></div></div>`).join('');
  const financial=`<div class="nfc-section-label">Conferência financeira da nota</div><div class="nfc-financial"><div class="stat-mini"><small>Itens</small><b id="nfcSubtotal">${money(parsed.subtotal||items.reduce((a,x)=>a+numBR(x.grossTotal||x.total),0))}</b></div><div class="stat-mini discount"><small>Desconto detectado</small><b id="nfcDiscount">${money(parsed.discount||0)}</b>${numBR(parsed.itemDiscount)>0?`<small style="color:var(--green);margin-top:3px">Aplicado nos itens: ${money(parsed.itemDiscount)}</small>`:''}${numBR(parsed.unallocatedDiscount)>0.005?`<small style="color:var(--orange);margin-top:3px">Não atribuído: ${money(parsed.unallocatedDiscount)}</small>`:''}</div><div class="stat-mini"><small>Total pago</small><b id="nfcGrandTotal">${money(parsed.total||0)}</b></div></div>`;
- area.innerHTML=`<div class="nfc-status"><div class="nfc-review-title"><b>✨ Leitura concluída</b><small>Conferência obrigatória</small></div><div class="nfc-quality"><span class="ok">✓ OCR aprimorado</span><span>🔎 Multi-leitura</span><span>🔒 Estoque protegido</span></div>Confira produtos, quantidades e valores antes de alterar o estoque.${parsed.date?`<br>📅 Data encontrada: ${esc(parsed.date)}`:''}${numBR(parsed.unallocatedDiscount)>0.005?`<br><span style="display:block;margin-top:5px;color:var(--orange);font-weight:700">⚠️ ${money(parsed.unallocatedDiscount)} de desconto foi detectado na nota, mas não foi distribuído automaticamente. Confira a qual item ele pertence.</span>`:''}</div><div class="nfc-items">${rows||'<div class="empty">Nenhum item foi identificado automaticamente. Use a imagem e adicione os produtos manualmente.</div>'}</div>${financial}<div class="nfc-add-row"><button type="button" class="secondary" id="nfcAddItem">＋ Adicionar item</button><button type="button" class="secondary" id="nfcShowRaw">Ver leitura OCR</button></div><textarea id="nfcRaw" class="nfc-raw" style="display:none" readonly>${esc(rawText||'')}</textarea><div class="nfc-summary"><div class="stat-mini"><small>Itens</small><b id="nfcItemCount">${items.length}</b></div><div class="stat-mini"><small>Unidades de estoque</small><b id="nfcUnitCount">0</b></div><div class="stat-mini"><small>Total da entrada</small><b id="nfcEntryTotal">${money(parsed.total||0)}</b></div></div><div class="actions nfc-actions"><button type="button" class="secondary" id="nfcCancel">Cancelar</button><button type="button" class="primary" id="nfcConfirm">🔒 Conferi e lançar no estoque</button></div><div class="nfc-ocr-note">Nenhuma alteração de estoque acontece durante a leitura. Só após sua confirmação.</div>`;
+ area.innerHTML=`<div class="nfc-status"><div class="nfc-review-title"><b>✨ Leitura concluída</b><small>Conferência obrigatória</small></div><div class="nfc-quality"><span class="ok">✓ OCR adaptativo</span><span>⚡ Leitura rápida</span><span>🔒 Estoque protegido</span></div>Confira produtos, quantidades e valores antes de alterar o estoque.${parsed.date?`<br>📅 Data encontrada: ${esc(parsed.date)}`:''}${numBR(parsed.unallocatedDiscount)>0.005?`<br><span style="display:block;margin-top:5px;color:var(--orange);font-weight:700">⚠️ ${money(parsed.unallocatedDiscount)} de desconto foi detectado na nota, mas não foi distribuído automaticamente. Confira a qual item ele pertence.</span>`:''}</div><div class="nfc-items">${rows||'<div class="empty">Nenhum item foi identificado automaticamente. Use a imagem e adicione os produtos manualmente.</div>'}</div>${financial}<div class="nfc-add-row"><button type="button" class="secondary" id="nfcAddItem">＋ Adicionar item</button><button type="button" class="secondary" id="nfcShowRaw">Ver leitura OCR</button></div><textarea id="nfcRaw" class="nfc-raw" style="display:none" readonly>${esc(rawText||'')}</textarea><div class="nfc-summary"><div class="stat-mini"><small>Itens</small><b id="nfcItemCount">${items.length}</b></div><div class="stat-mini"><small>Unidades de estoque</small><b id="nfcUnitCount">0</b></div><div class="stat-mini"><small>Total da entrada</small><b id="nfcEntryTotal">${money(parsed.total||0)}</b></div></div><div class="actions nfc-actions"><button type="button" class="secondary" id="nfcCancel">Cancelar</button><button type="button" class="primary" id="nfcConfirm">🔒 Conferi e lançar no estoque</button></div><div class="nfc-ocr-note">Nenhuma alteração de estoque acontece durante a leitura. Só após sua confirmação.</div>`;
  const updateSummary=()=>{let units=0,total=0;items.forEach((_,i)=>{const q=Math.max(0,Math.floor(numBR($("nfcPacks"+i)?.value)||0)),size=Math.max(1,Math.floor(numBR($("nfcSize"+i)?.value)||1)),t=numBR($("nfcTotal"+i)?.value)||0;units+=q*size;total+=t});$("nfcUnitCount").textContent=String(units);$("nfcEntryTotal").textContent=money(total)};
  items.forEach((_,i)=>[$("nfcQty"+i),$("nfcTotal"+i),$("nfcPacks"+i),$("nfcSize"+i)].forEach(el=>el?.addEventListener('input',updateSummary)));
  area.querySelectorAll('[data-nfc-remove]').forEach(btn=>btn.onclick=()=>{items.splice(Number(btn.dataset.nfcRemove),1);renderNfcReview(parsed,rawText,file)});
@@ -2184,7 +2250,7 @@ function confirmDeleteSale(s){
  $("delSaleText").oninput=e=>$("delDo").disabled=e.target.value.trim().toUpperCase()!=="EXCLUIR";
  $("delDo").onclick=async()=>{
   const btn=$("delDo");if(btn.dataset.busy)return;btn.dataset.busy="1";
-  try{await runTransaction(db,async tx=>{const saleRef=doc(col("sales"),s.id),saleSnap=await tx.get(saleRef);if(!saleSnap.exists())throw Error("Venda não encontrada.");const sale=saleSnap.data(),byProduct=new Map();for(const i of(sale.items||[])){const qty=numBR(i.qty||0);if(qty>0)byProduct.set(i.productId,(byProduct.get(i.productId)||0)+qty);}for(const [pid,qty] of byProduct){const ref=doc(col("products"),pid),snap=await tx.get(ref);if(snap.exists())tx.update(ref,{stock:numBR(snap.data().stock||0)+qty});}tx.delete(saleRef);});const ps=await getDocs(col("payments"));await Promise.all(ps.docs.filter(d=>d.data()?.saleId===s.id).map(d=>deleteDoc(d.ref)));await logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`);closeModal();render();toast("Venda excluída com sucesso!");}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy=""}
+  try{await runTransaction(db,async tx=>{const saleRef=doc(col("sales"),s.id),saleSnap=await tx.get(saleRef);if(!saleSnap.exists())throw Error("Venda não encontrada.");const sale=saleSnap.data(),byProduct=new Map();for(const i of(sale.items||[])){const qty=numBR(i.qty||0),pid=i.productId;if(qty>0&&pid)byProduct.set(pid,(byProduct.get(pid)||0)+qty);}const productReads=[];for(const [pid,qty] of byProduct){const ref=doc(col("products"),pid);productReads.push({pid,qty,ref});}const productSnaps=[];for(const item of productReads)productSnaps.push({item,snap:await tx.get(item.ref)});for(const {item,snap} of productSnaps){if(snap.exists())tx.update(item.ref,{stock:numBR(snap.data().stock||0)+item.qty});}tx.delete(saleRef);});const ps=await getDocs(col("payments"));await Promise.all(ps.docs.filter(d=>d.data()?.saleId===s.id).map(d=>deleteDoc(d.ref)));await logAction("Venda excluída",`${s.clientName||"Venda balcão"} • ${money(s.total)}`);closeModal();render();toast("Venda excluída com sucesso!");}catch(e){console.error(e);toast(e.message||"Não foi possível excluir a venda.")}finally{btn.dataset.busy=""}
  };
 }
 
