@@ -676,6 +676,44 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 }
 </style>
 
+<style id="V183_CLIENT_MOBILE_FIX">
+.closure-actions{display:flex;flex-direction:column;align-items:stretch;gap:7px;min-width:0;max-width:100%}
+.closure-actions button{white-space:normal;overflow-wrap:anywhere;line-height:1.25;min-width:0;max-width:100%;padding:10px 12px;font-size:12px}
+@media(max-width:600px){
+ .client-profile-head{grid-template-columns:64px minmax(0,1fr)!important;gap:10px!important;padding:11px!important}
+ .client-profile-photo-col{grid-row:1/3}
+ .client-profile-debt{grid-column:2;text-align:left;min-width:0;border-top:1px solid var(--line);padding-top:8px}
+ .client-profile-debt small{font-size:9px!important}.client-profile-debt b{font-size:19px!important}
+ .client-profile-card{padding:10px!important;overflow:hidden}
+ .client-profile-card .list>.item{display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px;align-items:start;padding:10px!important;min-width:0}
+ .client-profile-card .list>.item>.avatar{grid-row:1;grid-column:1;width:34px;height:34px;flex-basis:34px}
+ .client-profile-card .list>.item>.item-main{grid-row:1;grid-column:2;min-width:0;overflow-wrap:anywhere}
+ .client-profile-card .list>.item>.item-right,.client-profile-card .list>.item>.closure-actions{grid-column:1/-1;width:100%;min-width:0;align-items:stretch}
+ .client-profile-card .list>.item .item-right{text-align:left}
+ .closure-actions button{width:100%;font-size:12px!important;min-height:43px}
+ .client-profile-actions{display:grid;grid-template-columns:1fr;gap:8px}
+ .client-profile-actions button{width:100%;margin:0!important}
+}
+@media(max-width:380px){.client-profile-head{grid-template-columns:54px minmax(0,1fr)!important}.client-avatar-large,.client-avatar-large-img{width:52px!important;height:52px!important}.client-profile-metrics strong{font-size:13px!important}}
+</style>
+
+<style id="V184_CLIENT_CLOSURE_LAYOUT">
+/* Cartões de fechamento: layout independente, sem esmagar texto nem ações. */
+.client-profile-card .list>.closure-item{display:grid!important;grid-template-columns:42px minmax(0,1fr) minmax(220px,.85fr);align-items:center;gap:12px;min-width:0;padding:14px!important}
+.client-profile-card .list>.closure-item>.avatar{grid-column:1;grid-row:1;width:40px;height:40px;flex:0 0 40px}
+.client-profile-card .list>.closure-item>.item-main{grid-column:2;grid-row:1;min-width:0;overflow-wrap:anywhere}
+.client-profile-card .list>.closure-item>.item-main b{white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+.client-profile-card .list>.closure-item>.closure-actions{grid-column:3;grid-row:1;display:flex;flex-direction:column;gap:8px;min-width:0;width:100%}
+.client-profile-card .list>.closure-item .closure-actions button{width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.3;padding:10px 12px;font-size:12px}
+@media(max-width:600px){
+ .client-profile-card .list>.closure-item{grid-template-columns:36px minmax(0,1fr)!important;gap:9px!important;align-items:start!important;padding:12px!important}
+ .client-profile-card .list>.closure-item>.avatar{grid-column:1!important;grid-row:1!important;width:34px;height:34px}
+ .client-profile-card .list>.closure-item>.item-main{grid-column:2!important;grid-row:1!important;width:100%;min-width:0}
+ .client-profile-card .list>.closure-item>.item-main small{white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.4;font-size:11px}
+ .client-profile-card .list>.closure-item>.closure-actions{grid-column:1/-1!important;grid-row:2!important;width:100%;min-width:0;display:grid;grid-template-columns:1fr;gap:8px}
+ .client-profile-card .list>.closure-item .closure-actions button{width:100%;min-height:44px;font-size:13px!important;text-align:center}
+}
+</style>
 </head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
@@ -993,7 +1031,7 @@ function compressClientPhoto(file){
   reader.readAsDataURL(file);
  });
 }
-function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),pending=clientPending(c),isOtimo=String(c.status||"normal").toLowerCase()==="otimo";return `<div class="item" data-client="${c.id}">${clientAvatar(c)}<div class="item-main"><b>${esc(c.name)}</b>${isOtimo?`<small class="client-status-otimo">Ótimo</small>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${pending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+function clientRows(list){return list.map(c=>{let ss=data.sales.filter(s=>s.clientId===c.id),pending=clientCurrentPending(c),totalPending=clientPending(c),isOtimo=String(c.status||"normal").toLowerCase()==="otimo";return `<div class="item" data-client="${c.id}">${clientAvatar(c)}<div class="item-main"><b>${esc(c.name)}</b>${isOtimo?`<small class="client-status-otimo">Ótimo</small>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"sem telefone"}</small></div><div class="item-right"><b>${money(pending)}</b><small>a receber</small></div>${totalPending>0?`<button class="secondary charge-btn" data-charge="${c.id}" style="padding:9px 10px;font-size:10px">Cobrar total</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><div class="stock-head-actions"><button type="button" class="stock-avulsa-head" id="stockAddMenu">＋ Adicionar</button><button class="top-action" id="newProduct">＋</button></div></div>
@@ -1438,7 +1476,7 @@ function clientProfileHtml(c,period){
    <div class="client-profile-main"><p>${c.phone?`📱 ${esc(c.phone)}`:"📱 Sem telefone cadastrado"}${since?`<br>📅 Cliente desde ${dateOnly(since)}`:""}</p></div>
    <div class="client-profile-debt"><small>SALDO ATUAL</small><b>${money(clientCurrentPending(c))}</b></div>
   </div>
-  ${(data.debtClosures||[]).filter(x=>x.clientId===c.id).sort((a,b)=>String(b.monthKey).localeCompare(String(a.monthKey))).length?`<div class="client-profile-card"><div class="client-section-title"><div><b>🧾 Saldos mensais fechados</b><small>Valores congelados no fechamento, separados das compras novas.</small></div></div><div class="list">${(data.debtClosures||[]).filter(x=>x.clientId===c.id).sort((a,b)=>String(b.monthKey).localeCompare(String(a.monthKey))).map(x=>{const rem=closureRemaining(x);return `<div class="item"><div class="avatar">🧾</div><div class="item-main"><b>${esc(monthLabel(x.monthKey))}</b><small>Fechado • valor original ${money(x.snapshotTotal||0)} • vencimento ${esc(x.dueMonth||"-")}</small><small>${rem<=0?"Quitado":"Saldo devedor: "+money(rem)}</small></div><div class="item-right">${rem>0?`<button class="secondary" data-charge-closure="${esc(x.id||`${x.clientId}_${x.monthKey}`)}" style="padding:8px 10px;font-size:10px">Cobrar R$ ${money(rem)}, fechado em ${esc(monthLabel(x.monthKey))}</button>`:`<span class="status paid">Quitado</span>`}</div></div>`}).join("")}</div></div>`:""}
+  ${(data.debtClosures||[]).filter(x=>x.clientId===c.id).sort((a,b)=>String(b.monthKey).localeCompare(String(a.monthKey))).length?`<div class="client-profile-card"><div class="client-section-title"><div><b>🧾 Saldos mensais fechados</b><small>Valores congelados no fechamento, separados das compras novas.</small></div></div><div class="list">${(data.debtClosures||[]).filter(x=>x.clientId===c.id).sort((a,b)=>String(b.monthKey).localeCompare(String(a.monthKey))).map(x=>{const rem=closureRemaining(x);return `<div class="item closure-item"><div class="avatar">🧾</div><div class="item-main"><b>${esc(monthLabel(x.monthKey))}</b><small>Fechado • valor original ${money(x.snapshotTotal||0)} • vencimento ${esc(x.dueMonth||"-")}</small><small>${rem<=0?"Quitado":"Saldo devedor: "+money(rem)}</small></div><div class="closure-actions">${rem>0?`<button class="secondary" data-charge-closure="${esc(x.id||`${x.clientId}_${x.monthKey}`)}">💬 Cobrar ${money(rem)}, fechado em ${esc(monthLabel(x.monthKey))}</button><button class="primary" data-pay-closure="${esc(x.id||`${x.clientId}_${x.monthKey}`)}">💵 Registrar pagamento</button>`:`<span class="status paid">Quitado</span>`}</div></div>`}).join("")}</div></div>`:""}
   <div class="client-period-tabs">
    <button type="button" data-client-period="1" class="${period==="1"?"active":""}">Hoje</button>
    <button type="button" data-client-period="7" class="${period==="7"?"active":""}">7 dias</button>
@@ -1481,6 +1519,7 @@ function openClient(c){
      };
    });
    document.querySelectorAll("[data-charge-closure]").forEach(btn=>{btn.onclick=e=>{e.stopPropagation();const x=(data.debtClosures||[]).find(z=>(z.id||`${z.clientId}_${z.monthKey}`)===btn.dataset.chargeClosure);if(x)openClosureCharge(c,x)}});
+   document.querySelectorAll("[data-pay-closure]").forEach(btn=>{btn.onclick=e=>{e.stopPropagation();const x=(data.debtClosures||[]).find(z=>(z.id||`${z.clientId}_${z.monthKey}`)===btn.dataset.payClosure);if(x)openPaymentForClient(c,x)}});
    document.querySelectorAll(".client-sale-row[data-sale]").forEach(row=>{
      row.onclick=()=>openSaleDetail(data.sales.find(s=>s.id===row.dataset.sale));
    });
@@ -1583,26 +1622,26 @@ function openCharge(c,options={}){
    toast(copied?"WhatsApp aberto • PIX copiado":"WhatsApp aberto");
  };
 }
-function openPaymentForClient(c){
+function openPaymentForClient(c,onlyClosure=null){
  const pendingSales=data.sales.filter(s=>s.clientId===c.id&&!clientClosedSaleIds(c).has(s.id)&&numBR(s.total||0)>Number(s.paid||0));
- const initialPending=clientInitialPending(c);
- const totalPending=initialPending+clientClosedDebt(c)+pendingSales.reduce((a,s)=>a+Math.max(0,numBR(s.total||0)-Number(s.paid||0)),0);
+ const initialPending=onlyClosure?0:clientInitialPending(c);
+ const totalPending=onlyClosure?closureRemaining(onlyClosure):initialPending+clientClosedDebt(c)+pendingSales.reduce((a,s)=>a+Math.max(0,numBR(s.total||0)-Number(s.paid||0)),0);
  if(totalPending<=0){toast("Esse cliente não possui valor pendente.");return}
- openModal("Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>Valor recebido</label><input id="payValue" type="number" min="0.01" step="0.01" value="${totalPending.toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>PIX</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
+ openModal(onlyClosure?`Registrar pagamento • ${monthLabel(onlyClosure.monthKey)}`:"Registrar pagamento",`<div class="form"><div class="field"><label>Cliente</label><input value="${esc(c.name)}" disabled></div><div class="field"><label>${onlyClosure?"Valor recebido deste fechamento":"Valor recebido"}</label><input id="payValue" type="number" min="0.01" max="${totalPending.toFixed(2)}" step="0.01" value="${totalPending.toFixed(2)}"></div><div class="field"><label>Forma</label><select id="payMethod"><option>Dinheiro</option><option>Cartão</option><option>PIX</option><option>Pagamento no salário</option></select></div><button class="primary" id="savePay">Registrar pagamento</button></div>`);
  $("savePay").onclick=async()=>{
   const btn=$("savePay"),amount=Number($("payValue").value)||0;
   if(amount<=0)return toast("Digite um valor.");
+  if(amount>totalPending+0.001)return toast(`O valor não pode ultrapassar ${money(totalPending)}.`);
   if(btn.dataset.busy==="1")return;
   btn.dataset.busy="1";btn.disabled=true;
   const overlay=document.createElement("div");overlay.className="sale-processing-overlay";overlay.innerHTML='<div class="sale-processing-card"><div class="sale-spinner"></div><b>Efetuando pagamento...</b><small>Aguarde enquanto o pagamento é registrado no Firebase.</small></div>';document.body.appendChild(overlay);
   try{
    let remaining=amount;
-   const closures=(data.debtClosures||[]).filter(x=>x.clientId===c.id&&closureRemaining(x)>0).sort((a,b)=>String(a.monthKey).localeCompare(String(b.monthKey)));
+   const closures=(onlyClosure?[onlyClosure]:(data.debtClosures||[]).filter(x=>x.clientId===c.id)).filter(x=>closureRemaining(x)>0).sort((a,b)=>String(a.monthKey).localeCompare(String(b.monthKey)));
    for(const closure of closures){if(remaining<=0)break;const open=closureRemaining(closure),use=Math.min(open,remaining);await updateDoc(doc(col("debtClosures"),closure.id||`${closure.clientId}_${closure.monthKey}`),{remainingAtClose:Math.round((open-use)*100)/100,status:open-use<=0?"paid":"open",lastPaymentAt:serverTimestamp()});remaining-=use;}
-   const closedIds=clientClosedSaleIds(c);
    const useInitial=Math.min(initialPending,remaining);
    if(useInitial>0){await updateDoc(doc(col("clients"),c.id),{initialDebtPaid:Number(c.initialDebtPaid||0)+useInitial});remaining-=useInitial;}
-   for(const sale of pendingSales){
+   for(const sale of (onlyClosure?[]:pendingSales)){
     if(remaining<=0)break;
     const open=Math.max(0,Number(sale.total)-Number(sale.paid||0)),use=Math.min(open,remaining);
     await updateDoc(doc(col("sales"),sale.id),{paid:Number(sale.paid||0)+use});remaining-=use;
