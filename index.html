@@ -731,7 +731,7 @@ const firebaseConfig={
 };
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
-let uid=null,currentUserName="Vitor",currentUserEmail="",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[]},page="home";
+let uid=null,currentUserName="Vitor",currentUserEmail="",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[],debtClosures:[]},page="home";
 
 const numBR=v=>{if(typeof v==="number")return Number.isFinite(v)?v:0;if(v==null||v==="")return 0;let s=String(v).trim().replace(/R\$|\s/g,"");if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");const n=Number(s);return Number.isFinite(n)?n:0;};const money=n=>numBR(n).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -764,7 +764,7 @@ function oldCol(name){return collection(db,"users",uid,name)}
 async function migrateOwnDataToShared(){
  const marker=`docesDoVituSharedMigration_${uid}`;
  if(localStorage.getItem(marker)==="done") return;
- const names=["products","clients","sales","payments","purchases","logs"];
+ const names=["products","clients","sales","payments","purchases","logs","debtClosures"];
  for(const name of names){
   const shared=await getDocs(col(name));
   if(!shared.empty) continue;
@@ -790,7 +790,7 @@ async function seedImportedDebts(){
 }
 function subscribeReady(){
  return new Promise(resolve=>{
-  const names=['products','clients','sales','payments','purchases']; let ready=0;
+  const names=['products','clients','sales','payments','purchases','debtClosures']; let ready=0;
   const seen=new Set();
   names.forEach(name=>{
    const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render();
@@ -1462,7 +1462,7 @@ function clientProfileHtml(c,period){
 function openClient(c){
  const initialPeriod="1";
  const pending=clientPending(c);
- const actions=`${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:9px">💸 Cobrar ${money(pending)}</button>`:""}<button class="secondary" id="editClientBtn" style="width:100%;margin-bottom:9px">✏️ Editar cliente</button><button class="primary" id="registerFromClient" style="width:100%">💵 Registrar pagamento</button>`;
+ const actions=`${pending>0?`<button class="primary" id="chargeClientModal" style="margin-bottom:9px">💸 Cobrar ${money(pending)}</button>`:""}<button class="secondary" id="closeDebtMonth" style="width:100%;margin-bottom:9px">🧾 Fechar dívida de um mês</button><button class="secondary" id="editClientBtn" style="width:100%;margin-bottom:9px">✏️ Editar cliente</button><button class="primary" id="registerFromClient" style="width:100%">💵 Registrar pagamento</button>`;
  openModal("",`<div id="clientProfileContent">${clientProfileHtml(c,initialPeriod)}</div><div class="client-profile-actions">${actions}</div>`);
  const bindPeriodTabs=()=>{
    document.querySelectorAll("[data-client-period]").forEach(btn=>{
@@ -1480,8 +1480,20 @@ function openClient(c){
  bindPeriodTabs();
  $("registerFromClient").onclick=()=>openPaymentForClient(c);
  if($("chargeClientModal"))$("chargeClientModal").onclick=()=>chargeClient(c);
+ $("closeDebtMonth").onclick=()=>openDebtMonthClose(c);
  $("editClientBtn").onclick=()=>openEditClient(c);
 } 
+function monthKeyFromDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`}
+function monthLabel(key){const [y,m]=key.split("-").map(Number);return new Date(y,m-1,1).toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}
+function monthRange(key){const [y,m]=key.split("-").map(Number);return {start:new Date(y,m-1,1),end:new Date(y,m,1)}}
+function openDebtMonthClose(c){
+ const key=monthKeyFromDate(now());
+ const prior=(data.debtClosures||[]).filter(x=>x.clientId===c.id).sort((a,b)=>String(b.monthKey).localeCompare(String(a.monthKey)));
+ openModal("Fechar dívida mensal",`<div class="form"><div class="item"><div class="avatar">🧾</div><div class="item-main"><b>${esc(c.name)}</b><small>O saldo será congelado como um fechamento consultável.</small></div></div><div class="field"><label>Mês que deseja fechar</label><input id="debtMonthKey" type="month" value="${key}" max="${key}"></div><div id="debtMonthPreview" class="stat" style="padding:14px"><small>SALDO PENDENTE DO MÊS</small><strong id="debtMonthAmount">Calculando...</strong></div><p style="font-size:12px;color:var(--muted);line-height:1.5">As compras feitas depois do mês fechado entram no ciclo seguinte. O saldo fechado permanece separado e os pagamentos serão abatidos das dívidas mais antigas.</p><button class="primary" id="confirmDebtClose" style="width:100%">🔒 Confirmar fechamento</button><div id="debtCloseHistory" class="list">${prior.map(x=>`<div class="item"><div class="item-main"><b>${esc(monthLabel(x.monthKey))}</b><small>Fechado • vencimento ${esc(x.dueMonth||"-")}</small></div><div class="item-right"><b>${money(x.snapshotTotal||0)}</b></div></div>`).join("")}</div></div>`);
+ const calculate=()=>{const k=$("debtMonthKey").value;const {start,end}=monthRange(k);const ss=clientSalesFor(c).filter(s=>{const d=dt(s.createdAt);return d&&d>=start&&d<end});return ss.reduce((a,s)=>a+salePendingAmount(s),0)};
+ const update=()=>{$("debtMonthAmount").textContent=money(calculate());};update();$("debtMonthKey").onchange=update;
+ $("confirmDebtClose").onclick=async()=>{const btn=$("confirmDebtClose"),k=$("debtMonthKey").value;if(!k)return toast("Escolha o mês.");const {start,end}=monthRange(k);const ss=clientSalesFor(c).filter(s=>{const d=dt(s.createdAt);return d&&d>=start&&d<end});const snapshot=ss.reduce((a,s)=>a+salePendingAmount(s),0);if(snapshot<=0)return toast("Não há saldo pendente nesse mês.");const id=`${c.id}_${k}`;btn.disabled=true;try{await runTransaction(db,async tx=>{const ref=doc(col("debtClosures"),id),existing=await tx.get(ref);if(existing.exists())throw Error("Esse mês já foi fechado para este cliente.");tx.set(ref,{clientId:c.id,clientName:c.name,monthKey:k,monthLabel:monthLabel(k),snapshotTotal:Math.round(snapshot*100)/100,remainingAtClose:Math.round(snapshot*100)/100,saleIds:ss.filter(s=>salePendingAmount(s)>0).map(s=>s.id),saleSnapshot:ss.filter(s=>salePendingAmount(s)>0).map(s=>({saleId:s.id,total:numBR(s.total||0),paid:numBR(s.paid||0),pending:salePendingAmount(s)})),dueMonth:(()=>{const [y,m]=k.split("-").map(Number);return monthKeyFromDate(new Date(y,m+1,1))})(),status:"open",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});});await logAction("Fechamento mensal de dívida",`${c.name} • ${monthLabel(k)} • ${money(snapshot)}`);closeModal();openClient(c);toast("Dívida mensal fechada e registrada!");}catch(e){console.error(e);toast(e.message||"Não foi possível fechar a dívida.");btn.disabled=false;}};
+}
 function openEditClient(c){
  openModal("Editar cliente",`<div class="form"><div class="field"><label>Nome do cliente</label><input id="editClientName" value="${esc(c.name)}" placeholder="Nome do cliente"></div><div class="field"><label>Telefone (opcional)</label><input id="editClientPhone" value="${esc(c.phone||"")}" placeholder="(47) 99999-9999"></div><div class="field"><label>Foto (opcional)</label><div class="client-photo-picker"><div class="client-photo-preview" id="editClientPhotoPreview">${c.photoData?`<img src="${esc(c.photoData)}" alt="Foto atual">`:'👤'}</div><div><input id="editClientPhotoGallery" type="file" accept="image/*" style="display:none"><input id="editClientPhotoCamera" type="file" accept="image/*" capture="environment" style="display:none"><div class="client-photo-actions" style="margin-top:0"><button type="button" class="secondary" id="chooseEditClientPhotoGallery">🖼️ Galeria</button><button type="button" class="secondary" id="chooseEditClientPhotoCamera">📷 Câmera</button></div><div class="client-photo-actions"><button type="button" class="secondary" id="removeEditClientPhoto" style="${c.photoData?'display:inline-block':'display:none'}">🗑️ Remover</button></div><small class="client-photo-note">Escolha uma foto da galeria ou tire uma nova com a câmera.</small></div></div></div><div class="actions"><button class="secondary" id="cancelEditClient">Cancelar</button><button class="primary" id="saveEditClient">Salvar alterações</button></div></div>`);
  $("cancelEditClient").onclick=closeModal;
@@ -2411,6 +2423,7 @@ applyTheme(localStorage.getItem("dv-theme")==="dark" ? "dark" : "light");
 function openAccount(){
  openModal("Configurações",`<div class="form settings-form">
   <div class="item"><div class="avatar">⚙️</div><div class="item-main"><b>Conta atual</b><small>${esc(auth.currentUser?.email||"")}</small></div></div>
+  <div class="vitu-settings-card"><div class="vitu-settings-icon">🧾</div><div><b>Fechamento mensal de dívidas</b><small>Feche o saldo de um cliente por mês, mantenha o valor registrado e acompanhe a cobrança separada.</small></div><button class="secondary" id="debtHelp">Ver regra</button></div>
   <button class="secondary" id="customerStatuses" style="width:100%;margin-top:10px">👥 Status dos clientes</button>
   <button type="button" class="theme-toggle" id="themeToggle">🌙  Modo escuro</button>
   <div class="vitu-settings-card"><div class="vitu-settings-icon">🧠</div><div><b>Vitu IA</b><small>Converse com o assistente e consulte vendas, estoque, lucro e metas.</small></div><button class="primary" id="openVituSettings">Abrir</button></div>
@@ -2430,6 +2443,7 @@ function openAccount(){
  $("openVituSettings").onclick=()=>{closeModal();setTimeout(openVituIA,120)};
  $("openGoalsSettings").onclick=()=>{closeModal();setTimeout(setGoals,120)};
  $("customerStatuses").onclick=openCustomerStatuses;
+ $("debtHelp").onclick=()=>openModal("Fechamento mensal",`<div class="form"><p>O fechamento salva um retrato do saldo pendente das vendas daquele mês, sem apagar nem alterar as vendas.</p><p>As novas compras ficam registradas no mês em que acontecerem e entram no ciclo seguinte. O fechamento antigo permanece separado para consulta e cobrança.</p><p>Pagamentos continuam sendo abatidos das dívidas mais antigas primeiro.</p></div>`);
  $("activityLog").onclick=openActivityLog;
  $("resetBusiness").onclick=()=>{
   openModal("Resetar dados?",`<div class="form">
