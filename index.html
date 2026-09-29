@@ -256,6 +256,10 @@ body.theme-dark .nfc-menu-card,body.theme-dark .nfc-item,body.theme-dark .nfc-dr
 .charge-v2-whatsapp span:first-child{font-size:20px!important}.charge-v2-whatsapp b{font-size:21px!important;line-height:1!important;margin-left:2px!important}.charge-v2-whatsapp:active{transform:scale(.985)}
 @media(max-width:520px){.charge-modal-v2{padding:16px 13px calc(18px + env(safe-area-inset-bottom))!important}.charge-modal-v2 .modal-head{margin-bottom:16px!important}.charge-modal-v2 .modal-head h2{font-size:23px!important}.charge-v2{gap:12px}.charge-v2-head{gap:12px;padding:2px 2px}.charge-v2-client b{font-size:20px}.charge-v2-client span{font-size:11px;margin-top:5px}.charge-v2-total small{font-size:8px}.charge-v2-total strong{font-size:24px}.charge-v2-card{padding:16px;border-radius:19px}.charge-v2-message{font-size:15px;line-height:1.45}.charge-v2-pix{max-height:105px;padding:11px}.charge-v2-pix code{font-size:9.5px;line-height:1.5}.charge-v2-copy{min-height:36px!important;font-size:11px!important;padding:7px 12px!important}.charge-v2-whatsapp{min-height:52px!important;font-size:13px!important;border-radius:15px!important}}
 @media(max-width:370px){.charge-modal-v2{padding-left:10px!important;padding-right:10px!important}.charge-v2-head{gap:8px}.charge-v2-client b{font-size:18px}.charge-v2-total strong{font-size:21px}.charge-v2-card{padding:14px}.charge-v2-message{font-size:14px}.charge-v2-pix{max-height:96px}.charge-v2-pix code{font-size:9px}.charge-v2-whatsapp{font-size:12px!important}}
+
+.ui-svg{width:19px;height:19px;display:inline-block;vertical-align:middle;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.nav .ui-svg{width:21px;height:21px}
+.quick .ui-svg{width:20px;height:20px}
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -742,11 +746,11 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
  <main class="view" id="view"></main>
  <nav class="nav">
   <button data-page="home" class="active"><span class="ni">⌂</span><small>Início</small></button>
-  <button data-page="sales"><span class="ni">🛒</span><small>Vendas</small></button>
-  <button data-page="clients"><span class="ni">👥</span><small>Clientes</small></button>
-  <button data-page="stock"><span class="ni">📦</span><small>Estoque</small></button>
-  <button data-page="purchases"><span class="ni">🛍️</span><small>Compras</small></button>
-  <button data-page="finance"><span class="ni">📊</span><small>Financeiro</small></button>
+  <button data-page="sales"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></span><small>Vendas</small></button>
+  <button data-page="clients"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6m3-3h-6"/></svg></span><small>Clientes</small></button>
+  <button data-page="stock"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5 9-5ZM3 7v10l9 5 9-5V7M12 12v10"/></svg></span><small>Estoque</small></button>
+  <button data-page="purchases"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z M9 8a3 3 0 0 1 6 0"/></svg></span><small>Compras</small></button>
+  <button data-page="finance"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M8 16V9m5 7V4m5 12v-5"/></svg></span><small>Financeiro</small></button>
  </nav>
 </div>
 <div id="modalRoot"></div>
