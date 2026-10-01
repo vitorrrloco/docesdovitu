@@ -1228,8 +1228,11 @@ function printDailyCash(r){
 }
 function openDailyCashReport(){const n=now(),key=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`,r=dayData(key);openModal("Caixa do dia",dailyCashHtml(r));bindDailyCash(r)}
 function bindDailyCash(r){$("dailyCashRefresh")?.addEventListener("click",()=>{const key=$("dailyCashDate")?.value||r.dateKey,rr=dayData(key);openModal("Caixa do dia",dailyCashHtml(rr));bindDailyCash(rr)});$("dailyCashPrint")?.addEventListener("click",()=>printDailyCash(r))}
+let financeMonthKey = `${now().getFullYear()}-${String(now().getMonth()+1).padStart(2,"0")}`;
 function finance(){
- const sales=data.sales||[], payments=data.payments||[], products=data.products||[], purchases=data.purchases||[], nowD=now();
+ const [financeYear,financeMonth]=financeMonthKey.split("-").map(Number);
+ const nowD=new Date(financeYear,financeMonth-1,1);
+ const sales=data.sales||[], payments=data.payments||[], products=data.products||[], purchases=data.purchases||[];
  const monthSales=monthSalesFor(nowD), monthPayments=monthPaymentsFor(nowD);
  const revenue=monthSales.reduce((a,s)=>a+numBR(s.total||0),0);
  const received=monthPayments.reduce((a,p)=>a+numBR(p.amount||0),0);
@@ -1251,10 +1254,14 @@ function finance(){
    <div><h1>Financeiro</h1><p>Resumo financeiro do negócio • ${monthLabel}</p></div>
    <div style="display:flex;align-items:center;gap:8px">${privacyButton()}</div>
   </div>
+  <div class="finance-month-picker" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 16px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card)">
+   <label for="financeMonthSelect" style="font-size:12px;font-weight:750;color:var(--muted)">Mês consultado</label>
+   <input id="financeMonthSelect" type="month" value="${financeMonthKey}" aria-label="Selecionar mês do financeiro" style="width:auto;max-width:165px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit;font-size:13px">
+  </div>
   ${goalCardHtml()}
   <div class="finance-actions">
    <button type="button" class="finance-option" id="financeAnalysis"><b>📈 Análise de vendas</b><small>Veja quando e quanto você vende.</small></button>
-   <button type="button" class="finance-option" id="financeReceivables"><b>💰 A receber</b><small>Clientes e valores pendentes.</small></button>
+   <button type="button" class="finance-option" id="financeReceivables"><b>💰 A receber <span class="private-number">${money((data.clients||[]).reduce((sum,c)=>sum+clientPending(c),0))}</span></b><small>Total em aberto de todos os clientes.</small></button>
    <button type="button" class="finance-option" id="financePayments"><b>💵 Registrar pagamento</b><small>Baixe pagamentos recebidos.</small></button>
    <button type="button" class="finance-option" id="financeDailyCash"><b>📋 Gerar caixa do dia</b><small>Relatório completo de um dia, com opção de imprimir/PDF.</small></button>
   </div>
@@ -2288,6 +2295,7 @@ function bindV140Month(){
 }
 
 function bindPage(){
+ $("financeMonthSelect")?.addEventListener("change",e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){financeMonthKey=e.target.value;render()}});
  $("newSale")?.addEventListener("click",openSale);
  $("salesPeriod")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituSalesDays",e.target.value);render()});$("qSale")?.addEventListener("click",openSale);$("qQuickSale")?.addEventListener("click",openQuickSale);$("stockAddMenu")?.addEventListener("click",openStockAddMenu);
  $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
