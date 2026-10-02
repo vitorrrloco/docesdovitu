@@ -1158,6 +1158,7 @@ function purchaseDetail(productId,monthKey){
   </div>
  </div>`;
 }
+let purchaseHistoryMonth=new Date().toISOString().slice(0,7);
 function purchases(){
  const products=data.products||[],sales=data.sales||[],purchasesData=data.purchases||[],today=now();
  const stats=products.map(p=>{
@@ -1184,6 +1185,11 @@ function purchases(){
    <select id="v140ProductSelect" aria-label="Selecione o produto"><option value="">Selecione um produto...</option>${products.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select>
   </div>
   <div id="v140ProductDetail">${firstId?purchaseDetail(firstId):'<div class="purchase-empty"><div class="purchase-empty-icon"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M2 3h2l2.5 12h12L21 7H5"/></svg></div><b>Nenhum produto selecionado</b><span>Escolha um produto acima para ver a sugestão de compra, os números e o gráfico.</span></div>'}</div>
+  <section class="purchase-detail" style="margin-top:18px"><div class="purchase-detail-head"><div><h3>Histórico de compras</h3><small>Entradas registradas no estoque</small></div></div>
+  <label for="purchaseHistoryMonth">Mês consultado</label><input id="purchaseHistoryMonth" type="month" value="${purchaseHistoryMonth}" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--cream);color:var(--text);margin:8px 0 14px">
+  <div class="purchase-highlight"><small>Total investido no mês</small><strong>${money(purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).reduce((a,x)=>a+numBR(x.total||0),0))}</strong><span>${purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).reduce((a,x)=>a+numBR(x.quantity||0),0)} unidades • ${purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).length} registros</span></div>
+  ${(()=>{const list=purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));return list.length?`<div class="purchase-list">${list.map(x=>`<div class="purchase-row"><div class="purchase-row-main"><b>${esc(x.productName||'Produto')}</b><small>${dt(x.createdAt)?.toLocaleDateString('pt-BR')||'Data indisponível'} • ${numBR(x.quantity||0)} unidades</small></div><div class="purchase-row-cost" style="grid-column:3">${money(x.total||0)}</div></div>`).join('')}</div>`:'<div class="purchase-empty">Nenhuma compra registrada neste mês.</div>'})()}
+  </section>
  </div>`;
 }
 function dayData(dateKey){
@@ -2295,6 +2301,7 @@ function bindV140Month(){
 }
 
 function bindPage(){
+ $("purchaseHistoryMonth")?.addEventListener("change",e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){purchaseHistoryMonth=e.target.value;render()}});
  $("financeMonthSelect")?.addEventListener("change",e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){financeMonthKey=e.target.value;render()}});
  $("newSale")?.addEventListener("click",openSale);
  $("salesPeriod")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituSalesDays",e.target.value);render()});$("qSale")?.addEventListener("click",openSale);$("qQuickSale")?.addEventListener("click",openQuickSale);$("stockAddMenu")?.addEventListener("click",openStockAddMenu);
