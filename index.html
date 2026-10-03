@@ -868,11 +868,12 @@ const SELLER_EMAIL='bernardojulio743@gmail.com';
 function isSeller(){return currentUserEmail===SELLER_EMAIL}
 async function loadSellerArea(){
  const v=$('view');
- v.innerHTML=`<div class="page seller-shell seller-home"><section id="sellerHomePage"><div class="head"><div><h1>Olá, Julio! 🍫</h1><p>Seu resumo de hoje • vendas e comissão</p></div><button id="sellerEye" class="seller-eye" aria-label="Ocultar valores">◉</button></div>
- <div class="hero"><div><small>VENDAS HOJE</small><h2 id="sellerToday">R$ 0,00</h2><p id="sellerTodayCount">Seu movimento aparece aqui</p></div><div class="emoji">🍫</div></div>
- <div class="stats"><div class="stat"><small>TOTAL VENDIDO</small><b id="sellerMonthSold">R$ 0,00</b></div><div class="stat"><small>A RECEBER</small><strong class="red" id="sellerReceivable">R$ 0,00</strong></div><div class="stat"><small>RECEBIDO</small><strong class="green" id="sellerReceived">R$ 0,00</strong></div><div class="stat"><small>COMISSÃO GERADA · 20%</small><strong class="green" id="sellerCommission">R$ 0,00</strong></div></div>
- <div class="quick"><button id="sellerOpenQuick" class="quick-launch"><span>⚡</span><b>Lançamentos rápidos</b></button><button id="sellerOpenNormal" ><span>▤</span><b>Venda normal</b></button><button id="sellerOpenClients" ><span>♙</span><b>Clientes</b></button><button id="sellerOpenDash" ><span>▥</span><b>Meu desempenho</b></button></div>
- <section class="section"><div class="section-title"><b>Minhas últimas vendas</b><button id="sellerSeeAll">Ver todas</button></div><div id="sellerRecent" class="list">Carregando...</div></section></section>
+ v.innerHTML=`<div class="page seller-shell seller-home"><section id="sellerHomePage"><div class="seller-home-heading"><div class="seller-brand-mark" aria-hidden="true">◈</div><div class="seller-brand"><b>DOCES DO VITU</b><small>PAINEL DO VENDEDOR</small></div><span class="seller-user-pill">Julio</span><button id="sellerEye" class="seller-eye" aria-label="Ocultar valores">◉</button></div>
+ <div class="seller-welcome"><small>BEM-VINDO DE VOLTA</small><h1>Olá, Julio! 👋</h1><p>Acompanhe suas vendas, recebimentos e comissões.</p></div>
+ <div class="seller-home-hero"><div><small>VENDAS HOJE</small><h2 id="sellerToday">R$ 0,00</h2><p id="sellerTodayCount">Seu movimento aparece aqui</p></div><div class="seller-home-cookie" aria-hidden="true">✦</div></div>
+ <div class="seller-home-stats"><article><small>TOTAL VENDIDO</small><b id="sellerMonthSold">R$ 0,00</b></article><article><small>A RECEBER</small><strong id="sellerReceivable">R$ 0,00</strong></article><article><small>RECEBIDO</small><strong id="sellerReceived">R$ 0,00</strong></article><article class="commission"><small>COMISSÃO · 20%</small><strong id="sellerCommission">R$ 0,00</strong></article></div>
+ <div class="seller-home-actions"><button id="sellerOpenQuick" class="primary"><span>＋</span><b>Lançamentos rápidos</b><small>Registrar uma venda</small></button><button id="sellerOpenNormal"><span>▤</span><b>Venda normal</b></button><button id="sellerOpenClients"><span>♙</span><b>Meus clientes</b></button><button id="sellerOpenDash"><span>▥</span><b>Meu desempenho</b></button></div>
+ <section class="seller-home-recent"><div class="seller-home-section-title"><b>Minhas últimas vendas</b><button id="sellerSeeAll">Ver todas　›</button></div><div id="sellerRecent" class="list">Carregando...</div></section></section>
  <section id="sellerSalesPage" style="display:none"><div class="seller-head"><div><h1>Minhas vendas</h1><p>Consulte seu histórico por período</p></div></div><div class="seller-periods" id="sellerPeriods"><button data-period="today" class="active">Hoje</button><button data-period="7">7 dias</button><button data-period="15">15 dias</button><button data-period="30">30 dias</button><button data-period="all">Todas</button></div><div class="seller-sales-summary"><span id="sellerPeriodLabel">Vendas de hoje</span><b id="sellerPeriodTotal">R$ 0,00</b></div><div id="sellerSalesList" class="seller-card">Carregando vendas...</div></section>
  <section id="sellerClientsPage" style="display:none"><div class="seller-head"><div><h1>Clientes</h1><p>Encontre e cadastre seus clientes</p></div></div><div class="seller-card"><input id="sellerClientListSearch" class="seller-input" placeholder="⌕  Procurar cliente"><button id="sellerAddClient" class="seller-confirm" style="width:100%;margin-top:10px">＋ Novo cliente</button><div id="sellerClientList" style="margin-top:12px">Carregando clientes...</div></div></section>
  <section id="sellerDashPanel" class="seller-detail" style="display:none"><div class="seller-detail-head"><b>Meu desempenho</b><button id="sellerCloseDash">×</button></div><div id="sellerDash" class="seller-kpis">Carregando...</div><div class="seller-form-block"><b>Histórico de solicitações</b><div id="sellerOwnRequests">Carregando...</div></div></section>
@@ -882,7 +883,7 @@ async function loadSellerArea(){
  let catalog=[],clients=[],cart={},own=[],detailMode='quick',period='today';
  const moneyBR=n=>money(Number(n||0)),total=()=>catalog.reduce((sum,p)=>sum+(cart[p.id]||0)*Number(p.price||0),0),net=()=>Math.max(0,total()-Math.max(0,Number($('sellerDiscount')?.value)||0));
  function sellerNavigate(tab){$('sellerHomePage').style.display=tab==='home'?'':'none';$('sellerSalesPage').style.display=tab==='sales'?'':'none';$('sellerClientsPage').style.display=tab==='clients'?'':'none';$('sellerDashPanel').style.display='none';nav.forEach(b=>b.classList.toggle('active',b.dataset.page===tab));if(tab==='sales')renderSales();if(tab==='clients')renderClients()}
- function renderSales(){const now=new Date(),cut=new Date(now);if(period!=='all'){cut.setHours(0,0,0,0);cut.setDate(cut.getDate()-(period==='today'?0:Number(period)-1))}const list=own.filter(x=>{const d=dt(x.createdAt);return period==='all'||(d&&d>=cut)});$('sellerPeriodLabel').textContent=period==='today'?'Vendas de hoje':period==='all'?'Todas as vendas':`Vendas dos últimos ${period} dias`;$('sellerPeriodTotal').textContent=moneyBR(list.reduce((a,x)=>a+Number(x.total||0),0));$('sellerSalesList').innerHTML=list.map(x=>`<article class="seller-sale-row"><div><b>${esc(x.clientName||'Venda balcão')}</b><small>${dateTime(x.createdAt)} · ${(x.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(' · ')}</small><small>Recebido ${moneyBR(x.paid||0)} · ${esc(x.paymentMethod||'Pendente')}</small></div><div class="seller-sale-value"><b>${moneyBR(x.total||0)}</b><small class="badge">${x.status==='approved'?'Aprovada':x.status==='rejected'?'Recusada':'Em análise'}</small></div></article>`).join('')||'<div class="seller-empty">Nenhuma venda neste período.</div>'}
+ function renderSales(){const now=new Date(),cut=new Date(now);if(period!=='all'){cut.setHours(0,0,0,0);cut.setDate(cut.getDate()-(period==='today'?0:Number(period)-1))}const list=own.filter(x=>{const d=dt(x.createdAt);return period==='all'||(d&&d>=cut)});$('sellerPeriodLabel').textContent=period==='today'?'Vendas de hoje':period==='all'?'Todas as vendas':`Vendas dos últimos ${period} dias`;$('sellerPeriodTotal').textContent=moneyBR(list.reduce((a,x)=>a+Number(x.total||0),0));$('sellerSalesList').innerHTML=list.map(x=>`<article class="seller-sale-row"><div><b>${esc(x.clientName||'Venda balcão')}</b><small>${dateTime(x.createdAt)} · ${(x.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(' · ')}</small><small>Recebido ${moneyBR(x.paid||0)} · ${esc(x.paymentMethod||'Pendente')}</small><small>Comissão (20%): <b>${moneyBR(x.status==='rejected'?0:Number(x.total||0)*.2)}</b></small></div><div class="seller-sale-value"><b>${moneyBR(x.total||0)}</b><small class="badge">${x.status==='approved'?'Aprovada':x.status==='rejected'?'Recusada':'Em análise'}</small></div></article>`).join('')||'<div class="seller-empty">Nenhuma venda neste período.</div>'}
  $('sellerPeriods').onclick=e=>{const b=e.target.closest('[data-period]');if(!b)return;period=b.dataset.period;$('sellerPeriods').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));renderSales()};
  $('sellerLogout').onclick=()=>signOut(auth);const renderCart=()=>{const rows=catalog.filter(p=>cart[p.id]>0);$('sellerCartItems').innerHTML=rows.map(p=>`<div class="seller-cart-row"><div><b>${esc(p.name)}</b><small>${cart[p.id]} × ${moneyBR(p.price)}</small></div><div><button data-cminus="${esc(p.id)}">−</button><b>${cart[p.id]}</b><button data-cplus="${esc(p.id)}">＋</button></div></div>`).join('')||'<div class="seller-empty">Nenhum produto selecionado.</div>';$('sellerNetTotal').textContent=moneyBR(net());$('sellerPaidNow').max=net()};
  const renderProducts=()=>{const list=catalog.filter(p=>Number(p.stock||0)>0);$('sellerProductList').innerHTML=list.map(p=>`<button class="seller-product-tile" data-addproduct="${esc(p.id)}"><span class="seller-product-glyph">▣</span><b>${esc(p.name)}</b><small>${moneyBR(p.price)} · ${Number(p.stock||0)} un.</small><em>${cart[p.id]?'Selecionado: '+cart[p.id]:'＋ Adicionar'}</em></button>`).join('')||'<div class="seller-empty">Nenhum produto encontrado.</div>';renderCart()};
@@ -2745,4 +2746,43 @@ window.addEventListener("load",()=>{
 @media(max-width:600px){.client-profile-card .list>.closure-item{grid-template-columns:30px minmax(0,1fr)!important;gap:8px!important;padding:10px!important}.client-profile-card .list>.closure-item>.avatar{width:30px;height:30px}.client-profile-card .list>.closure-item>.item-main{grid-column:2!important;grid-row:1!important}.client-profile-card .list>.closure-item>.closure-actions{grid-column:1/-1!important;grid-row:2!important;display:grid!important;grid-template-columns:1fr 1fr;gap:7px!important}.closure-actions button{min-height:38px!important;padding:7px 8px!important;font-size:11px!important;line-height:1.2!important}}
 
 .product-avatar{display:grid;place-items:center}.product-glyph{width:30px;height:30px;display:block;flex:0 0 auto;color:currentColor}.product-avatar .product-glyph{width:29px;height:29px;margin:0;opacity:1}.fast-product .product-glyph{width:27px;height:27px;margin:0 auto 5px;opacity:.9}.fast-product{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* Identidade visual da página inicial do Julio */
+.seller-home-heading{display:flex;align-items:center;gap:10px;margin:4px 2px 22px}
+.seller-brand-mark{width:43px;height:43px;display:grid;place-items:center;border-radius:14px;background:#e9b96e;color:#30251f;font-size:26px;font-weight:900}
+.seller-brand{display:flex;flex-direction:column;gap:2px;flex:1}
+.seller-brand b{font-size:14px;letter-spacing:.04em;color:var(--text)}
+.seller-brand small{font-size:9px;letter-spacing:.13em;color:var(--muted);font-weight:800}
+.seller-user-pill{font-size:11px;font-weight:800;border:1px solid var(--line);border-radius:99px;padding:7px 10px;color:var(--text)}
+.seller-home-heading .seller-eye{width:38px;height:38px;border-radius:12px;font-size:17px}
+.seller-welcome{margin:0 4px 16px}
+.seller-welcome small{font-size:10px;letter-spacing:.12em;font-weight:850;color:#b77a4e}
+.seller-welcome h1{font-size:28px;line-height:1.1;margin:7px 0 6px;letter-spacing:-.6px}
+.seller-welcome p{font-size:12px;color:var(--muted);margin:0}
+.seller-home-hero{display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;border-radius:23px;padding:21px;background:linear-gradient(135deg,#30251f,#62412e);color:#f5e4c8;box-shadow:0 10px 25px #30251f20;margin-bottom:12px}
+.seller-home-hero small{font-size:10px;letter-spacing:.1em;color:#d5bfa4;font-weight:850}
+.seller-home-hero h2{font-size:clamp(30px,8vw,39px);margin:8px 0 3px;color:#f8d79b;letter-spacing:-1px}
+.seller-home-hero p{font-size:11px;color:#d5bfa4;margin:0}
+.seller-home-cookie{width:58px;height:58px;border:1px solid #d5bfa455;border-radius:19px;display:grid;place-items:center;color:#e9b96e;font-size:35px;transform:rotate(-12deg);background:#ffffff0b}
+.seller-home-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:13px}
+.seller-home-stats article{background:var(--white);border:1px solid var(--line);border-radius:17px;padding:14px;min-width:0}
+.seller-home-stats small{display:block;font-size:9px;letter-spacing:.04em;font-weight:850;color:var(--muted)}
+.seller-home-stats b,.seller-home-stats strong{display:block;font-size:clamp(19px,5vw,24px);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.seller-home-stats article.commission{background:#49382c;border-color:#665344}
+.seller-home-stats article.commission small{color:#d5bfa4}
+.seller-home-stats article.commission strong{color:#f8d79b}
+.seller-home-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:22px}
+.seller-home-actions button{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;min-height:84px;padding:14px;border:1px solid var(--line);border-radius:17px;background:var(--white);color:var(--text);text-align:left}
+.seller-home-actions button>span{font-size:19px;color:#b77a4e}
+.seller-home-actions button b{font-size:12px}
+.seller-home-actions button small{font-size:10px;color:var(--muted)}
+.seller-home-actions button.primary{grid-column:1/-1;min-height:70px;background:#e9b96e;border-color:#e9b96e;color:#30251f}
+.seller-home-actions button.primary>span{font-size:23px;color:#30251f}
+.seller-home-actions button.primary small{color:#49382c}
+.seller-home-recent{background:var(--white);border:1px solid var(--line);border-radius:19px;padding:15px}
+.seller-home-section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.seller-home-section-title b{font-size:14px}
+.seller-home-section-title button{background:transparent;border:0;color:#b77a4e;font-size:11px;font-weight:850}
+@media(max-width:370px){.seller-user-pill{display:none}.seller-home-heading{gap:7px}.seller-home-stats article{padding:11px}}
+
 </style>
