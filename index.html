@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU 1.8.0</title>
+<title>DOCES DO VITU V1.8.9 1.8.0</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -780,7 +780,7 @@ let db;
 try{db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});}
 catch(cacheError){console.warn("Cache persistente indisponível; usando Firestore padrão.",cacheError);db=getFirestore(app);}
 const $=id=>document.getElementById(id);
-let uid=null,currentUserName="Vitor",currentUserEmail="",unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[],debtClosures:[]},page="home";
+let uid=null,currentUserName="Vitor",currentUserEmail="",currentRole='admin',unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[],debtClosures:[]},page="home";
 
 const numBR=v=>{if(typeof v==="number")return Number.isFinite(v)?v:0;if(v==null||v==="")return 0;let s=String(v).trim().replace(/R\$|\s/g,"");if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");const n=Number(s);return Number.isFinite(n)?n:0;};const money=n=>numBR(n).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -805,10 +805,52 @@ function bootFinish(){bootSet(100);requestAnimationFrame(()=>setTimeout(()=>{$("
 onAuthStateChanged(auth,async user=>{
  unsubs.forEach(u=>u());unsubs=[];bootSet(0);
  if(!user){uid=null;$('app').classList.add('hidden');$('login').classList.remove('hidden');$('bootLoader').classList.add('done');return}
- uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentUserEmail==='viitorcontas@gmail.com'?'Vitor':'Vitor';$('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');
- try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}});
+ uid=user.uid;currentUserEmail=(user.email||'').toLowerCase();
+ currentRole=isSellerEmail(currentUserEmail)?'seller':'admin';
+ currentUserName=currentUserEmail==='xlocox000@gmail.com'?'Eduardo':currentRole==='seller'?'Julio':'Vitor';
+ $('currentUser').textContent='👤 '+currentUserName;$('login').classList.add('hidden');
+ if(currentRole==='seller'){
+  $('app').classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.style.display='none');$('quickSale').style.display='none';
+  loadSellerArea();bootFinish();return;
+ }
+ document.querySelectorAll('.nav button').forEach(b=>b.style.display='');$('quickSale').style.display='';
+ try{bootSet(15);await migrateOwnDataToShared();bootSet(25);await seedImportedDebts();bootSet(30);await subscribeReady();await publishSellerCatalog();bootSet(95);go('home');logAction('Login','Entrou no sistema');bootFinish();$('app').classList.remove('hidden')}
+ catch(e){console.error(e);toast('Não foi possível carregar os dados.');bootFinish();$('app').classList.remove('hidden')}
+});
+function isSellerEmail(email){return email===SELLER_EMAIL}
+async function publishSellerCatalog(){
+ for(const p of data.products||[]){
+  await setDoc(doc(db,'sellerCatalog',p.id),{name:p.name,price:Number(p.price||0),stock:Number(p.stock||0),updatedAt:serverTimestamp()});
+ }
+}
 
 function col(name){return collection(db,"businesses","docesDoVitu",name)}
+
+const SELLER_EMAIL='bernardojulio743@gmail.com';
+function isSeller(){return currentUserEmail===SELLER_EMAIL}
+async function loadSellerArea(){
+ const v=$('view');
+ v.innerHTML='<div class="page"><div class="head"><div><h1>Minhas vendas</h1><p>Comissão de 20% sobre valores recebidos</p></div></div><div class="card" id="sellerCatalog"><p>Carregando catálogo...</p></div><div class="card" style="margin-top:12px"><h3>Minhas solicitações</h3><div id="sellerOwnRequests">Carregando...</div></div><button class="secondary" id="sellerLogout">Sair</button></div>';
+ $('sellerLogout').onclick=()=>signOut(auth);
+ let catalog=[];
+ onSnapshot(collection(db,'sellerCatalog'),snap=>{
+  catalog=snap.docs.map(d=>({id:d.id,...d.data()}));
+  const box=$('sellerCatalog');if(!box)return;
+  box.innerHTML='<h3>Registrar venda</h3>'+ (catalog.length?catalog.map(p=>`<label style="display:block;margin:9px 0"><input type="checkbox" data-selprod="${esc(p.id)}"> ${esc(p.name)} • ${money(p.price)} • estoque ${Number(p.stock||0)}</label><input type="number" min="1" value="1" data-selqty="${esc(p.id)}" style="width:85px">`).join('')+'<input id="sellerClient" placeholder="Cliente (opcional)" style="width:100%;margin-top:12px"><button id="sellerSend" class="primary" style="width:100%;margin-top:10px">Enviar venda para aprovação</button>':'<p>Catálogo ainda não publicado pelo administrador.</p>');
+  $('sellerSend')?.addEventListener('click',async()=>{
+   const items=catalog.filter(p=>box.querySelector(`[data-selprod="${CSS.escape(p.id)}"]`)?.checked).map(p=>({productId:p.id,name:p.name,qty:Math.max(1,Number(box.querySelector(`[data-selqty="${CSS.escape(p.id)}"]`)?.value)||1),price:Number(p.price)||0}));
+   if(!items.length)return toast('Selecione ao menos um produto.');
+   for(const i of items){const p=catalog.find(x=>x.id===i.productId);if(i.qty>Number(p.stock||0))return toast('Quantidade maior que o estoque publicado.')}
+   try{await addDoc(collection(db,'sellerRequests'),{sellerUid:uid,sellerEmail:currentUserEmail,sellerName:'Julio',clientName:$('sellerClient').value.trim()||'Venda balcão',items,total:items.reduce((a,i)=>a+i.qty*i.price,0),status:'pending',createdAt:serverTimestamp()});toast('Venda enviada para aprovação.');}
+   catch(e){console.error(e);toast('Não foi possível enviar. Verifique as regras do Firebase.')}
+  },{once:true});
+ });
+ onSnapshot(query(collection(db,'sellerRequests')),snap=>{
+  const own=snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.sellerUid===uid);
+  const box=$('sellerOwnRequests');if(box)box.innerHTML=own.length?own.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).map(x=>`<div class="item"><div class="item-main"><b>${esc(x.clientName||'Venda')}</b><small>${esc(x.status||'pendente')} • ${money(x.total||0)}</small></div></div>`).join(''):'Nenhuma solicitação ainda.';
+ });
+}
+
 function oldCol(name){return collection(db,"users",uid,name)}
 async function migrateOwnDataToShared(){
  const marker=`docesDoVituSharedMigration_${uid}`;
@@ -852,6 +894,7 @@ function subscribeReady(){
 function subscribe(){return subscribeReady()}
 
 function go(p){
+ if(isSeller())return;
  page=p;
  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===p));
  const view=$("view");
@@ -862,7 +905,7 @@ function go(p){
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
 
-function render(){if(!uid)return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="purchases")v.innerHTML=purchases();if(page==="finance")v.innerHTML=finance();bindPage();bindPrivacy()}
+function render(){if(!uid||isSeller())return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="purchases")v.innerHTML=purchases();if(page==="finance")v.innerHTML=finance();bindPage();bindPrivacy()}
 function monthBounds(ref=now()){
  const start=new Date(ref.getFullYear(),ref.getMonth(),1);start.setHours(0,0,0,0);
  const end=new Date(ref.getFullYear(),ref.getMonth()+1,1);end.setHours(0,0,0,0);
