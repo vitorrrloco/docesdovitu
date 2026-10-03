@@ -831,7 +831,7 @@ function isSeller(){return currentUserEmail===SELLER_EMAIL}
 async function loadSellerArea(){
  const v=$('view');
  v.innerHTML=`<div class="page" style="max-width:760px;margin:auto;padding:14px">
- <div class="head" style="margin-bottom:14px"><div><h1>Registrar venda</h1><p>Selecione os produtos, quantidades e cliente</p></div></div>
+ <div class="card" style="padding:16px;margin-bottom:14px"><h2 style="margin:0 0 4px">Meu painel</h2><small style="color:var(--muted)">Seu desempenho e comissão de 20% sobre valores recebidos</small><div id="sellerDash" style="margin-top:14px">Carregando seu resumo...</div></div><div class="head" style="margin-bottom:14px"><div><h1>Registrar venda</h1><p>Selecione os produtos, quantidades e cliente</p></div></div>
  <div class="card" style="padding:14px;margin-bottom:12px">
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
    <button id="sellerTabSale" class="primary" style="flex:1">＋ Nova venda</button>
@@ -893,6 +893,10 @@ async function loadSellerArea(){
   try{await addDoc(collection(db,'sellerRequests'),{sellerUid:uid,sellerEmail:currentUserEmail,sellerName:'Julio',clientId:selected?.id||'',clientName:selected?.name||'Venda balcão',items,total:items.reduce((a,i)=>a+i.qty*i.price,0),status:'pending',createdAt:serverTimestamp()});cart={};renderProducts();toast('Venda enviada para aprovação.')}
   catch(e){console.error(e);toast('Não foi possível enviar. Verifique as regras do Firebase.')}
  };
+ onSnapshot(doc(db,'sellerDashboard',SELLER_EMAIL),snap=>{
+  const d=snap.exists()?snap.data():null,box=$('sellerDash');if(!box)return;
+  box.innerHTML=d?`<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px"><div class="stat"><small>VENDIDO NO MÊS</small><strong>${money(d.monthSold||0)}</strong></div><div class="stat"><small>RECEBIDO NO MÊS</small><strong>${money(d.monthReceived||0)}</strong></div><div class="stat"><small>COMISSÃO DO MÊS</small><strong style="color:var(--green)">${money(d.monthCommission||0)}</strong></div><div class="stat"><small>A RECEBER</small><strong>${money(d.monthReceivable||0)}</strong></div></div><h3 style="margin:16px 0 8px">Minhas vendas do mês</h3>${(d.sales||[]).filter(s=>String(s.createdAt||'').slice(0,7)===d.monthKey).map(s=>`<div class="item" style="padding:10px 0;border-bottom:1px solid var(--border,#443b35)"><div class="item-main"><b>${esc(s.clientName)}</b><small>Recebido ${money(s.paid)} • pendente ${money(s.pending)}</small></div><div class="item-right"><b>${money(s.total)}</b><small style="color:var(--green)">Comissão ${money(s.commission)}</small></div></div>`).join('')||'<p>Nenhuma venda aprovada neste mês.</p>'}`:'Seu painel será atualizado após a primeira venda aprovada e sincronizada.';
+ });
  onSnapshot(collection(db,'sellerCatalog'),snap=>{catalog=snap.docs.map(d=>({id:d.id,...d.data()}));renderProducts()});
  onSnapshot(col('clients'),snap=>{clients=snap.docs.map(d=>({id:d.id,...d.data()}));renderClients()});
  onSnapshot(query(collection(db,'sellerRequests'),where('sellerUid','==',uid)),snap=>{
@@ -932,12 +936,24 @@ async function seedImportedDebts(){
   await setDoc(markerRef,{done:true,total:502,createdAt:serverTimestamp()});
  }catch(e){console.warn("Importação inicial de clientes pendentes não concluída",e)}
 }
+let sellerProjectionLast='';
+async function publishSellerDashboard(){
+ const sales=(data.sales||[]).filter(s=>s.sellerUid && s.sellerName);
+ const nowDate=now(),monthStart=new Date(nowDate.getFullYear(),nowDate.getMonth(),1),monthEnd=new Date(nowDate.getFullYear(),nowDate.getMonth()+1,1);
+ const mine=sales.filter(s=>s.sellerEmail==='bernardojulio743@gmail.com'||s.sellerName==='Julio');
+ const monthly=mine.filter(s=>{const d=dt(s.createdAt);return d&&d>=monthStart&&d<monthEnd});
+ const summary={monthKey:`${nowDate.getFullYear()}-${String(nowDate.getMonth()+1).padStart(2,'0')}`,monthSold:monthly.reduce((a,s)=>a+numBR(s.total||0),0),monthReceived:monthly.reduce((a,s)=>a+numBR(s.paid||0),0),monthReceivable:monthly.reduce((a,s)=>a+salePendingAmount(s),0),monthCommission:monthly.reduce((a,s)=>a+numBR(s.paid||0)*.2,0),allSold:mine.reduce((a,s)=>a+numBR(s.total||0),0),allReceived:mine.reduce((a,s)=>a+numBR(s.paid||0),0),sales:mine.map(s=>({id:s.id,clientName:s.clientName||'Venda balcão',total:numBR(s.total||0),paid:numBR(s.paid||0),pending:salePendingAmount(s),commission:numBR(s.paid||0)*.2,createdAt:dt(s.createdAt)?.toISOString()||null})).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,100),updatedAt:serverTimestamp()};
+ const fingerprint=JSON.stringify({...summary,updatedAt:null});
+ if(fingerprint===sellerProjectionLast)return;
+ sellerProjectionLast=fingerprint;
+ await setDoc(doc(db,'sellerDashboard',SELLER_EMAIL),summary);
+}
 function subscribeReady(){
  return new Promise(resolve=>{
   const names=['products','clients','sales','payments','purchases','debtClosures']; let ready=0;
   const seen=new Set();
   names.forEach(name=>{
-   const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));render();
+   const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));if(name==='sales')publishSellerDashboard().catch(e=>console.error('seller dashboard publish',e));render();
     if(!seen.has(name)){seen.add(name);ready++;bootSet(30+ready*13);if(ready===names.length)resolve();}
    },()=>{if(!seen.has(name)){seen.add(name);ready++;if(ready===names.length)resolve();}toast('Não foi possível sincronizar '+name+'.')});
    unsubs.push(u);
@@ -1100,7 +1116,7 @@ async function rejectSellerRequest(id){
 }
 function home(){
  const t=totals(),low=data.products.filter(p=>numBR(p.stock||0)<=Number(p.minStock||2));
- return `<div class="page">
+ return `<div class="page">\n ${sellerApprovalPanel()}
  <div class="head"><div><h1>Olá! 🍫</h1><p>Seu resumo de hoje • ${now().toLocaleDateString("pt-BR",{month:"long",year:"numeric"})}</p></div>${privacyButton()}</div>
  <div class="hero"><div><small>VENDAS HOJE</small><h2 class="private-number money-hero">${money(t.todaySales)}</h2><p>${data.sales.filter(s=>{let d=dt(s.createdAt);return d&&d.toDateString()===now().toDateString()}).length} vendas registradas hoje</p></div><div class="emoji"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7 4 4m13 13 3 3M17 7l3-3M7 17l-3 3"/><rect x="6" y="6" width="12" height="12" rx="4"/><path d="M9 10h6M9 14h6"/></svg></div></div>
  <div class="stats">
