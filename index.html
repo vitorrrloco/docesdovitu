@@ -271,6 +271,31 @@ body.theme-dark .nfc-menu-card,body.theme-dark .nfc-item,body.theme-dark .nfc-dr
 /* Seller navigation, modal launcher and period filters */
 .seller-sale-overlay{position:fixed!important;inset:0!important;width:100vw;height:100vh;height:100dvh;z-index:2147483000!important;background:rgba(0,0,0,.76);display:flex;align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));box-sizing:border-box;backdrop-filter:blur(7px);overscroll-behavior:contain}.seller-sale-sheet{position:relative;width:min(100%,620px);max-height:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;background:var(--white);border:1px solid var(--line);border-radius:25px;padding:18px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 18px 60px #0007;animation:sellerSheet .22s ease both;scrollbar-width:thin}.seller-sale-sheet .seller-detail-head{position:sticky;top:-18px;z-index:2;background:var(--white);padding:4px 0 10px;margin:0 0 10px}.seller-sale-sheet .seller-form-block{margin:12px 0}.seller-sale-sheet .seller-product-tile{min-height:112px}@media(max-height:700px){.seller-sale-sheet{padding-top:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}.seller-sale-sheet .seller-product-tile{min-height:90px}.seller-sale-sheet .seller-detail-head{top:-12px}}.seller-periods{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;padding:6px;border-radius:16px;background:var(--cream2);margin:8px 0 14px}.seller-periods button{padding:11px 2px;border-radius:11px;background:transparent;color:var(--muted);font-size:11px;font-weight:850;white-space:nowrap}.seller-periods button.active{background:var(--white);color:var(--dark);box-shadow:0 3px 12px #0001}.seller-sales-summary{display:flex;justify-content:space-between;align-items:center;padding:17px;border-radius:18px;background:#3b2117;color:#fff;margin-bottom:12px}.seller-sales-summary b{font-size:20px}.seller-sale-row{display:flex;justify-content:space-between;gap:10px;padding:15px 0;border-bottom:1px solid var(--line)}.seller-sale-row:last-child{border-bottom:0}.seller-sale-row small{display:block;color:var(--muted);font-size:11px;line-height:1.5;margin-top:5px}.seller-sale-value{text-align:right;white-space:nowrap}.seller-sale-value .badge{display:inline-block;margin-top:5px}.seller-match{display:block;width:100%;text-align:left;padding:12px;background:var(--cream2);border-radius:10px;margin-top:4px;color:var(--text)}@keyframes sellerSheet{from{transform:translateY(35px);opacity:.7}to{transform:translateY(0);opacity:1}}@media(max-width:380px){.seller-periods button{font-size:10px}.seller-sale-sheet{padding-left:13px;padding-right:13px}}
 
+
+/* 1.9.9: Julio usa a mesma linguagem visual do app principal */
+.seller-shell{max-width:720px;padding:0 0 24px;animation:pageEnter .22s cubic-bezier(.2,.75,.25,1) both}
+.seller-head{margin:2px 2px 15px;align-items:end}
+.seller-head h1{font-size:28px;letter-spacing:-.5px;font-weight:800}
+.seller-head p{font-size:13px}
+.seller-hero{border-radius:25px;padding:19px;margin-bottom:13px;box-shadow:var(--shadow);background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff}
+.seller-hero small{color:inherit;opacity:.72;letter-spacing:0}
+.seller-hero strong{font-size:28px;letter-spacing:0;margin:5px 0}
+.seller-hero p{font-size:12px;opacity:.78;color:#fff}
+.seller-stats{gap:10px;margin-bottom:14px}
+.seller-stats article{min-height:0;padding:15px;border-radius:17px;box-shadow:none}
+.seller-stats small{font-size:10px;letter-spacing:0}
+.seller-stats b{font-size:clamp(21px,5.5vw,27px);margin-top:6px}
+.seller-shortcuts{gap:9px;margin:0 0 19px}
+.seller-shortcut{min-height:68px;padding:12px;border-radius:17px;box-shadow:0 4px 14px #4a281908;color:var(--dark);gap:9px}
+.seller-shortcut b{font-size:13px}
+.seller-shortcut-main{background:var(--dark);color:#fff;min-height:58px}
+.seller-section{margin-top:15px}
+.seller-section-title{font-size:17px;margin:0 2px 9px}
+.seller-recent-row,.seller-client-row{padding:12px;background:var(--white);border:1px solid var(--line);border-radius:16px;margin-bottom:8px}
+.seller-card{border-radius:18px;box-shadow:none;padding:12px}
+.seller-product-tile{border-radius:14px;background:var(--cream2);min-height:110px}
+.seller-sale-sheet{border-radius:22px}
+
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
