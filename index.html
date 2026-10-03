@@ -363,7 +363,9 @@ body.theme-dark .nfc-menu-card,body.theme-dark .nfc-item,body.theme-dark .nfc-dr
 #sellerSaleOverlay.seller-quick-mode .seller-sale-intro:before{content:"VENDA EXPRESSA  ·  ";font-weight:800;color:#986e3d}
 @media(max-width:420px){.seller-sale-redesign{padding:15px!important;border-radius:22px!important}.seller-sale-redesign .seller-product-grid{gap:7px}.seller-sale-redesign .seller-product-tile{padding:10px;min-height:108px}.seller-sale-redesign .seller-detail-head b{font-size:22px}}
 
-.seller-profile-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}.seller-profile-actions button{min-height:44px!important;padding:10px!important;font-size:12px!important}.seller-profile-actions #sellerProfileSell{grid-column:1/-1}</style>
+.seller-profile-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}.seller-profile-actions button{min-height:44px!important;padding:10px!important;font-size:12px!important}.seller-profile-actions #sellerProfileSell{grid-column:1/-1}
+.payables-panel{margin:14px 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}.payables-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.payables-row:last-child{border-bottom:0}.payables-main{flex:1;min-width:0}.payables-main b{display:block;font-size:13px;overflow-wrap:anywhere}.payables-main small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.payables-amount{font-weight:900;white-space:nowrap}.payables-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.payables-actions button{min-height:32px;padding:6px 9px;font-size:11px}
+</style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -885,7 +887,7 @@ let db;
 try{db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});}
 catch(cacheError){console.warn("Cache persistente indisponível; usando Firestore padrão.",cacheError);db=getFirestore(app);}
 const $=id=>document.getElementById(id);
-let uid=null,currentUserName="Vitor",currentUserEmail="",currentRole='admin',unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[],debtClosures:[],sellerRequests:[]},page="home";
+let uid=null,currentUserName="Vitor",currentUserEmail="",currentRole='admin',unsubs=[],data={products:[],clients:[],sales:[],payments:[],purchases:[],logs:[],debtClosures:[],payables:[],sellerRequests:[]},page="home";
 
 const numBR=v=>{if(typeof v==="number")return Number.isFinite(v)?v:0;if(v==null||v==="")return 0;let s=String(v).trim().replace(/R\$|\s/g,"");if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");const n=Number(s);return Number.isFinite(n)?n:0;};const money=n=>numBR(n).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -1029,7 +1031,7 @@ async function publishSellerDashboard(){
 }
 function subscribeReady(){
  return new Promise(resolve=>{
-  const names=['products','clients','sales','payments','purchases','debtClosures']; let ready=0;
+  const names=['products','clients','sales','payments','purchases','debtClosures','payables']; let ready=0;
   const seen=new Set();
   names.forEach(name=>{
    const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));if(name==='sales')publishSellerDashboard().catch(e=>console.error('seller dashboard publish',e));render();
@@ -1473,6 +1475,19 @@ function printDailyCash(r){
 }
 function openDailyCashReport(){const n=now(),key=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`,r=dayData(key);openModal("Caixa do dia",dailyCashHtml(r));bindDailyCash(r)}
 function bindDailyCash(r){$("dailyCashRefresh")?.addEventListener("click",()=>{const key=$("dailyCashDate")?.value||r.dateKey,rr=dayData(key);openModal("Caixa do dia",dailyCashHtml(rr));bindDailyCash(rr)});$("dailyCashPrint")?.addEventListener("click",()=>printDailyCash(r))}
+function openPayables(){
+ const rows=(data.payables||[]).slice().sort((a,b)=>{const ap=a.status==='paid'?1:0,bp=b.status==='paid'?1:0;if(ap!==bp)return ap-bp;return String(a.dueDate||'9999-99-99').localeCompare(String(b.dueDate||'9999-99-99'));});
+ const pending=rows.filter(x=>x.status!=='paid'),paid=rows.filter(x=>x.status==='paid');
+ const totalPending=pending.reduce((a,x)=>a+numBR(x.amount||0),0),totalPaid=paid.reduce((a,x)=>a+numBR(x.amount||0),0);
+ const fmtDate=v=>{if(!v)return 'Sem vencimento';const p=String(v).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:esc(v)};
+ const list=rows.map(x=>{const overdue=x.status!=='paid'&&x.dueDate&&x.dueDate<new Date().toISOString().slice(0,10);return `<div class="payables-row"><div class="payables-main"><b>${esc(x.title||'Conta')}</b><small>${esc(x.category||'Outra despesa')} · Vencimento: ${fmtDate(x.dueDate)} · ${x.status==='paid'?'Pago':'Pendente'}</small>${x.note?`<small>${esc(x.note)}</small>`:''}${overdue?'<span class="badge" style="color:var(--red)">Vencida</span>':''}<div class="payables-actions">${x.status==='paid'?`<span class="badge" style="color:var(--green)">Pago em ${fmtDate(x.paidDate)}</span>`:`<button class="primary" type="button" data-payable-paid="${x.id}">Registrar pagamento</button>`}<button class="secondary" type="button" data-payable-delete="${x.id}">Excluir</button></div></div><div class="payables-amount ${x.status==='paid'?'finance-positive':'finance-negative'}">${money(x.amount||0)}</div></div>`}).join('')||'<div class="empty">Nenhuma conta cadastrada.</div>';
+ openModal('Contas a pagar',`<div class="finance-grid"><div class="finance-card"><small>Total pendente</small><strong class="finance-negative">${money(totalPending)}</strong></div><div class="finance-card"><small>Pago registrado</small><strong class="finance-positive">${money(totalPaid)}</strong></div></div><button class="primary" id="payableNew" style="width:100%;margin:10px 0 12px">＋ Registrar conta</button><div class="payables-panel">${list}</div>`);
+ $('payableNew').onclick=()=>{openModal('Registrar conta',`<div class="form"><div class="field"><label>Descrição</label><input id="payTitle" maxlength="100" placeholder="Ex.: Comissão Julio, fornecedor"></div><div class="field"><label>Favorecido / categoria</label><select id="payCategory"><option>Funcionário</option><option>Fornecedor</option><option>Frete</option><option>Embalagem</option><option>Impostos</option><option>Outra despesa</option></select></div><div class="field"><label>Valor (R$)</label><input id="payAmount" type="number" min="0.01" step="0.01" placeholder="0,00"></div><div class="field"><label>Vencimento</label><input id="payDue" type="date"></div><div class="field"><label>Observação (opcional)</label><input id="payNote" maxlength="200" placeholder="Detalhes"></div><div class="actions"><button class="secondary" id="payCancel">Cancelar</button><button class="primary" id="paySave">Salvar conta</button></div></div>`);$('payCancel').onclick=openPayables;
+ $('paySave').onclick=async()=>{const title=$('payTitle').value.trim(),amount=Number($('payAmount').value),category=$('payCategory').value,dueDate=$('payDue').value,note=$('payNote').value.trim();if(!title)return toast('Informe a descrição.');if(!Number.isFinite(amount)||amount<=0)return toast('Informe um valor válido.');try{await addDoc(col('payables'),{title,category,amount:Math.round(amount*100)/100,dueDate,note,status:'pending',createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});toast('Conta registrada.');openPayables()}catch(e){console.error(e);toast('Não foi possível salvar. Verifique as regras do Firebase.')}}};
+ document.querySelectorAll('[data-payable-paid]').forEach(b=>b.onclick=async()=>{const x=(data.payables||[]).find(p=>p.id===b.dataset.payablePaid);if(!x||x.status==='paid')return;try{await updateDoc(doc(col('payables'),x.id),{status:'paid',paidDate:new Date().toISOString().slice(0,10),paidAt:serverTimestamp(),paidByUid:uid,paidByName:currentUserName});toast('Pagamento registrado.');openPayables()}catch(e){console.error(e);toast('Não foi possível registrar o pagamento.')}});
+ document.querySelectorAll('[data-payable-delete]').forEach(b=>b.onclick=async()=>{const x=(data.payables||[]).find(p=>p.id===b.dataset.payableDelete);if(!x)return;if(!confirm(`Excluir a conta "${x.title||'Conta'}"?`))return;try{await deleteDoc(doc(col('payables'),x.id));toast('Conta excluída.');openPayables()}catch(e){console.error(e);toast('Não foi possível excluir a conta.')}});
+}
+
 let financeMonthKey = `${now().getFullYear()}-${String(now().getMonth()+1).padStart(2,"0")}`;
 function finance(){
  const [financeYear,financeMonth]=financeMonthKey.split("-").map(Number);
@@ -1488,7 +1503,8 @@ function finance(){
  const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+numBR(i.qty||0),0),0);
  const allReceived=payments.reduce((a,p)=>a+numBR(p.amount||0),0);
  const allPurchases=purchases.reduce((a,p)=>a+numBR(p.total||0),0);
- const cash=allReceived-allPurchases;
+ const paidPayables=(data.payables||[]).filter(x=>x.status==='paid').reduce((a,x)=>a+numBR(x.amount||0),0);
+ const cash=allReceived-allPurchases-paidPayables;
  const byMethod={};monthPayments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+numBR(p.amount||0)});
  const top={};monthSales.forEach(s=>(s.items||[]).forEach(i=>{top[i.name]=(top[i.name]||0)+numBR(i.qty||0)}));
  const topRows=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name,q])=>`<div class="item"><div class="avatar"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div class="item-main"><b>${esc(name)}</b><small>${q} unidade(s) vendida(s)</small></div></div>`).join("")||'<div class="empty">Ainda não há vendas neste mês.</div>';
@@ -1509,6 +1525,7 @@ function finance(){
    <button type="button" class="finance-option" id="financeReceivables"><b>💰 A receber <span class="private-number">${money((data.clients||[]).reduce((sum,c)=>sum+clientPending(c),0))}</span></b><small>Total em aberto de todos os clientes.</small></button>
    <button type="button" class="finance-option" id="financePayments"><b>💵 Registrar pagamento</b><small>Baixe pagamentos recebidos.</small></button>
    <button type="button" class="finance-option" id="financeDailyCash"><b>📋 Gerar caixa do dia</b><small>Relatório completo de um dia, com opção de imprimir/PDF.</small></button>
+   <button type="button" class="finance-option" id="financePayables"><b>🧾 Contas a pagar <span class="private-number">${money((data.payables||[]).filter(x=>x.status!=='paid').reduce((a,x)=>a+numBR(x.amount||0),0))}</span></b><small>Julio, fornecedores e despesas registradas.</small></button>
   </div>
   <div class="finance-grid">
    <div class="finance-card"><small>Faturamento do mês</small><strong class="private-number money-large">${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
@@ -2607,6 +2624,7 @@ function bindPage(){
  $("currentUser")?.addEventListener("click",openAccount);
  $("financeAnalysis")?.addEventListener("click",openAnalysis);
 $("financeDailyCash")?.addEventListener("click",openDailyCashReport);
+ $("financePayables")?.addEventListener("click",openPayables);
  $("financeReceivables")?.addEventListener("click",openReceivables);
  $("financePayments")?.addEventListener("click",()=>{const rows=data.clients.map(c=>{let pending=clientPending(c);return {...c,pending}}).filter(c=>c.pending>0).sort((a,b)=>b.pending-a.pending);if(!rows.length)return toast("Ninguém com valor pendente.");openPaymentForClient(rows[0]);});
 }
