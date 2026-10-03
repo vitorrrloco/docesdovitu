@@ -762,7 +762,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import {getFirestore,initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc,runTransaction} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {getFirestore,initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,addDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,query,orderBy,getDocs,getDoc,runTransaction, where} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig={
  apiKey:"AIzaSyAfH-93y7s1YK_3je_sZlofd8XJ1z436Yk",
@@ -830,27 +830,78 @@ const SELLER_EMAIL='bernardojulio743@gmail.com';
 function isSeller(){return currentUserEmail===SELLER_EMAIL}
 async function loadSellerArea(){
  const v=$('view');
- v.innerHTML='<div class="page"><div class="head"><div><h1>Minhas vendas</h1><p>Comissão de 20% sobre valores recebidos</p></div></div><div class="card" id="sellerCatalog"><p>Carregando catálogo...</p></div><div class="card" style="margin-top:12px"><h3>Minhas solicitações</h3><div id="sellerOwnRequests">Carregando...</div></div><button class="secondary" id="sellerLogout">Sair</button></div>';
+ v.innerHTML=`<div class="page" style="max-width:760px;margin:auto;padding:14px">
+ <div class="head" style="margin-bottom:14px"><div><h1>Registrar venda</h1><p>Selecione os produtos, quantidades e cliente</p></div></div>
+ <div class="card" style="padding:14px;margin-bottom:12px">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+   <button id="sellerTabSale" class="primary" style="flex:1">＋ Nova venda</button>
+   <button id="sellerTabClients" class="secondary" style="flex:1">♙ Clientes</button>
+  </div>
+  <section id="sellerSalePanel">
+   <label style="display:block;font-weight:700;margin:8px 0">Cliente</label>
+   <select id="sellerClientSelect" style="width:100%;padding:13px;border-radius:10px;background:var(--surface,#211e1c);color:inherit;border:1px solid var(--border,#443b35);font:inherit"><option value="">Venda balcão</option></select>
+   <div style="display:flex;gap:8px;margin:8px 0 14px"><input id="sellerClientSearch" placeholder="Buscar cliente..." style="flex:1;min-width:0"><button id="sellerNewClientInline" class="secondary">＋ Cliente</button></div>
+   <label style="display:block;font-weight:700;margin:10px 0">Produtos</label>
+   <input id="sellerProductSearch" placeholder="🔎 Buscar produto" style="width:100%;margin-bottom:10px">
+   <div id="sellerProductList"></div>
+   <div style="border-top:1px solid var(--border,#443b35);margin-top:14px;padding-top:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:18px"><span>Total da venda</span><span id="sellerCartTotal">R$ 0,00</span></div>
+    <button id="sellerSend" class="primary" style="width:100%;margin-top:12px;padding:15px">Enviar venda para aprovação</button>
+   </div>
+  </section>
+  <section id="sellerClientsPanel" style="display:none">
+   <div style="display:flex;gap:8px"><input id="sellerClientListSearch" placeholder="🔎 Procurar cliente" style="flex:1;min-width:0"><button id="sellerAddClient" class="primary">＋ Cadastrar</button></div>
+   <div id="sellerClientList" style="margin-top:12px">Carregando clientes...</div>
+  </section>
+ </div>
+ <div class="card" style="padding:14px"><h3>Minhas vendas enviadas</h3><div id="sellerOwnRequests">Carregando...</div></div>
+ <button class="secondary" id="sellerLogout" style="margin-top:12px">Sair</button></div>`;
  $('sellerLogout').onclick=()=>signOut(auth);
- let catalog=[];
- onSnapshot(collection(db,'sellerCatalog'),snap=>{
-  catalog=snap.docs.map(d=>({id:d.id,...d.data()}));
-  const box=$('sellerCatalog');if(!box)return;
-  box.innerHTML='<h3>Registrar venda</h3>'+ (catalog.length?catalog.map(p=>`<label style="display:block;margin:9px 0"><input type="checkbox" data-selprod="${esc(p.id)}"> ${esc(p.name)} • ${money(p.price)} • estoque ${Number(p.stock||0)}</label><input type="number" min="1" value="1" data-selqty="${esc(p.id)}" style="width:85px">`).join('')+'<input id="sellerClient" placeholder="Cliente (opcional)" style="width:100%;margin-top:12px"><button id="sellerSend" class="primary" style="width:100%;margin-top:10px">Enviar venda para aprovação</button>':'<p>Catálogo ainda não publicado pelo administrador.</p>');
-  $('sellerSend')?.addEventListener('click',async()=>{
-   const items=catalog.filter(p=>box.querySelector(`[data-selprod="${CSS.escape(p.id)}"]`)?.checked).map(p=>({productId:p.id,name:p.name,qty:Math.max(1,Number(box.querySelector(`[data-selqty="${CSS.escape(p.id)}"]`)?.value)||1),price:Number(p.price)||0}));
-   if(!items.length)return toast('Selecione ao menos um produto.');
-   for(const i of items){const p=catalog.find(x=>x.id===i.productId);if(i.qty>Number(p.stock||0))return toast('Quantidade maior que o estoque publicado.')}
-   try{await addDoc(collection(db,'sellerRequests'),{sellerUid:uid,sellerEmail:currentUserEmail,sellerName:'Julio',clientName:$('sellerClient').value.trim()||'Venda balcão',items,total:items.reduce((a,i)=>a+i.qty*i.price,0),status:'pending',createdAt:serverTimestamp()});toast('Venda enviada para aprovação.');}
-   catch(e){console.error(e);toast('Não foi possível enviar. Verifique as regras do Firebase.')}
-  },{once:true});
- });
- onSnapshot(query(collection(db,'sellerRequests')),snap=>{
-  const own=snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.sellerUid===uid);
-  const box=$('sellerOwnRequests');if(box)box.innerHTML=own.length?own.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).map(x=>`<div class="item"><div class="item-main"><b>${esc(x.clientName||'Venda')}</b><small>${esc(x.status||'pendente')} • ${money(x.total||0)}</small></div></div>`).join(''):'Nenhuma solicitação ainda.';
+ let catalog=[], clients=[], cart={};
+ const moneyBR=n=>money(Number(n||0));
+ const escId=id=>CSS.escape(String(id));
+ const renderProducts=()=>{
+  const q=($('sellerProductSearch')?.value||'').toLowerCase();
+  const list=catalog.filter(p=>String(p.name||'').toLowerCase().includes(q));
+  $('sellerProductList').innerHTML=list.map(p=>{const qty=cart[p.id]||0;return `<div class="item" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border,#443b35)"><div class="item-main" style="min-width:0;flex:1"><b>${esc(p.name)}</b><small>${moneyBR(p.price)} • estoque ${Number(p.stock||0)}</small></div><div style="display:flex;align-items:center;gap:8px"><button class="secondary" data-sminus="${esc(p.id)}" aria-label="Diminuir">−</button><b style="min-width:18px;text-align:center">${qty}</b><button class="secondary" data-splus="${esc(p.id)}" aria-label="Aumentar" ${qty>=Number(p.stock||0)?'disabled':''}>＋</button></div></div>`}).join('')||'<p>Nenhum produto encontrado.</p>';
+  $('sellerCartTotal').textContent=moneyBR(catalog.reduce((sum,p)=>sum+(cart[p.id]||0)*Number(p.price||0),0));
+ };
+ const renderClients=()=>{
+  const q=($('sellerClientListSearch')?.value||'').toLowerCase();
+  const found=clients.filter(c=>String(c.name||'').toLowerCase().includes(q)||String(c.phone||'').includes(q));
+  $('sellerClientList').innerHTML=found.map(c=>`<div class="item" style="padding:12px 0;border-bottom:1px solid var(--border,#443b35)"><div class="item-main"><b>${esc(c.name)}</b><small>${esc(c.phone||'Sem telefone')}</small></div><button class="secondary" data-pickclient="${esc(c.id)}">Selecionar</button></div>`).join('')||'<p>Nenhum cliente cadastrado.</p>';
+  const sel=$('sellerClientSelect'),chosen=sel.value;
+  sel.innerHTML='<option value="">Venda balcão</option>'+clients.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}${c.phone?' • '+esc(c.phone):''}</option>`).join('');
+  if(clients.some(c=>c.id===chosen))sel.value=chosen;
+ };
+ const showClients=()=>{$('sellerSalePanel').style.display='none';$('sellerClientsPanel').style.display='block';$('sellerTabSale').className='secondary';$('sellerTabClients').className='primary';renderClients()};
+ const showSale=()=>{$('sellerSalePanel').style.display='block';$('sellerClientsPanel').style.display='none';$('sellerTabSale').className='primary';$('sellerTabClients').className='secondary'};
+ $('sellerTabSale').onclick=showSale;$('sellerTabClients').onclick=showClients;
+ $('sellerNewClientInline').onclick=()=>{showClients();openSellerClientForm()};
+ $('sellerAddClient').onclick=openSellerClientForm;
+ $('sellerProductSearch').oninput=renderProducts;
+ $('sellerClientSearch').oninput=()=>{const q=$('sellerClientSearch').value.toLowerCase();$('sellerClientSelect').innerHTML='<option value="">Venda balcão</option>'+clients.filter(c=>c.name.toLowerCase().includes(q)||String(c.phone||'').includes(q)).map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')};
+ $('sellerClientListSearch').oninput=renderClients;
+ $('sellerProductList').onclick=e=>{const plus=e.target.closest('[data-splus]'),minus=e.target.closest('[data-sminus]');if(!plus&&!minus)return;const id=(plus||minus).dataset.splus||(plus||minus).dataset.sminus,p=catalog.find(x=>x.id===id);if(!p)return;cart[id]=Math.max(0,Math.min(Number(p.stock||0),(cart[id]||0)+(plus?1:-1)));if(!cart[id])delete cart[id];renderProducts()};
+ $('sellerClientList').onclick=e=>{const b=e.target.closest('[data-pickclient]');if(b){$('sellerClientSelect').value=b.dataset.pickclient;showSale()}};
+ $('sellerSend').onclick=async()=>{
+  const items=catalog.filter(p=>cart[p.id]>0).map(p=>({productId:p.id,name:p.name,qty:cart[p.id],price:Number(p.price)||0}));
+  if(!items.length)return toast('Adicione pelo menos um produto.');
+  const selected=clients.find(c=>c.id===$('sellerClientSelect').value);
+  try{await addDoc(collection(db,'sellerRequests'),{sellerUid:uid,sellerEmail:currentUserEmail,sellerName:'Julio',clientId:selected?.id||'',clientName:selected?.name||'Venda balcão',items,total:items.reduce((a,i)=>a+i.qty*i.price,0),status:'pending',createdAt:serverTimestamp()});cart={};renderProducts();toast('Venda enviada para aprovação.')}
+  catch(e){console.error(e);toast('Não foi possível enviar. Verifique as regras do Firebase.')}
+ };
+ onSnapshot(collection(db,'sellerCatalog'),snap=>{catalog=snap.docs.map(d=>({id:d.id,...d.data()}));renderProducts()});
+ onSnapshot(col('clients'),snap=>{clients=snap.docs.map(d=>({id:d.id,...d.data()}));renderClients()});
+ onSnapshot(query(collection(db,'sellerRequests'),where('sellerUid','==',uid)),snap=>{
+  const own=snap.docs.map(d=>({id:d.id,...d.data()}));
+  const box=$('sellerOwnRequests');if(box)box.innerHTML=own.length?own.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).map(x=>`<div class="item"><div class="item-main"><b>${esc(x.clientName||'Venda')}</b><small>${esc(x.status||'pendente')} • ${money(x.total||0)}</small></div></div>`).join(''):'Nenhuma venda enviada ainda.';
  });
 }
-
+function openSellerClientForm(){
+ openModal('Cadastrar cliente',`<div class="form"><div class="field"><label>Nome *</label><input id="sellerNewName" placeholder="Nome do cliente" maxlength="90"></div><div class="field"><label>Telefone</label><input id="sellerNewPhone" placeholder="(47) 99999-9999" inputmode="tel"></div><button id="sellerSaveClient" class="primary" style="width:100%">Salvar cliente</button></div>`);
+ $('sellerSaveClient').onclick=async()=>{const name=$('sellerNewName').value.trim(),phone=$('sellerNewPhone').value.trim();if(!name)return toast('Informe o nome do cliente.');try{await addDoc(col('clients'),{name,phone,status:'normal',createdAt:serverTimestamp(),createdByUid:uid,createdByName:'Julio'});closeModal();toast('Cliente cadastrado!')}catch(e){console.error(e);toast('Não foi possível cadastrar. Verifique as regras do Firebase.')}};
+}
 function oldCol(name){return collection(db,"users",uid,name)}
 async function migrateOwnDataToShared(){
  const marker=`docesDoVituSharedMigration_${uid}`;
