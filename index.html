@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU V1.8.9 1.8.0</title>
+<title>DOCES DO VITU V1.9.3</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -260,6 +260,10 @@ body.theme-dark .nfc-menu-card,body.theme-dark .nfc-item,body.theme-dark .nfc-dr
 .ui-svg{width:19px;height:19px;display:inline-block;vertical-align:middle;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 .nav .ui-svg{width:21px;height:21px}
 .quick .ui-svg{width:20px;height:20px}
+
+/* DOCES DO VITU 1.9.3 • experiência do vendedor */
+.seller-shell{max-width:760px;margin:auto;padding:14px 14px 28px;animation:sellerEnter .35s ease both}.seller-hero{position:relative;overflow:hidden;padding:20px;border-radius:24px;background:linear-gradient(135deg,#4a2819,#85502f);color:#fff;box-shadow:0 12px 30px #4a281925}.seller-hero:after{content:"";position:absolute;width:160px;height:160px;border-radius:50%;right:-50px;top:-65px;background:#ffffff0d}.seller-hero h1{font-size:23px;margin:0 0 5px}.seller-hero p{margin:0;color:#f0d9c6;font-size:12px}.seller-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:6px;background:var(--cream2);border-radius:17px;margin:14px 0}.seller-tabs button{min-width:0;border-radius:12px;padding:11px 3px;background:transparent;color:var(--muted);font-size:11px;font-weight:850;transition:.2s}.seller-tabs button.active{background:var(--white);color:var(--dark);box-shadow:0 3px 12px #4a281912}.seller-panel{animation:sellerEnter .24s ease both}.seller-card{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:0 7px 22px #4a281908}.seller-label{display:block;font-size:12px;font-weight:850;margin:12px 0 7px;color:var(--dark2)}.seller-input{width:100%;height:50px;border:1px solid var(--line);border-radius:14px;padding:0 13px;background:var(--cream);color:var(--text);outline:none}.seller-input:focus{border-color:var(--caramel);box-shadow:0 0 0 4px #b77a4e20}.seller-total{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--line);font-weight:850;font-size:16px}.seller-submit{background:linear-gradient(135deg,#4a2819,#805033);box-shadow:0 8px 18px #4a281926;transition:transform .16s,filter .16s}.seller-submit:active{transform:scale(.985);filter:brightness(1.12)}.seller-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.seller-kpi{padding:13px;border-radius:15px;background:var(--cream);border:1px solid var(--line)}.seller-kpi small{display:block;font-size:10px;color:var(--muted);font-weight:800}.seller-kpi b{display:block;font-size:19px;margin-top:5px}.seller-admin-wrap{margin:0 0 14px}.seller-admin-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 17px;border-radius:18px;background:linear-gradient(110deg,#0878d1,#159de9);color:white;text-align:left;box-shadow:0 8px 22px #0878d12b;transition:transform .18s,box-shadow .18s}.seller-admin-toggle:active{transform:scale(.99)}.seller-admin-toggle small{display:block;color:#e0f3ff;margin-top:3px}.seller-admin-count{background:#fff;color:#0878d1;border-radius:99px;min-width:34px;height:34px;display:grid;place-items:center;font-weight:900}.seller-admin-content{margin-top:9px;padding:12px;border-radius:17px;background:var(--white);border:1px solid var(--line);animation:sellerEnter .2s ease both}.seller-request{padding:13px 0;border-bottom:1px solid var(--line)}.seller-request:last-child{border-bottom:0}.seller-request-actions{display:flex;gap:7px;margin-top:10px}.seller-request-actions button{flex:1;min-height:42px}@keyframes sellerEnter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}@media(max-width:380px){.seller-tabs button{font-size:10px;padding:10px 1px}.seller-hero{padding:17px}}
+
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -742,7 +746,7 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V1.7.7</small></div></div>
+  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V1.9.3</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -830,79 +834,26 @@ const SELLER_EMAIL='bernardojulio743@gmail.com';
 function isSeller(){return currentUserEmail===SELLER_EMAIL}
 async function loadSellerArea(){
  const v=$('view');
- v.innerHTML=`<div class="page" style="max-width:760px;margin:auto;padding:14px">
- <div class="card" style="padding:16px;margin-bottom:14px"><h2 style="margin:0 0 4px">Meu painel</h2><small style="color:var(--muted)">Seu desempenho e comissão de 20% sobre valores recebidos</small><div id="sellerDash" style="margin-top:14px">Carregando seu resumo...</div></div><div class="head" style="margin-bottom:14px"><div><h1>Registrar venda</h1><p>Selecione os produtos, quantidades e cliente</p></div></div>
- <div class="card" style="padding:14px;margin-bottom:12px">
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-   <button id="sellerTabSale" class="primary" style="flex:1">＋ Nova venda</button>
-   <button id="sellerTabClients" class="secondary" style="flex:1">♙ Clientes</button>
-  </div>
-  <section id="sellerSalePanel">
-   <label style="display:block;font-weight:700;margin:8px 0">Cliente</label>
-   <input id="sellerClientSearch" placeholder="🔎 Digite nome ou telefone do cliente" autocomplete="off" style="width:100%;margin:8px 0">
-   <div id="sellerClientMatches"></div><div id="sellerChosenClient" style="margin:6px 0 14px;color:var(--muted)">Venda balcão</div>
-   <button id="sellerNewClientInline" class="secondary" style="margin-bottom:12px">＋ Cadastrar cliente</button>
-   <input id="sellerClientSelect" type="hidden" value="">
-   <label style="display:block;font-weight:700;margin:10px 0">Produtos</label>
-   <input id="sellerProductSearch" placeholder="🔎 Buscar produto" style="width:100%;margin-bottom:10px">
-   <div id="sellerProductList"></div>
-   <div style="border-top:1px solid var(--border,#443b35);margin-top:14px;padding-top:14px">
-    <div style="display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:18px"><span>Total da venda</span><span id="sellerCartTotal">R$ 0,00</span></div>
-    <button id="sellerSend" class="primary" style="width:100%;margin-top:12px;padding:15px">Enviar venda para aprovação</button>
-   </div>
-  </section>
-  <section id="sellerClientsPanel" style="display:none">
-   <div style="display:flex;gap:8px"><input id="sellerClientListSearch" placeholder="🔎 Procurar cliente" style="flex:1;min-width:0"><button id="sellerAddClient" class="primary">＋ Cadastrar</button></div>
-   <div id="sellerClientList" style="margin-top:12px">Carregando clientes...</div>
-  </section>
- </div>
- <div class="card" style="padding:14px"><h3>Minhas vendas enviadas</h3><div id="sellerOwnRequests">Carregando...</div></div>
- <button class="secondary" id="sellerLogout" style="margin-top:12px">Sair</button></div>`;
+ v.innerHTML=`<div class="seller-shell"><div class="seller-hero"><div style="display:flex;justify-content:space-between;align-items:start;gap:10px"><div><h1>Olá, Julio! 👋</h1><p>Seu espaço de vendas • comissão de 20% sobre o que receber</p></div><span style="font-size:28px">🍫</span></div></div>
+ <div class="seller-tabs"><button id="sellerTabQuick" class="active">⚡ Rápida</button><button id="sellerTabSale">🧾 Normal</button><button id="sellerTabClients">♙ Clientes</button><button id="sellerTabDash">📊 Meu painel</button></div>
+ <section id="sellerSalePanel" class="seller-panel"><div class="seller-card"><h3 id="sellerFormTitle" style="margin:0">Lançamento rápido</h3><small id="sellerFormHint" style="color:var(--muted)">Adicione os itens e registre o pagamento em poucos toques.</small><label class="seller-label">Cliente</label><input id="sellerClientSearch" class="seller-input" placeholder="Buscar nome ou telefone" autocomplete="off"><div id="sellerClientMatches"></div><div id="sellerChosenClient" style="margin:7px 0;color:var(--muted);font-size:12px">Venda balcão</div><button id="sellerNewClientInline" class="secondary" style="width:100%">＋ Cadastrar cliente</button><label class="seller-label">Encontrar produto</label><input id="sellerProductSearch" class="seller-input" placeholder="Digite o produto para adicionar"><div id="sellerProductList"></div><div class="seller-total"><span>Total</span><strong id="sellerCartTotal">R$ 0,00</strong></div>
+ <label class="seller-label">Quanto o cliente pagou agora?</label><input id="sellerPaidNow" class="seller-input" type="number" min="0" step="0.01" value="0" placeholder="0,00"><label class="seller-label">Forma de pagamento</label><select id="sellerPayMethod" class="seller-input"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Transferência</option><option>Outro</option></select><small style="display:block;color:var(--muted);margin:8px 0">Informe 0 para deixar em aberto, o total para pagamento integral ou um valor menor para pagamento parcial.</small><button id="sellerSend" class="primary seller-submit" style="width:100%;margin-top:9px">Enviar venda para aprovação</button></div></section>
+ <section id="sellerClientsPanel" class="seller-panel" style="display:none"><div class="seller-card"><div style="display:flex;gap:8px"><input id="sellerClientListSearch" class="seller-input" placeholder="Procurar cliente" style="flex:1;min-width:0"><button id="sellerAddClient" class="primary" style="width:auto;padding:0 14px">＋</button></div><div id="sellerClientList" style="margin-top:12px">Carregando clientes...</div></div></section>
+ <section id="sellerDashPanel" class="seller-panel" style="display:none"><div class="seller-card"><h3 style="margin:0 0 4px">Meu desempenho</h3><small style="color:var(--muted)">Resumo pessoal e comissão calculada sobre valores recebidos</small><div id="sellerDash" style="margin-top:14px">Carregando seu resumo...</div></div><div class="seller-card"><h3 style="margin:0 0 8px">Minhas vendas e solicitações</h3><div id="sellerOwnRequests">Carregando...</div></div></section><button class="secondary" id="sellerLogout" style="width:100%;margin-top:4px">Sair da conta</button></div>`;
  $('sellerLogout').onclick=()=>signOut(auth);
- let catalog=[], clients=[], cart={};
- const moneyBR=n=>money(Number(n||0));
- const escId=id=>CSS.escape(String(id));
- const renderProducts=()=>{
-  const q=($('sellerProductSearch')?.value||'').trim().toLowerCase();
-  const list=q?catalog.filter(p=>String(p.name||'').toLowerCase().includes(q)):[];
-  $('sellerProductList').innerHTML=list.map(p=>{const qty=cart[p.id]||0;return `<div class="item" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border,#443b35)"><div class="item-main" style="min-width:0;flex:1"><b>${esc(p.name)}</b><small>${moneyBR(p.price)} • estoque ${Number(p.stock||0)}</small></div><div style="display:flex;align-items:center;gap:8px"><button class="secondary" data-sminus="${esc(p.id)}" aria-label="Diminuir">−</button><b style="min-width:18px;text-align:center">${qty}</b><button class="secondary" data-splus="${esc(p.id)}" aria-label="Aumentar" ${qty>=Number(p.stock||0)?'disabled':''}>＋</button></div></div>`}).join('')||(q?'<p>Nenhum produto encontrado.</p>':'<p>Digite o nome do produto para pesquisar.</p>');
-  $('sellerCartTotal').textContent=moneyBR(catalog.reduce((sum,p)=>sum+(cart[p.id]||0)*Number(p.price||0),0));
- };
- const renderClients=()=>{
-  const q=($('sellerClientListSearch')?.value||'').toLowerCase();
-  const found=clients.filter(c=>String(c.name||'').toLowerCase().includes(q)||String(c.phone||'').includes(q));
-  $('sellerClientList').innerHTML=found.map(c=>`<div class="item" style="padding:12px 0;border-bottom:1px solid var(--border,#443b35)"><div class="item-main"><b>${esc(c.name)}</b><small>${esc(c.phone||'Sem telefone')}</small></div><button class="secondary" data-pickclient="${esc(c.id)}">Selecionar</button></div>`).join('')||'<p>Nenhum cliente cadastrado.</p>';
-  renderClientMatches();
- };
+ let catalog=[],clients=[],cart={};const moneyBR=n=>money(Number(n||0));
+ const renderProducts=()=>{const q=($('sellerProductSearch')?.value||'').trim().toLowerCase();const list=q?catalog.filter(p=>String(p.name||'').toLowerCase().includes(q)):[];$('sellerProductList').innerHTML=list.map(p=>{const qty=cart[p.id]||0;return `<div class="item" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)"><div class="item-main" style="min-width:0;flex:1"><b>${esc(p.name)}</b><small>${moneyBR(p.price)} • estoque ${Number(p.stock||0)}</small></div><div style="display:flex;align-items:center;gap:8px"><button class="secondary" data-sminus="${esc(p.id)}">−</button><b>${qty}</b><button class="secondary" data-splus="${esc(p.id)}" ${qty>=Number(p.stock||0)?'disabled':''}>＋</button></div></div>`}).join('')||(q?'<p>Nenhum produto encontrado.</p>':'<p style="color:var(--muted);font-size:12px">Pesquise um produto para começar.</p>');$('sellerCartTotal').textContent=moneyBR(catalog.reduce((sum,p)=>sum+(cart[p.id]||0)*Number(p.price||0),0));};
+ const renderClients=()=>{const q=($('sellerClientListSearch')?.value||'').toLowerCase();const found=clients.filter(c=>String(c.name||'').toLowerCase().includes(q)||String(c.phone||'').includes(q));$('sellerClientList').innerHTML=found.map(c=>`<div class="item" style="padding:12px 0;border-bottom:1px solid var(--line)"><div class="item-main"><b>${esc(c.name)}</b><small>${esc(c.phone||'Sem telefone')}</small></div><button class="secondary" data-pickclient="${esc(c.id)}">Selecionar</button></div>`).join('')||'<p>Nenhum cliente cadastrado.</p>';};
  const renderClientMatches=()=>{const box=$('sellerClientMatches');if(!box)return;const q=($('sellerClientSearch')?.value||'').trim().toLowerCase();const found=q?clients.filter(c=>String(c.name||'').toLowerCase().includes(q)||String(c.phone||'').toLowerCase().includes(q)).slice(0,8):[];box.innerHTML=found.map(c=>`<button type="button" class="secondary" data-saleclient="${esc(c.id)}" style="display:block;width:100%;text-align:left;margin:4px 0;padding:10px">${esc(c.name)}${c.phone?' • '+esc(c.phone):''}</button>`).join('')||(q?'<small>Nenhum cliente encontrado.</small>':'');};
- const showClients=()=>{$('sellerSalePanel').style.display='none';$('sellerClientsPanel').style.display='block';$('sellerTabSale').className='secondary';$('sellerTabClients').className='primary';renderClients()};
- const showSale=()=>{$('sellerSalePanel').style.display='block';$('sellerClientsPanel').style.display='none';$('sellerTabSale').className='primary';$('sellerTabClients').className='secondary'};
- $('sellerTabSale').onclick=showSale;$('sellerTabClients').onclick=showClients;
- $('sellerNewClientInline').onclick=()=>{showClients();openSellerClientForm()};
- $('sellerAddClient').onclick=openSellerClientForm;
- $('sellerProductSearch').oninput=renderProducts;
- $('sellerClientSearch').oninput=()=>{ $('sellerClientSelect').value=''; $('sellerChosenClient').textContent='Venda balcão'; renderClientMatches(); };
- $('sellerClientListSearch').oninput=renderClients;
+ const tabs={quick:['sellerSalePanel','sellerTabQuick'],sale:['sellerSalePanel','sellerTabSale'],clients:['sellerClientsPanel','sellerTabClients'],dash:['sellerDashPanel','sellerTabDash']};const showTab=key=>{Object.entries(tabs).forEach(([k,[panel,btn]])=>{$(panel).style.display=(k===key?'block':'none');$(btn).classList.toggle('active',k===key)});if(key==='clients')renderClients();if(key==='quick'){$('sellerFormTitle').textContent='Lançamento rápido';$('sellerFormHint').textContent='Adicione os itens e registre o pagamento em poucos toques.';$('sellerProductSearch').focus()}if(key==='sale'){$('sellerFormTitle').textContent='Venda normal';$('sellerFormHint').textContent='Confira cliente, produtos, valor recebido e forma de pagamento.'}};Object.keys(tabs).forEach(k=>$(tabs[k][1]).onclick=()=>showTab(k));
+ $('sellerNewClientInline').onclick=()=>{showTab('clients');openSellerClientForm()};$('sellerAddClient').onclick=openSellerClientForm;$('sellerProductSearch').oninput=renderProducts;$('sellerClientSearch').oninput=()=>{delete $('sellerChosenClient').dataset.id;$('sellerChosenClient').textContent='Venda balcão';renderClientMatches()};$('sellerClientListSearch').oninput=renderClients;
  $('sellerProductList').onclick=e=>{const plus=e.target.closest('[data-splus]'),minus=e.target.closest('[data-sminus]');if(!plus&&!minus)return;const id=(plus||minus).dataset.splus||(plus||minus).dataset.sminus,p=catalog.find(x=>x.id===id);if(!p)return;cart[id]=Math.max(0,Math.min(Number(p.stock||0),(cart[id]||0)+(plus?1:-1)));if(!cart[id])delete cart[id];renderProducts()};
- $('sellerClientMatches').onclick=e=>{const b=e.target.closest('[data-saleclient]');if(!b)return;const c=clients.find(x=>x.id===b.dataset.saleclient);if(!c)return;$('sellerClientSelect').value=c.id;$('sellerChosenClient').textContent='Cliente: '+c.name;$('sellerClientSearch').value='';renderClientMatches()};
- $('sellerClientList').onclick=e=>{const b=e.target.closest('[data-pickclient]');if(b){const c=clients.find(x=>x.id===b.dataset.pickclient);$('sellerClientSelect').value=b.dataset.pickclient;$('sellerChosenClient').textContent='Cliente: '+(c?.name||'');showSale()}};
- $('sellerSend').onclick=async()=>{
-  const items=catalog.filter(p=>cart[p.id]>0).map(p=>({productId:p.id,name:p.name,qty:cart[p.id],price:Number(p.price)||0}));
-  if(!items.length)return toast('Adicione pelo menos um produto.');
-  const selected=clients.find(c=>c.id===$('sellerClientSelect').value);
-  try{await addDoc(collection(db,'sellerRequests'),{sellerUid:uid,sellerEmail:currentUserEmail,sellerName:'Julio',clientId:selected?.id||'',clientName:selected?.name||'Venda balcão',items,total:items.reduce((a,i)=>a+i.qty*i.price,0),status:'pending',createdAt:serverTimestamp()});cart={};renderProducts();toast('Venda enviada para aprovação.')}
-  catch(e){console.error(e);toast('Não foi possível enviar. Verifique as regras do Firebase.')}
- };
- onSnapshot(doc(db,'sellerDashboard',SELLER_EMAIL),snap=>{
-  const d=snap.exists()?snap.data():null,box=$('sellerDash');if(!box)return;
-  box.innerHTML=d?`<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px"><div class="stat"><small>VENDIDO NO MÊS</small><strong>${money(d.monthSold||0)}</strong></div><div class="stat"><small>RECEBIDO NO MÊS</small><strong>${money(d.monthReceived||0)}</strong></div><div class="stat"><small>COMISSÃO DO MÊS</small><strong style="color:var(--green)">${money(d.monthCommission||0)}</strong></div><div class="stat"><small>A RECEBER</small><strong>${money(d.monthReceivable||0)}</strong></div></div><h3 style="margin:16px 0 8px">Minhas vendas do mês</h3>${(d.sales||[]).filter(s=>String(s.createdAt||'').slice(0,7)===d.monthKey).map(s=>`<div class="item" style="padding:10px 0;border-bottom:1px solid var(--border,#443b35)"><div class="item-main"><b>${esc(s.clientName)}</b><small>Recebido ${money(s.paid)} • pendente ${money(s.pending)}</small></div><div class="item-right"><b>${money(s.total)}</b><small style="color:var(--green)">Comissão ${money(s.commission)}</small></div></div>`).join('')||'<p>Nenhuma venda aprovada neste mês.</p>'}`:'Seu painel será atualizado após a primeira venda aprovada e sincronizada.';
- });
- onSnapshot(collection(db,'sellerCatalog'),snap=>{catalog=snap.docs.map(d=>({id:d.id,...d.data()}));renderProducts()});
- onSnapshot(col('clients'),snap=>{clients=snap.docs.map(d=>({id:d.id,...d.data()}));renderClients()});
- onSnapshot(query(collection(db,'sellerRequests'),where('sellerUid','==',uid)),snap=>{
-  const own=snap.docs.map(d=>({id:d.id,...d.data()}));
-  const box=$('sellerOwnRequests');if(box)box.innerHTML=own.length?own.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).map(x=>`<div class="item"><div class="item-main"><b>${esc(x.clientName||'Venda')}</b><small>${esc(x.status||'pendente')} • ${money(x.total||0)}</small></div></div>`).join(''):'Nenhuma venda enviada ainda.';
- });
+ $('sellerClientMatches').onclick=e=>{const b=e.target.closest('[data-saleclient]');if(!b)return;const c=clients.find(x=>x.id===b.dataset.saleclient);if(!c)return;$('sellerChosenClient').textContent='Cliente: '+c.name;$('sellerClientSearch').value='';$('sellerChosenClient').dataset.id=c.id;renderClientMatches()};
+ $('sellerClientList').onclick=e=>{const b=e.target.closest('[data-pickclient]');if(b){const c=clients.find(x=>x.id===b.dataset.pickclient);$('sellerChosenClient').textContent='Cliente: '+(c?.name||'');$('sellerChosenClient').dataset.id=b.dataset.pickclient;showTab('sale')}};
+ $('sellerSend').onclick=async()=>{const items=catalog.filter(p=>cart[p.id]>0).map(p=>({productId:p.id,name:p.name,qty:cart[p.id],price:Number(p.price)||0}));if(!items.length)return toast('Adicione pelo menos um produto.');const total=items.reduce((a,i)=>a+i.qty*i.price,0),paid=Math.max(0,Math.min(total,Number($('sellerPaidNow').value)||0));try{await addDoc(collection(db,'sellerRequests'),{sellerUid:uid,sellerEmail:currentUserEmail,sellerName:'Julio',clientId:$('sellerChosenClient').dataset.id||'',clientName:$('sellerChosenClient').textContent.replace(/^Cliente: /,''),items,total,paid,paymentMethod:paid>0?$('sellerPayMethod').value:'Pendente',status:'pending',createdAt:serverTimestamp()});cart={};$('sellerPaidNow').value='0';$('sellerChosenClient').textContent='Venda balcão';delete $('sellerChosenClient').dataset.id;renderProducts();toast('Venda enviada para aprovação!')}catch(e){console.error(e);toast('Não foi possível enviar. Verifique as regras do Firebase.')}};
+ onSnapshot(doc(db,'sellerDashboard',SELLER_EMAIL),snap=>{const d=snap.exists()?snap.data():null,box=$('sellerDash');if(!box)return;box.innerHTML=d?`<div class="seller-kpis"><div class="seller-kpi"><small>VENDIDO NO MÊS</small><b>${money(d.monthSold||0)}</b></div><div class="seller-kpi"><small>RECEBIDO NO MÊS</small><b>${money(d.monthReceived||0)}</b></div><div class="seller-kpi"><small>MINHA COMISSÃO · 20%</small><b style="color:var(--green)">${money(d.monthCommission||0)}</b></div><div class="seller-kpi"><small>A RECEBER</small><b>${money(d.monthReceivable||0)}</b></div></div>`:'Seu painel será atualizado após a primeira venda aprovada.'});
+ onSnapshot(collection(db,'sellerCatalog'),snap=>{catalog=snap.docs.map(d=>({id:d.id,...d.data()}));renderProducts()});onSnapshot(col('clients'),snap=>{clients=snap.docs.map(d=>({id:d.id,...d.data()}));renderClients()});onSnapshot(query(collection(db,'sellerRequests'),where('sellerUid','==',uid)),snap=>{const own=snap.docs.map(d=>({id:d.id,...d.data()}));const box=$('sellerOwnRequests');if(box)box.innerHTML=own.length?own.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).map(x=>`<div class="item" style="padding:12px 0;border-bottom:1px solid var(--line)"><div class="item-main"><b>${esc(x.clientName||'Venda balcão')}</b><small>${esc(x.status||'pendente')} • ${money(x.total||0)} • recebido ${money(x.paid||0)}</small></div><span class="badge">${x.status==='approved'?'Aprovada':x.status==='rejected'?'Recusada':'Em análise'}</span></div>`).join(''):'Nenhuma venda enviada ainda.'});
+ showTab('quick');
 }
 function openSellerClientForm(){
  openModal('Cadastrar cliente',`<div class="form"><div class="field"><label>Nome *</label><input id="sellerNewName" placeholder="Nome do cliente" maxlength="90"></div><div class="field"><label>Telefone</label><input id="sellerNewPhone" placeholder="(47) 99999-9999" inputmode="tel"></div><button id="sellerSaveClient" class="primary" style="width:100%">Salvar cliente</button></div>`);
@@ -1081,15 +1032,14 @@ function openPurchaseBuilder(){
 
 function sellerApprovalPanel(){
  const pending=(data.sellerRequests||[]).filter(r=>r.status==='pending');
- return `<section class="card" style="padding:14px;margin:0 0 14px;border:1px solid var(--line)"><div style="display:flex;justify-content:space-between;align-items:center"><div><h2 style="margin:0">Vendas do Júlio</h2><small>${pending.length} aguardando aprovação</small></div><span class="badge">${pending.length}</span></div>
- ${pending.map(r=>`<article style="border-top:1px solid var(--line);padding:12px 0;margin-top:10px"><b>${esc(r.clientName||'Venda balcão')}</b><small style="display:block;color:var(--muted)">${(r.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(' • ')}</small><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><strong>${money(r.total||0)}</strong><div style="display:flex;gap:6px"><button class="secondary" data-reject-request="${esc(r.id)}">Rejeitar</button><button class="primary" data-approve-request="${esc(r.id)}">Aprovar</button></div></div></article>`).join('')||'<p style="color:var(--muted)">Nenhuma venda pendente.</p>'}</section>`;
+ return `<section class="seller-admin-wrap"><button class="seller-admin-toggle" id="sellerAdminToggle"><span><b>▣ Vendas do Júlio</b><small>Toque para revisar vendas pendentes</small></span><span class="seller-admin-count">${pending.length}</span></button><div class="seller-admin-content" id="sellerAdminContent" style="display:none">${pending.map(r=>`<article class="seller-request"><b>${esc(r.clientName||'Venda balcão')}</b><small style="display:block;color:var(--muted);margin:4px 0">${(r.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(' • ')}</small><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${money(r.total||0)}</strong><small>Pago agora: ${money(r.paid||0)} • ${esc(r.paymentMethod||'Pendente')}</small></div><div class="seller-request-actions"><button class="secondary" data-reject-request="${esc(r.id)}">Rejeitar</button><button class="primary" data-approve-request="${esc(r.id)}">Aprovar venda</button></div></article>`).join('')||'<p style="color:var(--muted);text-align:center;padding:10px">Tudo em dia! Nenhuma venda pendente.</p>'}</div></section>`;
 }
 function subscribeSellerRequests(){
  const u=onSnapshot(collection(db,'sellerRequests'),snap=>{data.sellerRequests=snap.docs.map(d=>({id:d.id,...d.data()}));if(page==='home')render()},e=>{console.error(e);toast('Não foi possível carregar as vendas do Júlio.')});
  unsubs.push(u);
 }
 async function approveSellerRequest(id){
- const reqRef=doc(db,'sellerRequests',id),saleRef=doc(col('sales'));
+ const reqRef=doc(db,'sellerRequests',id),saleRef=doc(col('sales')),paymentRef=doc(col('payments'));
  try{
   await runTransaction(db,async tx=>{
    const reqSnap=await tx.get(reqRef);if(!reqSnap.exists())throw new Error('Solicitação não encontrada.');
@@ -1103,8 +1053,9 @@ async function approveSellerRequest(id){
     items.push({...item,cost:Number(p.cost||p.unitCost||0),price:Number(p.price||item.price||0)});
     tx.update(productRef,{stock:stock-qty});
    }
-   const total=items.reduce((a,i)=>a+i.qty*i.price,0);
-   tx.set(saleRef,{clientId:r.clientId||'',clientName:r.clientName||'Venda balcão',items,total,paid:0,createdAt:serverTimestamp(),sellerUid:r.sellerUid,sellerName:r.sellerName||'Julio',approvedByUid:uid,approvedByName:currentUserName,source:'seller'});
+   const total=items.reduce((a,i)=>a+i.qty*i.price,0),paid=Math.max(0,Math.min(total,Number(r.paid)||0));
+   tx.set(saleRef,{clientId:r.clientId||'',clientName:r.clientName||'Venda balcão',items,total,paid,paymentMethod:r.paymentMethod||'Pendente',createdAt:serverTimestamp(),sellerUid:r.sellerUid,sellerEmail:r.sellerEmail||'',sellerName:r.sellerName||'Julio',approvedByUid:uid,approvedByName:currentUserName,source:'seller'});
+   if(paid>0)tx.set(paymentRef,{saleId:saleRef.id,clientId:r.clientId||'',clientName:r.clientName||'Venda balcão',amount:paid,method:r.paymentMethod||'Outro',createdByUid:uid,createdByName:currentUserName,sellerUid:r.sellerUid,sellerName:r.sellerName||'Julio',createdAt:serverTimestamp()});
    tx.update(reqRef,{status:'approved',saleId:saleRef.id,approvedAt:serverTimestamp(),approvedByUid:uid});
   });
   toast('Venda aprovada e estoque atualizado.');
@@ -2449,6 +2400,7 @@ function bindV140Month(){
 
 function bindPage(){
  document.querySelectorAll('[data-approve-request]').forEach(b=>b.onclick=()=>approveSellerRequest(b.dataset.approveRequest));
+ const sellerToggle=$('sellerAdminToggle');if(sellerToggle)sellerToggle.onclick=()=>{const box=$('sellerAdminContent');box.style.display=box.style.display==='none'?'block':'none'};
  document.querySelectorAll('[data-reject-request]').forEach(b=>b.onclick=()=>rejectSellerRequest(b.dataset.rejectRequest));
 
  $("purchaseHistoryMonth")?.addEventListener("change",e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){purchaseHistoryMonth=e.target.value;render()}});
