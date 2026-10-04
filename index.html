@@ -668,6 +668,8 @@ body.theme-dark .tabs button.active {
 }
 
 /* V1.5.9: Sugestão de Compras reorganizada e números maiores */
+
+.purchase-month-end-callout{margin:14px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--cream);display:flex;flex-direction:column;gap:5px}.purchase-month-end-callout small{font-size:11px;letter-spacing:.04em;color:var(--muted);font-weight:700}.purchase-month-end-callout strong{font-size:24px;color:var(--text)}.purchase-month-end-callout span{font-size:13px;color:var(--muted)}.purchase-history-fold>summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;list-style:none}.purchase-history-fold>summary::-webkit-details-marker{display:none}.purchase-history-fold[open]>summary span{transform:rotate(45deg)}.purchase-history-content{padding-top:12px}
 .purchases-page{min-width:0}.purchases-page-head{margin-bottom:14px}
 .purchase-selector-card{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);display:grid;gap:12px}
 .purchase-selector-title{display:flex;align-items:center;gap:12px;min-width:0}.purchase-selector-title>span{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--cream2);font-size:22px;flex:0 0 auto}.purchase-selector-title div{min-width:0}.purchase-selector-title b{display:block;font-size:16px}.purchase-selector-title small{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:3px}
@@ -1374,7 +1376,13 @@ function purchaseDetail(productId,monthKey){
    return a+(stored>0?stored:numBR(p.cost||0))*numBR(x.item.qty??x.item.quantity??0);
  },0);
  const profit=revenue-cost,margin=revenue>0?(profit/revenue)*100:0;
- const avgDaily=qtySold/Math.max(1,rows.length),stock=Math.max(0,Math.floor(numBR(p.stock||0))),coverage=avgDaily>0?stock/avgDaily:null;
+ const today=now(),monthStart=new Date(today.getFullYear(),today.getMonth(),1);
+ const soldThisMonth=items.filter(x=>{const d=dt(x.sale.createdAt);return d&&d>=monthStart&&d<=today;}).reduce((a,x)=>a+numBR(x.item.qty??x.item.quantity??0),0);
+ const firstSale=items.map(x=>dt(x.sale.createdAt)).filter(Boolean).sort((a,b)=>a-b)[0];
+ const lifetimeDays=Math.max(1,firstSale?Math.ceil((today-firstSale)/86400000)+1:1);
+ const avgDaily=soldThisMonth>0?soldThisMonth/Math.max(1,today.getDate()):qtySold/lifetimeDays;
+ const stock=Math.max(0,Math.floor(numBR(p.stock||0))),coverage=avgDaily>0?stock/avgDaily:null;
+ const daysLeft=Math.max(0,new Date(today.getFullYear(),today.getMonth()+1,0).getDate()-today.getDate()),monthEndNeed=Math.ceil(avgDaily*daysLeft),monthEndBuy=Math.max(0,monthEndNeed-stock);
  return `<div class="v140-product-detail">
   <div class="v140-detail-head"><div><h2>${esc(p.name)}</h2><small>Desempenho baseado nas vendas registradas</small></div><span class="v140-period">${options.length} ${options.length===1?'mês':'meses'} registrados</span></div>
   <div class="v140-month-row">
@@ -1384,6 +1392,7 @@ function purchaseDetail(productId,monthKey){
    <div class="v140-chart-title"><b>Faturamento × Custo • ${esc(options.find(o=>o.key===selected)?.label||'')}</b><div class="v140-legend"><span><i class="v140-dot rev"></i>Faturamento</span><span><i class="v140-dot cost"></i>Custo</span></div></div>
    ${purchaseChartSvg(rows)}
   </div>
+  <div class="purchase-month-end-callout"><small>PREVISÃO ATÉ O FIM DO MÊS · ${daysLeft} dia(s) restantes</small><strong>${monthEndBuy} unidade(s) para comprar</strong><span>Estimativa de ${monthEndNeed} unidade(s) de venda até o fim do mês, menos o estoque atual de ${stock}.</span></div>
   <div class="v140-metrics">
    <div class="v140-metric"><small>Faturamento</small><b>${money(revenue)}</b></div>
    <div class="v140-metric"><small>Custo</small><b>${money(cost)}</b></div>
@@ -1419,15 +1428,15 @@ function purchases(){
  return `<div class="page purchases-page">
   <div class="head purchases-page-head"><div><h1>🛍️ Sugestão de Compras</h1><p>Escolha um produto para analisar a reposição e quanto comprar.</p></div></div>
   <div class="purchase-selector-card">
-   <div class="purchase-selector-title"><span><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 7 9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/></svg></span><div><b>Produto para analisar</b><small>Selecione um item. Sem seleção, nenhum gráfico ou cálculo será exibido.</small></div></div>
-   <select id="v140ProductSelect" aria-label="Selecione o produto"><option value="">Selecione um produto...</option>${products.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select>
+   <div class="purchase-selector-title"><span><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></span><div><b>Pesquisar produto</b><small>Digite o nome para consultar quanto comprar até o fim do mês.</small></div></div>
+   <input id="v140ProductSearch" list="v140ProductOptions" autocomplete="off" placeholder="Digite o nome do produto..." aria-label="Pesquisar produto"><datalist id="v140ProductOptions">${products.map(p=>`<option value="${esc(p.name)}"></option>`).join('')}</datalist>
   </div>
   <div id="v140ProductDetail">${firstId?purchaseDetail(firstId):'<div class="purchase-empty"><div class="purchase-empty-icon"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M2 3h2l2.5 12h12L21 7H5"/></svg></div><b>Nenhum produto selecionado</b><span>Escolha um produto acima para ver a sugestão de compra, os números e o gráfico.</span></div>'}</div>
-  <section class="purchase-detail" style="margin-top:18px"><div class="purchase-detail-head"><div><h3>Histórico de compras</h3><small>Entradas registradas no estoque</small></div></div>
+  <details class="purchase-detail purchase-history-fold" style="margin-top:18px"><summary class="purchase-detail-head"><div><h3>🧾 Histórico de compras</h3><small>Toque para abrir as entradas registradas no estoque</small></div><span aria-hidden="true">＋</span></summary><div class="purchase-history-content">
   <label for="purchaseHistoryMonth">Mês consultado</label><input id="purchaseHistoryMonth" type="month" value="${purchaseHistoryMonth}" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--cream);color:var(--text);margin:8px 0 14px">
   <div class="purchase-highlight"><small>Total investido no mês</small><strong>${money(purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).reduce((a,x)=>a+numBR(x.total||0),0))}</strong><span>${purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).reduce((a,x)=>a+numBR(x.quantity||0),0)} unidades • ${purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).length} registros</span></div>
   ${(()=>{const list=purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));return list.length?`<div class="purchase-list">${list.map(x=>`<div class="purchase-row"><div class="purchase-row-main"><b>${esc(x.productName||'Produto')}</b><small>${dt(x.createdAt)?.toLocaleDateString('pt-BR')||'Data indisponível'} • ${numBR(x.quantity||0)} unidades</small></div><div class="purchase-row-cost" style="grid-column:3">${money(x.total||0)}</div></div>`).join('')}</div>`:'<div class="purchase-empty">Nenhuma compra registrada neste mês.</div>'})()}
-  </section>
+  </div></details>
  </div>`;
 }
 function dayData(dateKey){
@@ -1528,6 +1537,7 @@ function finance(){
    <button type="button" class="finance-option" id="financePayments"><b>💵 Registrar pagamento</b><small>Baixe pagamentos recebidos.</small></button>
    <button type="button" class="finance-option" id="financeDailyCash"><b>📋 Gerar caixa do dia</b><small>Relatório completo de um dia, com opção de imprimir/PDF.</small></button>
    <button type="button" class="finance-option" id="financePayables"><b>🧾 Contas a pagar <span class="private-number">${money((data.payables||[]).filter(x=>x.status!=='paid').reduce((a,x)=>a+numBR(x.amount||0),0))}</span></b><small>Julio, fornecedores e despesas registradas.</small></button>
+   <button type="button" class="finance-option" id="financeSellers"><b>👥 Vendedores</b><small>Vendas, comissões, recebimentos e saldo por vendedor.</small></button>
   </div>
   <div class="finance-grid">
    <div class="finance-card"><small>Faturamento do mês</small><strong class="private-number money-large">${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div>
@@ -2552,7 +2562,8 @@ function bindV140Month(){
  if(!select || select.dataset.bound==="1")return;
  select.dataset.bound="1";
  select.addEventListener("change",e=>{
-   const product=$("v140ProductSelect")?.value;
+   const typed=String($("v140ProductSearch")?.value||'').trim().toLocaleLowerCase('pt-BR');
+   const product=(data.products||[]).find(p=>String(p.name||'').trim().toLocaleLowerCase('pt-BR')===typed)?.id;
    const detail=$("v140ProductDetail");
    if(detail&&product){detail.innerHTML=purchaseDetail(product,e.target.value);bindV140Month();}
  });
@@ -2576,12 +2587,14 @@ function bindPage(){
  $("logout")?.addEventListener("click",()=>signOut(auth));
  $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
  $("stockSearch")?.addEventListener("input",e=>{$("stockList").innerHTML=productRows(data.products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())))})
- $("v140ProductSelect")?.addEventListener("change",e=>{
+ $("v140ProductSearch")?.addEventListener("input",e=>{
+   const typed=String(e.target.value||'').trim().toLocaleLowerCase('pt-BR');
+   const match=(data.products||[]).find(p=>String(p.name||'').trim().toLocaleLowerCase('pt-BR')===typed);
    const detail=$("v140ProductDetail");
-   if(detail){
-     detail.innerHTML=purchaseDetail(e.target.value);
-     bindV140Month();
-   }
+   if(!detail)return;
+   if(match){detail.innerHTML=purchaseDetail(match.id);bindV140Month();}
+   else if(!typed){detail.innerHTML='<div class="purchase-empty"><b>Pesquise um produto</b><span>Digite o nome para ver a previsão de compra até o fim do mês.</span></div>';}
+   else{detail.innerHTML='<div class="purchase-empty"><b>Produto não encontrado</b><span>Continue digitando ou escolha um nome da lista sugerida.</span></div>';}
  });
  bindV140Month();
 
