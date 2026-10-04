@@ -2587,7 +2587,7 @@ function bindPage(){
  $("logout")?.addEventListener("click",()=>signOut(auth));
  $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
  $("stockSearch")?.addEventListener("input",e=>{$("stockList").innerHTML=productRows(data.products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())))})
- const normalizePurchaseName=v=>String(v||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').trim().toLocaleLowerCase('pt-BR').replace(/\\s+/g,' ');
+ const normalizePurchaseName=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
  const purchaseSearch=$("v140ProductSearch");
  const purchaseDetailBox=$("v140ProductDetail");
  const showPurchaseProduct=p=>{if(p&&purchaseDetailBox){purchaseDetailBox.innerHTML=purchaseDetail(p.id);bindV140Month();}};
@@ -2596,13 +2596,15 @@ function bindPage(){
    const typed=normalizePurchaseName(purchaseSearch.value);
    if(!typed){purchaseDetailBox.innerHTML='<div class="purchase-empty"><b>Pesquise um produto</b><span>Digite o nome para ver a previsão de compra até o fim do mês.</span></div>';return;}
    const products=data.products||[];
-   const match=products.find(p=>normalizePurchaseName(p.name)===typed)
-     || (products.filter(p=>normalizePurchaseName(p.name).startsWith(typed)).length===1?products.find(p=>normalizePurchaseName(p.name).startsWith(typed)):null)
-     || (products.filter(p=>normalizePurchaseName(p.name).includes(typed)).length===1?products.find(p=>normalizePurchaseName(p.name).includes(typed)):null);
-   if(match){showPurchaseProduct(match);return;}
-   const options=products.filter(p=>normalizePurchaseName(p.name).includes(typed)).slice(0,8);
-   purchaseDetailBox.innerHTML=options.length?'<div class="purchase-empty"><b>Produtos encontrados</b><div style="display:grid;gap:8px;margin-top:10px">'+options.map(p=>'<button type="button" class="secondary" data-purchase-product="'+esc(p.id)+'">'+esc(p.name)+'</button>').join('')+'</div><span>Toque no produto para abrir a previsão.</span></div>':'<div class="purchase-empty"><b>Produto não encontrado</b><span>Confira o nome ou tente uma parte dele.</span></div>';
-   purchaseDetailBox.querySelectorAll('[data-purchase-product]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>x.id===b.dataset.purchaseProduct);if(p){purchaseSearch.value=p.name;showPurchaseProduct(p);}}));
+   const matches=products.map(p=>({p,name:normalizePurchaseName(p.name)}))
+     .filter(x=>typed.split(' ').every(term=>x.name.includes(term)))
+     .sort((a,b)=>a.name.indexOf(typed)-b.name.indexOf(typed));
+   const exact=matches.find(x=>x.name===typed);
+   if(exact){showPurchaseProduct(exact.p);return;}
+   if(matches.length===1){showPurchaseProduct(matches[0].p);return;}
+   const options=matches.slice(0,12);
+   purchaseDetailBox.innerHTML=options.length?'<div class="purchase-empty"><b>Produtos encontrados ('+matches.length+')</b><div style="display:grid;gap:8px;margin-top:10px">'+options.map(x=>'<button type="button" class="secondary" data-purchase-product="'+esc(x.p.id)+'">'+esc(x.p.name)+'</button>').join('')+'</div><span>Toque no produto para abrir a previsão.</span></div>':'<div class="purchase-empty"><b>Produto não encontrado</b><span>Tente uma palavra do nome, sem precisar digitar tudo.</span></div>';
+   purchaseDetailBox.querySelectorAll('[data-purchase-product]').forEach(b=>b.addEventListener('click',()=>{const p=products.find(x=>String(x.id)===b.dataset.purchaseProduct);if(p){purchaseSearch.value=p.name;showPurchaseProduct(p);}}));
  };
  purchaseSearch?.addEventListener('input',updatePurchaseSearch);
  purchaseSearch?.addEventListener('change',updatePurchaseSearch);
