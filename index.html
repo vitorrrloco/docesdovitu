@@ -1913,17 +1913,19 @@ function openCharge(c,options={}){
    const ok=await copyTextSafe(pix);
    toast(ok?"PIX copiado! Agora cole na próxima mensagem do WhatsApp.":"Não foi possível copiar automaticamente.");
  };
- $("sendCharge").onclick=async()=>{
-   // O toque do usuário dispara as duas ações: abre o WhatsApp e copia o PIX.
-   // Abrimos primeiro para evitar bloqueio de popup causado pelo await da área de transferência.
+ $("sendCharge").onclick=()=>{
+   // Mantém a cópia dentro do gesto original do usuário. Não usamos await aqui,
+   // pois no iPhone isso pode perder o contexto de interação exigido pela Clipboard API.
+   const copyPromise=copyTextSafe(pix);
    openWhatsAppCharge(c,firstMessage);
    const copyBtn=$("copyPix"),pixBox=$("pixNextBox"),pixLabel=$("pixNextLabel");
-   const ok=await copyTextSafe(pix);
-   if(copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent=ok?"📋  PIX copiado • Copiar novamente":"📋  Copiar PIX para próxima mensagem";}
+   if(copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent="📋  PIX copiado — cole na próxima mensagem";}
    if(pixBox){pixBox.style.opacity="1";}
    if(pixLabel){pixLabel.style.opacity="1";}
-   toast(ok?"Mensagem aberta e PIX copiado! Depois de enviar a cobrança, cole o PIX na próxima mensagem.":"Mensagem aberta. Não foi possível copiar o PIX automaticamente neste navegador. Use o botão de copiar PIX.");
- };;
+   copyPromise.then(ok=>{
+     toast(ok?"Cobrança aberta e PIX copiado. Agora envie a cobrança e cole o PIX na próxima mensagem.":"Cobrança aberta. Não foi possível copiar o PIX automaticamente, use o botão de copiar PIX.");
+   });
+ };
 }
 function openPaymentForClient(c,onlyClosure=null){
  const pendingSales=data.sales.filter(s=>s.clientId===c.id&&!clientClosedSaleIds(c).has(s.id)&&numBR(s.total||0)>Number(s.paid||0));
