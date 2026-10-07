@@ -1913,14 +1913,17 @@ function openCharge(c,options={}){
    const ok=await copyTextSafe(pix);
    toast(ok?"PIX copiado! Agora cole na próxima mensagem do WhatsApp.":"Não foi possível copiar automaticamente.");
  };
- $("sendCharge").onclick=()=>{
+ $("sendCharge").onclick=async()=>{
+   // O toque do usuário dispara as duas ações: abre o WhatsApp e copia o PIX.
+   // Abrimos primeiro para evitar bloqueio de popup causado pelo await da área de transferência.
    openWhatsAppCharge(c,firstMessage);
    const copyBtn=$("copyPix"),pixBox=$("pixNextBox"),pixLabel=$("pixNextLabel");
-   if(copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent="📋  Copiar PIX para próxima mensagem";}
+   const ok=await copyTextSafe(pix);
+   if(copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent=ok?"📋  PIX copiado • Copiar novamente":"📋  Copiar PIX para próxima mensagem";}
    if(pixBox){pixBox.style.opacity="1";}
    if(pixLabel){pixLabel.style.opacity="1";}
-   toast("Mensagem de cobrança aberta. Depois de enviar, copie o PIX e cole na próxima mensagem.");
- };
+   toast(ok?"Mensagem aberta e PIX copiado! Depois de enviar a cobrança, cole o PIX na próxima mensagem.":"Mensagem aberta. Não foi possível copiar o PIX automaticamente neste navegador. Use o botão de copiar PIX.");
+ };;
 }
 function openPaymentForClient(c,onlyClosure=null){
  const pendingSales=data.sales.filter(s=>s.clientId===c.id&&!clientClosedSaleIds(c).has(s.id)&&numBR(s.total||0)>Number(s.paid||0));
