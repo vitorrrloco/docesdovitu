@@ -1868,11 +1868,20 @@ function normalizeWhatsappPhone(phone){
  if(n.length===10||n.length===11)return "55"+n;
  return n;
 }
-async function copyTextSafe(value, fallbackEl){
- try{await navigator.clipboard.writeText(value);return true}catch(e){
-  try{if(fallbackEl){fallbackEl.focus();fallbackEl.select();document.execCommand("copy");return true}}catch(_){}
-  return false;
- }
+function copyTextImmediate(value){
+ const text=String(value??"");
+ try{
+  const ta=document.createElement("textarea");
+  ta.value=text; ta.setAttribute("readonly",""); ta.setAttribute("aria-hidden","true");
+  ta.style.position="fixed"; ta.style.top="0"; ta.style.left="-9999px"; ta.style.width="1px"; ta.style.height="1px"; ta.style.opacity="0.01"; ta.style.fontSize="16px";
+  document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0,text.length);
+  const ok=document.execCommand("copy"); ta.remove(); return !!ok;
+ }catch(e){return false}
+}
+async function copyTextSafe(value){
+ if(copyTextImmediate(value))return true;
+ try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(String(value??""));return true}}catch(e){}
+ return false;
 }
 function openWhatsAppCharge(c, firstMessage){
  const phone=normalizeWhatsappPhone(c.phone);
@@ -1903,29 +1912,34 @@ function openCharge(c,options={}){
      <div class="charge-v2-divider"></div>
      <div class="charge-v2-label" id="pixNextLabel" style="opacity:.55">PIX para a próxima mensagem</div>
      <div class="charge-v2-pix" id="pixNextBox" style="opacity:.55"><code>${esc(pix)}</code></div>
-     <button type="button" class="charge-v2-copy" id="copyPix" disabled style="opacity:.5;cursor:not-allowed">📋&nbsp; Copiar PIX para próxima mensagem</button>
+     <button type="button" class="charge-v2-copy" id="copyPix">📋&nbsp; Copiar PIX para próxima mensagem</button>
    </div>
    <button type="button" class="charge-v2-whatsapp" id="sendCharge"><span><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-9 8.5 9 9 0 0 1-4-.9L3 21l1.9-4.3A8.5 8.5 0 1 1 21 11.5Z"/></svg></span><span>${phone?"Abrir WhatsApp do cliente":"Escolher contato no WhatsApp"}</span><b>›</b></button>
  </div>`);
  const modal=$("modalRoot").querySelector(".modal");
  modal?.classList.add("charge-modal-v2");
- $("copyPix").onclick=async()=>{
-   const ok=await copyTextSafe(pix);
-   toast(ok?"PIX copiado! Agora cole na próxima mensagem do WhatsApp.":"Não foi possível copiar automaticamente.");
+ $("copyPix").onclick=()=>{
+   const ok=copyTextImmediate(pix);
+   if(ok){toast("PIX copiado! Agora cole na próxima mensagem do WhatsApp.");return}
+   copyTextSafe(pix).then(ok2=>toast(ok2?"PIX copiado! Agora cole na próxima mensagem do WhatsApp.":"Não foi possível copiar o PIX neste navegador."));
  };
- $("sendCharge").onclick=()=>{
-   // Mantém a cópia dentro do gesto original do usuário. Não usamos await aqui,
-   // pois no iPhone isso pode perder o contexto de interação exigido pela Clipboard API.
-   const copyPromise=copyTextSafe(pix);
+ $("sendCharge").onclick=async()=>{
+   // Copia de forma SÍNCRONA durante o toque. Isso é importante no iPhone:
+   // depois de um await o navegador pode perder a permissão temporária de clipboard.
+   const ok=copyTextImmediate(pix);
    openWhatsAppCharge(c,firstMessage);
    const copyBtn=$("copyPix"),pixBox=$("pixNextBox"),pixLabel=$("pixNextLabel");
-   if(copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent="📋  PIX copiado — cole na próxima mensagem";}
+   if(!ok){
+     // fallback assíncrono apenas como segunda tentativa.
+     copyTextSafe(pix).then(ok2=>{
+       if(ok2&&copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent="📋  PIX copiado • Copiar novamente";}
+     });
+   }
+   if(copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent=ok?"📋  PIX copiado • Copiar novamente":"📋  Copiar PIX para próxima mensagem";}
    if(pixBox){pixBox.style.opacity="1";}
    if(pixLabel){pixLabel.style.opacity="1";}
-   copyPromise.then(ok=>{
-     toast(ok?"Cobrança aberta e PIX copiado. Agora envie a cobrança e cole o PIX na próxima mensagem.":"Cobrança aberta. Não foi possível copiar o PIX automaticamente, use o botão de copiar PIX.");
-   });
- };
+   toast(ok?"Mensagem aberta e PIX copiado! Depois de enviar a cobrança, cole o PIX na próxima mensagem.":"Mensagem aberta. Não foi possível copiar o PIX automaticamente neste navegador. Use o botão de copiar PIX.");
+ };;
 }
 function openPaymentForClient(c,onlyClosure=null){
  const pendingSales=data.sales.filter(s=>s.clientId===c.id&&!clientClosedSaleIds(c).has(s.id)&&numBR(s.total||0)>Number(s.paid||0));
