@@ -1850,7 +1850,7 @@ function openEditClient(c){
  $("saveEditClient").onclick=async()=>{const name=$("editClientName").value.trim();if(!name)return toast("Digite o nome.");try{await updateDoc(doc(col("clients"),c.id),{name,phone:$("editClientPhone").value.trim(),photoData:editPhotoData||""});await logAction("Cliente editado",`${c.name} → ${name}`);closeModal();toast("Cliente atualizado!")}catch(e){console.error(e);toast("Não foi possível editar o cliente.")}};
 }
 function pixPayload(amount){
- const value=Number(amount||0),key="13993881931",merchant="DOCES DO VITU",city="JOINVILLE";
+ const value=Number(amount||0),key="69502413000170",merchant="DOCES DO VITU",city="JOINVILLE";
  const field=(id,val)=>String(id).padStart(2,"0")+String(val.length).padStart(2,"0")+val;
  const mai=field("00","BR.GOV.BCB.PIX")+field("01",key);
  let payload="000201"+field("26",mai)+"520400005303986";
@@ -1914,17 +1914,12 @@ function openCharge(c,options={}){
    toast(ok?"PIX copiado! Agora cole na próxima mensagem do WhatsApp.":"Não foi possível copiar automaticamente.");
  };
  $("sendCharge").onclick=()=>{
-   // Um único toque: abre a conversa do cliente com a cobrança e copia
-   // automaticamente o PIX copia e cola para a área de transferência do celular.
-   const copyPromise=copyTextSafe(pix);
    openWhatsAppCharge(c,firstMessage);
    const copyBtn=$("copyPix"),pixBox=$("pixNextBox"),pixLabel=$("pixNextLabel");
-   if(copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent="📋  PIX copiado — cole na próxima mensagem";}
+   if(copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent="📋  Copiar PIX para próxima mensagem";}
    if(pixBox){pixBox.style.opacity="1";}
    if(pixLabel){pixLabel.style.opacity="1";}
-   copyPromise.then(ok=>{
-     toast(ok?"Cobrança aberta e PIX copiado. Agora envie a cobrança e cole o PIX na próxima mensagem.":"Cobrança aberta. Não foi possível copiar o PIX automaticamente, use o botão de copiar PIX.");
-   });
+   toast("Mensagem de cobrança aberta. Depois de enviar, copie o PIX e cole na próxima mensagem.");
  };
 }
 function openPaymentForClient(c,onlyClosure=null){
