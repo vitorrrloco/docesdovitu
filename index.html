@@ -1028,7 +1028,7 @@ async function loadSellerArea(){
   <div class="seller-total-panel"><small>TOTAL DA VENDA</small><b id="sellerNetTotal">R$ 0,00</b></div>
   <div class="seller-form-actions"><button id="sellerCancel" class="seller-cancel">Cancelar</button><button id="sellerSend" class="seller-confirm">✓ Registrar venda</button></div>
 </div></div><button class="seller-logout" id="sellerLogout">Sair da conta</button></div>`;
- const nav=[...document.querySelectorAll('.nav button')];nav.forEach((b,i)=>{b.style.display=[0,1,2].includes(i)?'':'none';b.onclick=()=>sellerNavigate(b.dataset.page)});
+ const nav=[...document.querySelectorAll('.nav button')];nav.forEach((b,i)=>{b.style.display=[0,1,3].includes(i)?'':'none';b.onclick=()=>sellerNavigate(b.dataset.page)});
  let catalog=[],clients=[],cart={},own=[],detailMode='quick',period='today';
  const moneyBR=n=>money(Number(n||0)),total=()=>catalog.reduce((sum,p)=>sum+(cart[p.id]||0)*Number(p.price||0),0),net=()=>Math.max(0,total()-Math.max(0,Number($('sellerDiscount')?.value)||0));
  function sellerNavigate(tab){$('sellerHomePage').style.display=tab==='home'?'':'none';$('sellerSalesPage').style.display=tab==='sales'?'':'none';$('sellerClientsPage').style.display=tab==='clients'?'':'none';$('sellerDashPanel').style.display='none';nav.forEach(b=>b.classList.toggle('active',b.dataset.page===tab));if(tab==='sales')renderSales();if(tab==='clients')renderClients()}
