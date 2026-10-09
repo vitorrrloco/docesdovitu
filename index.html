@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU V1.9.5</title>
+<title>DOCES DO VITU V2.0.0</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -381,6 +381,43 @@ body.theme-dark .nfc-menu-card,body.theme-dark .nfc-item,body.theme-dark .nfc-dr
 
 .seller-profile-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}.seller-profile-actions button{min-height:44px!important;padding:10px!important;font-size:12px!important}.seller-profile-actions #sellerProfileSell{grid-column:1/-1}
 .payables-panel{margin:14px 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}.payables-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.payables-row:last-child{border-bottom:0}.payables-main{flex:1;min-width:0}.payables-main b{display:block;font-size:13px;overflow-wrap:anywhere}.payables-main small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.payables-amount{font-weight:900;white-space:nowrap}.payables-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.payables-actions button{min-height:32px;padding:6px 9px;font-size:11px}
+
+/* DOCES DO VITU V2.0.0 · visual refresh, existing business logic retained */
+:root{--dark:#24130d;--dark2:#3a2115;--brown:#6f4228;--caramel:#c8894d;--cream:#1d100b;--cream2:#382116;--white:#2b190f;--line:#503321;--text:#f5e6d2;--muted:#c2a88f;--green:#72c58d;--red:#ff8c75;--orange:#e9ad63;--shadow:0 12px 30px rgba(0,0,0,.22);--r:20px}
+html,body{background:#1d100b;color:var(--text)}
+#app{background:radial-gradient(ellipse at 50% -20%,#56301b 0%,#21120c 56%,#170c08 100%)}
+.top{background:rgba(37,21,13,.96);border-bottom:1px solid #563722;backdrop-filter:blur(18px);height:66px;flex-basis:66px;padding:8px 15px}
+.brand-mark{background:#422719;border:1px solid #78502f;color:#e8b978;border-radius:17px}
+.brand b{color:#f7e9d5;font-family:Georgia,'Times New Roman',serif;letter-spacing:.2px}
+.brand small{color:#c9a77e}
+.top-action,.user-badge{background:#3a2417;color:#f2d0a1;border:1px solid #62432a}
+.view{padding:18px 14px calc(98px + env(safe-area-inset-bottom));scrollbar-color:#775034 transparent}
+.head h1{color:#fff0dc;font-family:Georgia,'Times New Roman',serif;font-size:29px;letter-spacing:-.6px}
+.head p,.stat small,.item-main small,.section-title{color:#c7ad92}
+.hero{background:linear-gradient(135deg,#4a2917,#2b190f 72%);border:1px solid #754a2b;color:#fff0d8;box-shadow:0 14px 30px #0003}
+.stat,.item,.quick button,.fast-product,.month-select,.sales-period-bar,.tabs,.section .empty,.empty,.client-result,.stock-card,.purchase-empty,.more-card{background:#2b190f!important;border-color:#503321!important;color:#f4e3cc!important;box-shadow:0 7px 20px #0002}
+.stat strong,.item-main b,.section-title b,.item-right b{color:#fff0db}
+.avatar{background:#49301f;color:#efc38b;border:1px solid #68452b}
+.primary,.quick-launch{background:linear-gradient(135deg,#e9b878,#c78a4e)!important;color:#2b180d!important;border-color:#dca568!important}
+.secondary,.privacy-toggle,.stock-avulsa-head{background:#3c2618!important;color:#f1d0a2!important;border-color:#67462d!important}
+.field label{color:#e2bd8c}.field input,.field select,.field textarea,input,select,textarea{background:#24150e;color:#fff0dc;border-color:#60412a}
+.nav{height:70px;flex:0 0 calc(70px + env(safe-area-inset-bottom));padding:6px 8px env(safe-area-inset-bottom);background:rgba(32,18,11,.97);border-top:1px solid #5a3a24;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;backdrop-filter:blur(18px)}
+.nav button{background:transparent;color:#b9a18a;border-radius:15px;gap:3px}.nav .ni{font-size:23px;line-height:25px}.nav small{font-size:10px;font-weight:750}.nav .active{background:#49301e;color:#f3c78b;box-shadow:inset 0 0 0 1px #725034}
+.nav .ui-svg{stroke:currentColor}
+#login{background:radial-gradient(ellipse at 50% 10%,#57321d,#24130c 68%,#180c07);color:#fff0dc}
+.login-card{background:rgba(43,25,15,.96);border:1px solid #654329;box-shadow:0 24px 70px #0006;color:#fff0dc;border-radius:28px}
+.login-card h1{font-family:Georgia,'Times New Roman',serif;color:#fff0dc}.login-card p{color:#c8ad91}.logo{background:#35190d;border-color:#6b4529}.field input,.field select,.field textarea{background:#21120c;color:#fff0dc;border-color:#5b3b25}
+button{transition:transform .14s ease,filter .14s ease}button:active{transform:scale(.985)}
+.item,.stat,.quick button,.section .item{border-radius:18px}
+.status,.badge{border-radius:99px}
+.more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.more-card{position:relative;text-align:left;border:1px solid #563822!important;border-radius:20px;padding:17px 14px;min-height:137px;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.more-icon{display:grid;place-items:center;width:39px;height:39px;border-radius:13px;background:#4a2d1a;color:#edbd7d;font-size:23px;margin-bottom:3px}
+.more-card b{font-size:14px;color:#fff0dc}.more-card small{font-size:11px;line-height:1.4;color:#c4a88b}.more-arrow{position:absolute;right:13px;top:16px;color:#d8a567;font-size:23px}
+.more-brand{display:flex;flex-direction:column;align-items:center;gap:5px;margin:28px auto 8px;color:#e4c49b}.more-brand img{width:100px;height:72px;object-fit:contain;border-radius:12px}.more-brand span{font-family:Georgia,serif;font-size:15px}.more-brand small{font-size:10px;letter-spacing:1px;color:#b99a7a}
+.boot-loader{background:radial-gradient(ellipse at 50% 10%,#57321d,#24130c 68%,#180c07)!important}
+@media(min-width:700px){.page{max-width:760px}.view{padding-left:22px;padding-right:22px}.more-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -870,17 +907,16 @@ body.theme-dark .v140-chart .rev-point{fill:#d9a47d}.theme-dark .v140-chart .cos
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V1.9.5</small></div></div>
+  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V2.0.0 · Gestão de doces</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
  <nav class="nav">
   <button data-page="home" class="active"><span class="ni">⌂</span><small>Início</small></button>
   <button data-page="sales"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></span><small>Vendas</small></button>
+  <button data-page="stock"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5 9-5ZM3 7v10l9 5 9-5V7M12 12v10"/></svg></span><small>Produtos</small></button>
   <button data-page="clients"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 8v6m3-3h-6"/></svg></span><small>Clientes</small></button>
-  <button data-page="stock"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5 9-5ZM3 7v10l9 5 9-5V7M12 12v10"/></svg></span><small>Estoque</small></button>
-  <button data-page="purchases"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z M9 8a3 3 0 0 1 6 0"/></svg></span><small>Compras</small></button>
-  <button data-page="finance"><span class="ni"><svg class="ui-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M8 16V9m5 7V4m5 12v-5"/></svg></span><small>Financeiro</small></button>
+  <button data-page="more"><span class="ni">•••</span><small>Mais</small></button>
  </nav>
 </div>
 <div id="modalRoot"></div>
@@ -1076,7 +1112,8 @@ function go(p){
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
 
-function render(){if(!uid||isSeller())return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="purchases")v.innerHTML=purchases();if(page==="finance")v.innerHTML=finance();bindPage();bindPrivacy()}
+function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Doces do Vitu</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatórios</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="logo.png" alt="Doces do Vitu"><span>Seu negócio, em boas mãos.</span><small>DOCES DO VITU · V2.0.0</small></div></div>`}
+function render(){if(!uid||isSeller())return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="purchases")v.innerHTML=purchases();if(page==="finance")v.innerHTML=finance();if(page==="more")v.innerHTML=morePage();if(page==="reports")v.innerHTML=finance();if(page==="settings")v.innerHTML=finance();bindPage();bindPrivacy();document.querySelectorAll('[data-go-page]').forEach(b=>b.onclick=()=>go(b.dataset.goPage))}
 function monthBounds(ref=now()){
  const start=new Date(ref.getFullYear(),ref.getMonth(),1);start.setHours(0,0,0,0);
  const end=new Date(ref.getFullYear(),ref.getMonth()+1,1);end.setHours(0,0,0,0);
