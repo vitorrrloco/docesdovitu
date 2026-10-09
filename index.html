@@ -1637,6 +1637,34 @@ function purchaseDetail(productId,monthKey){
  </div>`;
 }
 let purchaseHistoryMonth=new Date().toISOString().slice(0,7);
+async function deletePurchaseEntry(purchaseId){
+ const entry=(data.purchases||[]).find(x=>String(x.id)===String(purchaseId));
+ if(!entry)return toast('Entrada não encontrada. Atualize a tela e tente novamente.');
+ const qty=Math.max(0,numBR(entry.quantity||0));
+ const product=(data.products||[]).find(p=>String(p.id)===String(entry.productId));
+ const message=`Excluir a entrada de ${entry.productName||'produto'}?\n\nQuantidade: ${qty} unidade(s)\nValor registrado: ${money(entry.total||0)}\n\nO sistema vai retirar essa quantidade do estoque. Essa ação não pode ser desfeita.`;
+ if(!confirm(message))return;
+ try{
+  if(product&&qty>0){
+   const productRef=doc(col('products'),product.id),purchaseRef=doc(col('purchases'),entry.id);
+   await runTransaction(db,async tx=>{
+    const [ps,es]=await Promise.all([tx.get(productRef),tx.get(purchaseRef)]);
+    if(!es.exists())throw Error('Esta entrada já foi excluída. Atualize a tela.');
+    if(!ps.exists())throw Error('O produto desta entrada não existe mais.');
+    const current=Math.max(0,numBR(ps.data().stock||0));
+    if(current<qty)throw Error(`Estoque atual (${current}) menor que a quantidade da entrada (${qty}). Não é possível excluir sem deixar o estoque negativo.`);
+    tx.update(productRef,{stock:current-qty});
+    tx.delete(purchaseRef);
+   });
+  }else{
+   await deleteDoc(doc(col('purchases'),entry.id));
+  }
+  await logAction('Entrada de mercadoria excluída',`${entry.productName||'Produto'} • -${qty} un. do estoque • valor registrado ${money(entry.total||0)}`);
+  toast('Entrada excluída e estoque ajustado.');
+  render();
+ }catch(e){console.error(e);toast(e.message||'Não foi possível excluir a entrada.');}
+}
+
 function purchases(){
  const products=data.products||[],sales=data.sales||[],purchasesData=data.purchases||[],today=now();
  const stats=products.map(p=>{
@@ -1666,7 +1694,7 @@ function purchases(){
   <details class="purchase-detail purchase-history-fold" style="margin-top:18px"><summary class="purchase-detail-head"><div><h3>🧾 Histórico de compras</h3><small>Toque para abrir as entradas registradas no estoque</small></div><span aria-hidden="true">＋</span></summary><div class="purchase-history-content">
   <label for="purchaseHistoryMonth">Mês consultado</label><input id="purchaseHistoryMonth" type="month" value="${purchaseHistoryMonth}" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--cream);color:var(--text);margin:8px 0 14px">
   <div class="purchase-highlight"><small>Total investido no mês</small><strong>${money(purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).reduce((a,x)=>a+numBR(x.total||0),0))}</strong><span>${purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).reduce((a,x)=>a+numBR(x.quantity||0),0)} unidades • ${purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).length} registros</span></div>
-  ${(()=>{const list=purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));return list.length?`<div class="purchase-list">${list.map(x=>`<div class="purchase-row"><div class="purchase-row-main"><b>${esc(x.productName||'Produto')}</b><small>${dt(x.createdAt)?.toLocaleDateString('pt-BR')||'Data indisponível'} • ${numBR(x.quantity||0)} unidades</small></div><div class="purchase-row-cost" style="grid-column:3">${money(x.total||0)}</div></div>`).join('')}</div>`:'<div class="purchase-empty">Nenhuma compra registrada neste mês.</div>'})()}
+  ${(()=>{const list=purchasesData.filter(x=>{const d=dt(x.createdAt);return d&&d.getFullYear()===Number(purchaseHistoryMonth.slice(0,4))&&d.getMonth()+1===Number(purchaseHistoryMonth.slice(5,7))}).sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0));return list.length?`<div class="purchase-list">${list.map(x=>`<div class="purchase-row purchase-history-row"><div class="purchase-row-main"><b>${esc(x.productName||'Produto')}</b><small>${dt(x.createdAt)?.toLocaleDateString('pt-BR')||'Data indisponível'} • ${numBR(x.quantity||0)} unidades</small></div><div class="purchase-row-cost">${money(x.total||0)}</div><button type="button" class="purchase-delete-btn" data-delete-purchase="${esc(x.id)}" aria-label="Excluir entrada de ${esc(x.productName||'produto')}">Excluir entrada</button></div>`).join('')}</div>`:'<div class="purchase-empty">Nenhuma compra registrada neste mês.</div>'})()}
   </div></details>
  </div>`;
 }
@@ -2920,6 +2948,7 @@ function bindPage(){
  document.querySelectorAll('[data-reject-request]').forEach(b=>b.onclick=()=>rejectSellerRequest(b.dataset.rejectRequest));
 
  $("purchaseHistoryMonth")?.addEventListener("change",e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){purchaseHistoryMonth=e.target.value;render()}});
+ document.querySelectorAll('[data-delete-purchase]').forEach(b=>b.addEventListener('click',()=>deletePurchaseEntry(b.dataset.deletePurchase)));
  $("financeMonthSelect")?.addEventListener("change",e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){financeMonthKey=e.target.value;render()}});
  $("newSale")?.addEventListener("click",openSale);
  $("salesPeriod")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituSalesDays",e.target.value);render()});$("qSale")?.addEventListener("click",openQuickSale);$("qQuickSale")?.addEventListener("click",openQuickSale);$("stockAddMenu")?.addEventListener("click",openStockAddMenu);
@@ -3299,4 +3328,5 @@ window.addEventListener("load",()=>{
 .seller-client-card-bottom .seller-client-card-due{display:block;margin-top:4px}
 .seller-client-profile-link{font-size:11px;color:#b77a4e;font-weight:850}
 
+.purchase-history-row{grid-template-columns:minmax(0,1fr) auto;}.purchase-history-row .purchase-row-cost{grid-column:2;grid-row:1;}.purchase-delete-btn{grid-column:1/-1;justify-self:end;border:1px solid #8e4d3b;background:#3a2119;color:#f0b7a5;border-radius:10px;padding:8px 12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}.purchase-delete-btn:active{transform:scale(.98)}@media(min-width:900px){.purchase-history-row{grid-template-columns:minmax(0,1fr) auto auto;align-items:center}.purchase-history-row .purchase-row-cost{grid-column:2;grid-row:1}.purchase-delete-btn{grid-column:3;grid-row:1}}
 </style>
