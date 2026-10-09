@@ -898,6 +898,92 @@ html,body{background:#1c100b;color:var(--text)}body{background:radial-gradient(e
 @media(min-width:700px){.page,.dashboard-v2{max-width:1050px}.view{padding-left:24px;padding-right:24px}.dash-two-col{grid-template-columns:1.1fr .9fr}.dashboard-stats .stat{min-height:145px}.nav{max-width:none;width:100%;margin:0;border-radius:0}.app{display:flex;flex-direction:column}.view{width:100%}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
 </style>
+
+<!-- Responsive desktop/mobile and professional report styles -->
+<style id="responsive-pc-celular-v200-final">
+@media (max-width: 899px) {
+  #app.app { display:flex !important; flex-direction:column !important; height:100dvh !important; }
+  #app .top { order:0 !important; flex:0 0 74px !important; width:100% !important; grid-column:auto !important; grid-row:auto !important; }
+  #app .view { order:1 !important; flex:1 1 auto !important; min-height:0 !important; width:100% !important; grid-column:auto !important; grid-row:auto !important; padding:16px 14px calc(100px + env(safe-area-inset-bottom)) !important; overflow:auto !important; }
+  #app .nav { order:2 !important; grid-column:auto !important; grid-row:auto !important; display:grid !important; grid-template-columns:repeat(5,minmax(0,1fr)) !important; flex:0 0 calc(76px + env(safe-area-inset-bottom)) !important; width:100% !important; max-width:none !important; height:calc(76px + env(safe-area-inset-bottom)) !important; margin:0 !important; padding:5px 4px env(safe-area-inset-bottom) !important; border-radius:0 !important; border-top:1px solid var(--line) !important; border-right:0 !important; }
+  #app .nav:before { display:none !important; }
+  #app .nav button { display:flex !important; width:auto !important; min-width:0 !important; min-height:0 !important; padding:4px 2px !important; flex:initial !important; flex-direction:column !important; justify-content:center !important; align-items:center !important; gap:2px !important; }
+  #app .nav .ni { width:auto !important; font-size:22px !important; line-height:25px !important; }
+  #app .nav small { font-size:10px !important; }
+}
+@media (min-width: 900px) {
+  body { background:var(--cream2) !important; }
+  #app.app { display:grid !important; grid-template-columns:250px minmax(0,1fr) !important; grid-template-rows:76px minmax(0,1fr) !important; height:100dvh !important; width:100% !important; }
+  #app .top { grid-column:2 !important; grid-row:1 !important; height:auto !important; min-width:0 !important; padding:10px 28px !important; }
+  #app .view { grid-column:2 !important; grid-row:2 !important; min-width:0 !important; width:100% !important; padding:26px 30px 34px !important; overflow:auto !important; }
+  #app .page { max-width:1320px !important; }
+  #app .nav { grid-column:1 !important; grid-row:1 / span 2 !important; display:flex !important; flex-direction:column !important; align-items:stretch !important; gap:8px !important; width:250px !important; max-width:none !important; height:auto !important; margin:0 !important; padding:22px 12px !important; border:0 !important; border-right:1px solid var(--line) !important; border-radius:0 !important; background:var(--white) !important; }
+  #app .nav:before { display:block !important; content:"DOCES DO VITU" !important; font-size:16px !important; font-weight:900 !important; color:var(--dark) !important; padding:8px 12px 22px !important; }
+  #app .nav button { display:flex !important; width:100% !important; min-height:54px !important; flex:0 0 54px !important; flex-direction:row !important; align-items:center !important; justify-content:flex-start !important; gap:12px !important; padding:0 15px !important; border-radius:14px !important; }
+  #app .nav .ni { width:27px !important; flex:0 0 27px !important; font-size:22px !important; text-align:center !important; line-height:1 !important; }
+  #app .nav small { font-size:13px !important; }
+  #app .nav .active { background:var(--cream2) !important; color:var(--dark) !important; }
+  #app .hero { padding:25px 28px !important; }
+  #app .hero h2 { font-size:34px !important; }
+  #app .stats { grid-template-columns:repeat(4,minmax(0,1fr)) !important; gap:14px !important; }
+  #app .quick { grid-template-columns:repeat(4,minmax(0,1fr)) !important; gap:12px !important; }
+  #app .more-grid, #app .more { grid-template-columns:repeat(4,minmax(0,1fr)) !important; }
+  #app .table-wrap { max-width:100% !important; }
+  #app .modal-bg { align-items:center !important; padding:20px !important; }
+  #app .modal { width:min(760px,100%) !important; margin:auto !important; max-height:88dvh !important; }
+}
+@media (min-width: 1400px) {
+  #app .view { padding-left:42px !important; padding-right:42px !important; }
+  #app .page { max-width:1450px !important; }
+}
+</style>
+<style id="professional-reports-v2">
+.reports-page{max-width:1450px!important}
+.reports-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:4px 0 22px}
+.reports-heading h1{font-size:clamp(27px,3vw,36px);margin:5px 0 7px;font-weight:900;letter-spacing:-.7px}
+.reports-heading p{margin:0;color:var(--muted);font-size:13px}
+.reports-period{display:flex;flex-direction:column;gap:6px;min-width:170px;padding:10px 12px;background:var(--white);border:1px solid var(--line);border-radius:14px}
+.reports-period label{font-size:11px;font-weight:800;color:var(--muted)}
+.reports-period input{border:0;background:transparent;color:var(--text);font:inherit;font-size:14px;font-weight:800;outline:none;max-width:190px}
+.reports-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}
+.report-kpi{min-width:0;padding:19px;border:1px solid var(--line);border-radius:19px;background:var(--white);box-shadow:0 6px 20px #39241408;display:flex;flex-direction:column;gap:8px}
+.report-kpi span{font-size:12px;color:var(--muted);font-weight:800}
+.report-kpi strong{font-size:clamp(21px,2vw,29px);font-weight:900;letter-spacing:-.7px;overflow-wrap:anywhere}
+.report-kpi small{font-size:11px;line-height:1.45;color:var(--muted)}
+.report-kpi-primary{background:var(--dark);color:#fff;border-color:var(--dark)}
+.report-kpi-primary span,.report-kpi-primary small{color:#ead8c8}
+.report-positive{color:#278451}.report-negative{color:#b43c34}
+.reports-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}
+.reports-grid-main{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+.report-panel{min-width:0;background:var(--white);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 6px 20px #39241408}
+.report-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:17px}
+.report-panel-head h2{font-size:18px;font-weight:900;margin:4px 0}
+.report-panel-head p{font-size:12px;color:var(--muted);margin:5px 0 0}
+.report-tag{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--cream2);color:var(--dark);padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}
+.report-chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;min-height:205px;align-items:end;padding-top:8px}
+.report-bar-wrap{display:flex;min-width:0;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;height:100%}
+.report-bar-value{font-size:10px;color:var(--muted);white-space:nowrap;min-height:13px;max-width:100%;overflow:hidden}
+.report-bar-track{height:130px;width:min(100%,35px);display:flex;align-items:flex-end;overflow:hidden;border-radius:9px;background:var(--cream2)}
+.report-bar{width:100%;min-height:0;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#dca56c,#8d5837)}
+.report-bar-wrap small{font-size:10px;color:var(--muted);white-space:nowrap;text-transform:capitalize}
+.report-metric-line{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px}
+.report-metric-line:last-child{border-bottom:0}.report-metric-line span{color:var(--muted)}.report-metric-line b{font-size:13px;text-align:right}
+.report-rank{margin:12px 0}
+.report-rank-label{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:7px}
+.report-rank-label b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.report-rank-label span{font-weight:850;white-space:nowrap}
+.report-rank-track{height:7px;background:var(--cream2);border-radius:99px;overflow:hidden}
+.report-rank-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#d5a16b,#8d5837)}
+.report-subline{display:block;color:var(--muted);font-size:10px;margin-top:6px}
+.report-low-stock{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
+.report-low-stock:last-child{border-bottom:0}.report-low-stock b{color:#b76c28;white-space:nowrap}
+.report-empty{padding:20px 12px;text-align:center;color:var(--muted);font-size:12px;background:var(--cream2);border-radius:12px}
+.report-sales-panel{margin-bottom:28px}
+.report-status{display:inline-flex;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:850;white-space:nowrap}
+.report-status.is-paid{background:#e5f4e9;color:#226a3c}.report-status.is-partial{background:#fff0d9;color:#8b5a15}.report-status.is-open{background:#fbe8e6;color:#9c3029}
+.reports-page .table-wrap{overflow-x:auto}.reports-page .data-table{min-width:760px;width:100%}
+@media(max-width:899px){.reports-heading{align-items:stretch;flex-direction:column}.reports-period{width:100%}.reports-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.report-kpi{padding:14px;border-radius:15px}.reports-grid,.reports-grid-main{grid-template-columns:minmax(0,1fr)}.report-panel{padding:15px}.report-chart{gap:5px}.report-bar-track{height:105px}.report-bar-value{font-size:9px}.report-panel-head{align-items:flex-start}.report-sales-panel .report-panel-head{flex-direction:column}}
+</style>
 </head>
 <body>
 <div id="brandSplash" aria-label="DOCES DO VITU">
