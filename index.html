@@ -1126,7 +1126,84 @@ document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.p
 $("quickSale").onclick=()=>openSale();
 
 function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Doces do Vitu</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatórios</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="logo.png" alt="Doces do Vitu"><span>Seu negócio, em boas mãos.</span><small>DOCES DO VITU · V2.0.0</small></div></div>`}
-function render(){if(!uid||isSeller())return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="purchases")v.innerHTML=purchases();if(page==="finance")v.innerHTML=finance();if(page==="more")v.innerHTML=morePage();if(page==="reports")v.innerHTML=finance();if(page==="settings")v.innerHTML=finance();bindPage();bindPrivacy();document.querySelectorAll('[data-go-page]').forEach(b=>b.onclick=()=>go(b.dataset.goPage))}
+
+function reportsPage(){
+ const [year,month]=financeMonthKey.split("-").map(Number);
+ const ref=new Date(year,month-1,1); const label=ref.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+ const monthSales=monthSalesFor(ref), monthPayments=monthPaymentsFor(ref);
+ const products=data.products||[], purchases=data.purchases||[], clientsList=data.clients||[];
+ const revenue=monthSales.reduce((a,s)=>a+numBR(s.total||0),0);
+ const received=monthPayments.reduce((a,p)=>a+numBR(p.amount||0),0);
+ const pending=monthSales.reduce((a,s)=>a+salePendingAmount(s),0);
+ const cost=monthSales.reduce((a,s)=>a+saleCostAmount(s),0);
+ const expenseTotal=(data.expenses||[]).filter(e=>{const d=dt(e.createdAt||e.date);return d&&d.getFullYear()===year&&d.getMonth()===month-1}).reduce((a,e)=>a+numBR(e.amount||e.value||0),0);
+ const profit=revenue-cost-expenseTotal, margin=revenue>0?profit/revenue*100:0;
+ const ticket=monthSales.length?revenue/monthSales.length:0;
+ const itemCount=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+numBR(i.qty||i.quantity||0),0),0);
+ const paidSales=monthSales.filter(s=>salePendingAmount(s)<=0.009).length;
+ const openSales=monthSales.length-paidSales;
+ const expenseCount=(data.expenses||[]).filter(e=>{const d=dt(e.createdAt||e.date);return d&&d.getFullYear()===year&&d.getMonth()===month-1}).length;
+ const methodTotals={}; monthPayments.forEach(p=>{const k=p.method||p.paymentMethod||"Não informado";methodTotals[k]=(methodTotals[k]||0)+numBR(p.amount||0)});
+ const productTotals={}; monthSales.forEach(s=>(s.items||[]).forEach(i=>{const n=i.name||i.productName||"Produto";productTotals[n]=(productTotals[n]||0)+numBR(i.qty||i.quantity||0)}));
+ const clientTotals={}; monthSales.forEach(s=>{const id=s.clientId||s.customerId||s.clientName||"walkin";const c=clientsList.find(x=>x.id===s.clientId||x.id===s.customerId);const name=c?.name||s.clientName||s.customerName||"Venda avulsa";if(!clientTotals[id])clientTotals[id]={name,total:0,count:0,pending:0};clientTotals[id].total+=numBR(s.total||0);clientTotals[id].count++;clientTotals[id].pending+=salePendingAmount(s)});
+ const bestProducts=Object.entries(productTotals).sort((a,b)=>b[1]-a[1]).slice(0,6);
+ const bestClients=Object.values(clientTotals).sort((a,b)=>b.total-a.total).slice(0,6);
+ const methods=Object.entries(methodTotals).sort((a,b)=>b[1]-a[1]);
+ const lowStock=products.filter(p=>numBR(p.stock||0)<=Number(p.minStock||2)).sort((a,b)=>numBR(a.stock)-numBR(b.stock)).slice(0,8);
+ const rows=[...monthSales].sort((a,b)=>(dt(b.createdAt)||0)-(dt(a.createdAt)||0)).slice(0,15);
+ const maxProduct=Math.max(1,...bestProducts.map(x=>x[1]));
+ const maxClient=Math.max(1,...bestClients.map(x=>x.total));
+ const chartEnd=new Date(year,month,0); const current=new Date();
+ if(year===current.getFullYear()&&month===current.getMonth()+1) chartEnd.setTime(current.getTime());
+ const chartStart=new Date(chartEnd); chartStart.setDate(chartStart.getDate()-6); chartStart.setHours(0,0,0,0);
+ const trend=Array.from({length:7},(_,i)=>{const d=new Date(chartStart);d.setDate(d.getDate()+i);const total=monthSales.filter(s=>{const sd=dt(s.createdAt);return sd&&sd.getFullYear()===d.getFullYear()&&sd.getMonth()===d.getMonth()&&sd.getDate()===d.getDate()}).reduce((a,s)=>a+numBR(s.total||0),0);return {d,total}});
+ const maxTrend=Math.max(1,...trend.map(x=>x.total));
+ const statusText=s=>salePendingAmount(s)<=0.009?'Pago':(numBR(s.paidAmount||0)>0?'Parcial':'Pendente');
+ return `<div class="page reports-page">
+ <div class="reports-heading"><div><span class="eyebrow">DOCES DO VITU · INTELIGÊNCIA DO NEGÓCIO</span><h1>Relatório gerencial</h1><p>Visão consolidada de vendas, recebimentos, rentabilidade e operação.</p></div><div class="reports-period"><label for="reportsMonth">Período analisado</label><input id="reportsMonth" type="month" value="${financeMonthKey}"></div></div>
+ <div class="reports-kpis">
+  <article class="report-kpi report-kpi-primary"><span>Faturamento</span><strong class="private-number">${money(revenue)}</strong><small>${monthSales.length} venda(s) no período</small></article>
+  <article class="report-kpi"><span>Recebimentos registrados</span><strong class="private-number">${money(received)}</strong><small>${monthPayments.length} pagamento(s) registrado(s)</small></article>
+  <article class="report-kpi"><span>Saldo a receber</span><strong class="private-number">${money(pending)}</strong><small>${openSales} venda(s) com saldo em aberto</small></article>
+  <article class="report-kpi"><span>Resultado estimado</span><strong class="private-number ${profit>=0?'report-positive':'report-negative'}">${money(profit)}</strong><small>Após custo dos itens e despesas informadas</small></article>
+ </div>
+ <div class="reports-grid reports-grid-main">
+  <section class="report-panel"><div class="report-panel-head"><div><span class="eyebrow">ÚLTIMOS 7 DIAS DO PERÍODO</span><h2>Ritmo de vendas</h2></div><span class="report-tag">${label}</span></div>
+   <div class="report-chart">${trend.map(x=>`<div class="report-bar-wrap" title="${x.d.toLocaleDateString('pt-BR')}: ${money(x.total)}"><div class="report-bar-value">${x.total?money(x.total):' '}</div><div class="report-bar-track"><div class="report-bar" style="height:${Math.max(x.total?5:0,x.total/maxTrend*100)}%"></div></div><small>${x.d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit'}).replace('.','')}</small></div>`).join('')}</div>
+  </section>
+  <section class="report-panel"><div class="report-panel-head"><div><span class="eyebrow">RENTABILIDADE</span><h2>Indicadores do período</h2></div></div>
+   <div class="report-metric-line"><span>Lucro estimado antes das despesas</span><b class="private-number">${money(revenue-cost)}</b></div>
+   <div class="report-metric-line"><span>Custos dos produtos vendidos</span><b class="private-number">${money(cost)}</b></div>
+   <div class="report-metric-line"><span>Despesas registradas (${expenseCount})</span><b class="private-number">${money(expenseTotal)}</b></div>
+   <div class="report-metric-line"><span>Margem estimada</span><b>${margin.toFixed(1).replace('.',',')}%</b></div>
+   <div class="report-metric-line"><span>Ticket médio por venda</span><b class="private-number">${money(ticket)}</b></div>
+   <div class="report-metric-line"><span>Unidades vendidas</span><b>${itemCount}</b></div>
+  </section>
+ </div>
+ <div class="reports-grid">
+  <section class="report-panel"><div class="report-panel-head"><div><span class="eyebrow">DESTAQUES</span><h2>Produtos mais vendidos</h2></div></div>
+   ${bestProducts.length?bestProducts.map(([n,q])=>`<div class="report-rank"><div class="report-rank-label"><b>${esc(n)}</b><span>${q} un.</span></div><div class="report-rank-track"><i style="width:${q/maxProduct*100}%"></i></div></div>`).join(''):'<div class="report-empty">Ainda não há itens vendidos neste período.</div>'}
+  </section>
+  <section class="report-panel"><div class="report-panel-head"><div><span class="eyebrow">RELACIONAMENTO</span><h2>Principais clientes</h2></div></div>
+   ${bestClients.length?bestClients.map(c=>`<div class="report-rank"><div class="report-rank-label"><b>${esc(c.name)}</b><span>${money(c.total)}</span></div><div class="report-rank-track"><i style="width:${c.total/maxClient*100}%"></i></div><small class="report-subline">${c.count} venda(s) · ${c.pending>0?money(c.pending)+' a receber':'sem saldo pendente'}</small></div>`).join(''):'<div class="report-empty">Ainda não há vendas neste período.</div>'}
+  </section>
+  <section class="report-panel"><div class="report-panel-head"><div><span class="eyebrow">CAIXA</span><h2>Recebimentos por método</h2></div></div>
+   ${methods.length?methods.map(([n,v])=>`<div class="report-metric-line"><span>${esc(n)}</span><b class="private-number">${money(v)}</b></div>`).join(''):'<div class="report-empty">Nenhum recebimento registrado no período.</div>'}
+  </section>
+  <section class="report-panel"><div class="report-panel-head"><div><span class="eyebrow">ESTOQUE</span><h2>Atenção operacional</h2></div><span class="report-tag">${lowStock.length} alerta(s)</span></div>
+   <div class="report-metric-line"><span>Produtos cadastrados</span><b>${products.length}</b></div>
+   <div class="report-metric-line"><span>Itens com estoque baixo</span><b>${products.filter(p=>numBR(p.stock||0)<=Number(p.minStock||2)).length}</b></div>
+   <div class="report-metric-line"><span>Compras registradas (geral)</span><b>${purchases.length}</b></div>
+   ${lowStock.length?lowStock.map(p=>`<div class="report-low-stock"><span>${esc(p.name)}</span><b>${numBR(p.stock||0)} un.</b></div>`).join(''):'<div class="report-empty">Nenhum produto abaixo do estoque mínimo.</div>'}
+  </section>
+ </div>
+ <section class="report-panel report-sales-panel"><div class="report-panel-head"><div><span class="eyebrow">AUDITORIA DE VENDAS</span><h2>Vendas recentes do período</h2><p>Até 15 lançamentos mais recentes.</p></div><button class="secondary" id="reportsSeeSales">Ver todas as vendas</button></div>
+ ${rows.length?`<div class="table-wrap"><table class="data-table"><thead><tr><th>Data</th><th>Cliente</th><th>Itens</th><th>Valor</th><th>Saldo aberto</th><th>Status</th></tr></thead><tbody>${rows.map(s=>{const d=dt(s.createdAt);const c=clientsList.find(x=>x.id===s.clientId||x.id===s.customerId);const name=c?.name||s.clientName||s.customerName||'Venda avulsa';const items=(s.items||[]).reduce((a,i)=>a+numBR(i.qty||i.quantity||0),0);const open=salePendingAmount(s);return `<tr><td>${d?d.toLocaleDateString('pt-BR'):'—'}</td><td>${esc(name)}</td><td>${items}</td><td class="private-number">${money(s.total||0)}</td><td class="private-number">${money(open)}</td><td><span class="report-status ${open<=0.009?'is-paid':numBR(s.paidAmount||0)>0?'is-partial':'is-open'}">${statusText(s)}</span></td></tr>`}).join('')}</tbody></table></div>`:'<div class="report-empty">Nenhuma venda registrada neste período.</div>'}
+ </section>
+ </div>`;
+}
+
+function render(){if(!uid||isSeller())return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="purchases")v.innerHTML=purchases();if(page==="finance")v.innerHTML=finance();if(page==="more")v.innerHTML=morePage();if(page==="reports")v.innerHTML=reportsPage();if(page==="settings")v.innerHTML=finance();bindPage();bindPrivacy();document.querySelectorAll('[data-go-page]').forEach(b=>b.onclick=()=>go(b.dataset.goPage))}
 function monthBounds(ref=now()){
  const start=new Date(ref.getFullYear(),ref.getMonth(),1);start.setHours(0,0,0,0);
  const end=new Date(ref.getFullYear(),ref.getMonth()+1,1);end.setHours(0,0,0,0);
@@ -1285,7 +1362,7 @@ function home(){
  return `<div class="page dashboard-v2">
  ${sellerApprovalPanel()}
  <div class="dash-welcome"><div><span class="eyebrow">PAINEL DE CONTROLE</span><h1>Olá, ${esc(currentUserName||'Vitor')} <span class="welcome-wave">✦</span></h1><p>Veja como está o seu negócio hoje.</p></div><div class="dash-date">${now().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}</div></div>
- <section class="dash-hero"><div class="hero-copy"><span class="hero-kicker"><i></i> FATURAMENTO DE HOJE</span><h2 class="private-number money-hero">${money(t.todaySales)}</h2><p>${todaySales.length} ${todaySales.length===1?'venda registrada':'vendas registradas'} hoje</p><button class="hero-action" id="qSale">＋ Nova venda <span>↗</span></button></div><div class="hero-decoration"><div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div><div class="hero-candy">${productGlyph('bombom')}</div></div></section>
+ <section class="dash-hero"><div class="hero-copy"><span class="hero-kicker"><i></i> FATURAMENTO DE HOJE</span><h2 class="private-number money-hero">${money(t.todaySales)}</h2><p>${todaySales.length} ${todaySales.length===1?'venda registrada':'vendas registradas'} hoje</p><button class="hero-action" id="qSale">ϟ Venda rápida <span>↗</span></button></div><div class="hero-decoration"><div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div><div class="hero-candy">${productGlyph('bombom')}</div></div></section>
  <div class="dash-section-heading"><div><span class="eyebrow">VISÃO GERAL</span><h2>Resumo financeiro</h2></div>${privacyButton()}</div>
  <div class="stats dashboard-stats">
   <div class="stat stat-primary"><span class="stat-icon">↗</span><small>VENDAS TOTAIS</small><strong class="private-number money-large">${money(t.sold)}</strong><em>Valor registrado</em></div>
@@ -1582,6 +1659,55 @@ function printDailyCash(r){
   #app .view { padding-left:42px !important; padding-right:42px !important; }
   #app .page { max-width:1450px !important; }
 }
+</style>
+
+
+<style id="professional-reports-v2">
+.reports-page{max-width:1450px!important}
+.reports-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:4px 0 22px}
+.reports-heading h1{font-size:clamp(27px,3vw,36px);margin:5px 0 7px;font-weight:900;letter-spacing:-.7px}
+.reports-heading p{margin:0;color:var(--muted);font-size:13px}
+.reports-period{display:flex;flex-direction:column;gap:6px;min-width:170px;padding:10px 12px;background:var(--white);border:1px solid var(--line);border-radius:14px}
+.reports-period label{font-size:11px;font-weight:800;color:var(--muted)}
+.reports-period input{border:0;background:transparent;color:var(--text);font:inherit;font-size:14px;font-weight:800;outline:none;max-width:190px}
+.reports-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:16px}
+.report-kpi{min-width:0;padding:19px;border:1px solid var(--line);border-radius:19px;background:var(--white);box-shadow:0 6px 20px #39241408;display:flex;flex-direction:column;gap:8px}
+.report-kpi span{font-size:12px;color:var(--muted);font-weight:800}
+.report-kpi strong{font-size:clamp(21px,2vw,29px);font-weight:900;letter-spacing:-.7px;overflow-wrap:anywhere}
+.report-kpi small{font-size:11px;line-height:1.45;color:var(--muted)}
+.report-kpi-primary{background:var(--dark);color:#fff;border-color:var(--dark)}
+.report-kpi-primary span,.report-kpi-primary small{color:#ead8c8}
+.report-positive{color:#278451}.report-negative{color:#b43c34}
+.reports-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}
+.reports-grid-main{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+.report-panel{min-width:0;background:var(--white);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 6px 20px #39241408}
+.report-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:17px}
+.report-panel-head h2{font-size:18px;font-weight:900;margin:4px 0}
+.report-panel-head p{font-size:12px;color:var(--muted);margin:5px 0 0}
+.report-tag{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--cream2);color:var(--dark);padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}
+.report-chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;min-height:205px;align-items:end;padding-top:8px}
+.report-bar-wrap{display:flex;min-width:0;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;height:100%}
+.report-bar-value{font-size:10px;color:var(--muted);white-space:nowrap;min-height:13px;max-width:100%;overflow:hidden}
+.report-bar-track{height:130px;width:min(100%,35px);display:flex;align-items:flex-end;overflow:hidden;border-radius:9px;background:var(--cream2)}
+.report-bar{width:100%;min-height:0;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#dca56c,#8d5837)}
+.report-bar-wrap small{font-size:10px;color:var(--muted);white-space:nowrap;text-transform:capitalize}
+.report-metric-line{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px}
+.report-metric-line:last-child{border-bottom:0}.report-metric-line span{color:var(--muted)}.report-metric-line b{font-size:13px;text-align:right}
+.report-rank{margin:12px 0}
+.report-rank-label{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:7px}
+.report-rank-label b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.report-rank-label span{font-weight:850;white-space:nowrap}
+.report-rank-track{height:7px;background:var(--cream2);border-radius:99px;overflow:hidden}
+.report-rank-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#d5a16b,#8d5837)}
+.report-subline{display:block;color:var(--muted);font-size:10px;margin-top:6px}
+.report-low-stock{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
+.report-low-stock:last-child{border-bottom:0}.report-low-stock b{color:#b76c28;white-space:nowrap}
+.report-empty{padding:20px 12px;text-align:center;color:var(--muted);font-size:12px;background:var(--cream2);border-radius:12px}
+.report-sales-panel{margin-bottom:28px}
+.report-status{display:inline-flex;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:850;white-space:nowrap}
+.report-status.is-paid{background:#e5f4e9;color:#226a3c}.report-status.is-partial{background:#fff0d9;color:#8b5a15}.report-status.is-open{background:#fbe8e6;color:#9c3029}
+.reports-page .table-wrap{overflow-x:auto}.reports-page .data-table{min-width:760px;width:100%}
+@media(max-width:899px){.reports-heading{align-items:stretch;flex-direction:column}.reports-period{width:100%}.reports-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.report-kpi{padding:14px;border-radius:15px}.reports-grid,.reports-grid-main{grid-template-columns:minmax(0,1fr)}.report-panel{padding:15px}.report-chart{gap:5px}.report-bar-track{height:105px}.report-bar-value{font-size:9px}.report-panel-head{align-items:flex-start}.report-sales-panel .report-panel-head{flex-direction:column}}
 </style>
 
 </body></html>`);w.document.close();
@@ -2702,6 +2828,7 @@ function bindV140Month(){
 }
 
 function bindPage(){
+  $('reportsMonth')?.addEventListener('change',e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){financeMonthKey=e.target.value;go('reports')}}); $('reportsSeeSales')?.addEventListener('click',()=>go('sales'));
  document.querySelectorAll('[data-approve-request]').forEach(b=>b.onclick=()=>approveSellerRequest(b.dataset.approveRequest));
  const sellerToggle=$('sellerAdminToggle');if(sellerToggle)sellerToggle.onclick=()=>{const box=$('sellerAdminContent');box.style.display=box.style.display==='none'?'block':'none'};
  document.querySelectorAll('[data-reject-request]').forEach(b=>b.onclick=()=>rejectSellerRequest(b.dataset.rejectRequest));
@@ -2709,7 +2836,7 @@ function bindPage(){
  $("purchaseHistoryMonth")?.addEventListener("change",e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){purchaseHistoryMonth=e.target.value;render()}});
  $("financeMonthSelect")?.addEventListener("change",e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){financeMonthKey=e.target.value;render()}});
  $("newSale")?.addEventListener("click",openSale);
- $("salesPeriod")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituSalesDays",e.target.value);render()});$("qSale")?.addEventListener("click",openSale);$("qQuickSale")?.addEventListener("click",openQuickSale);$("stockAddMenu")?.addEventListener("click",openStockAddMenu);
+ $("salesPeriod")?.addEventListener("change",e=>{localStorage.setItem("docesDoVituSalesDays",e.target.value);render()});$("qSale")?.addEventListener("click",openQuickSale);$("qQuickSale")?.addEventListener("click",openQuickSale);$("stockAddMenu")?.addEventListener("click",openStockAddMenu);
  $("qClient")?.addEventListener("click",openClientForm);$("newClient")?.addEventListener("click",openClientForm);
  $("qProduct")?.addEventListener("click",()=>openProduct());$("newProduct")?.addEventListener("click",()=>openProduct());
  $("qAnalysis")?.addEventListener("click",openAnalysis);$("analysis")?.addEventListener("click",openAnalysis);
