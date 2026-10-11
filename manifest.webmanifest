@@ -1,25 +1,9 @@
 {
-  "name": "DOCES DO VITU",
+  "name": "DOCES DO VITU V3.0",
   "short_name": "Doces do Vitu",
-  "description": "Sistema de vendas, estoque e gestão do Doces do Vitu.",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#35190d",
-  "theme_color": "#35190d",
-  "icons": [
-    {
-      "src": "./icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+  "background_color": "#e8e4f2",
+  "theme_color": "#7137dc",
+  "icons": [{"src":"logo.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]
 }
