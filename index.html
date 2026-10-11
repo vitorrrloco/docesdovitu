@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU V2.1.0</title>
+<title>DOCES DO VITU V3.0</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -482,6 +482,58 @@ button:active{transform:scale(.985)}
  .stats{gap:14px}
  .stat{padding:20px}
  .more-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+
+/* DOCES DO VITU V3.0 - redesign visual inspired by clean modern SaaS interfaces */
+:root{
+ --dark:#30264a;--dark2:#51436f;--brown:#7657b8;--caramel:#8864df;
+ --cream:#f6f4fb;--cream2:#eee9f8;--white:#ffffff;--line:#e8e2f1;
+ --text:#29243a;--muted:#89839a;--green:#19845b;--red:#c04457;--orange:#bb7a25;
+ --shadow:0 4px 18px rgba(51,36,82,.055);--r:18px;
+ --purple:#7855d9;--purple-soft:#f0eaff;
+}
+html,body{background:#f7f6fb;color:var(--text)}
+button{cursor:pointer}
+#app{background:#f7f6fb}
+.nav{background:rgba(255,255,255,.96)!important;border-top:1px solid #e9e4f1!important;box-shadow:0 -4px 24px rgba(42,30,72,.045)!important;backdrop-filter:blur(18px)}
+.nav button{color:#8b849d!important;border-radius:15px!important;transition:background .16s,color .16s}
+.nav button.active{color:#7450d4!important;background:#f0eaff!important}
+.nav button.active small{color:#7450d4!important;font-weight:800}
+.nav .ni{font-size:22px!important}
+button.primary,button.confirm,.seller-confirm,.primary-btn{background:#7956d9!important;color:white!important;border-radius:13px!important;box-shadow:0 4px 10px rgba(121,86,217,.13)}
+button.secondary,.secondary-btn{background:#f0eaff!important;color:#6f4ac9!important;border-radius:13px!important}
+input,select,textarea{border-color:#e4deee!important;border-radius:12px!important;background:#fff!important}
+input:focus,select:focus,textarea:focus{border-color:#9b81e7!important;box-shadow:0 0 0 3px rgba(121,86,217,.09)!important}
+.card,.panel,.stat-card,.metric-card,.seller-home-hero,.seller-home-stats article,.seller-client-metrics article{
+ border:1px solid #ebe6f3!important;border-radius:18px!important;box-shadow:0 3px 14px rgba(44,31,76,.035)!important;
+}
+.seller-home-hero{background:linear-gradient(135deg,#7651d5,#9b7be9)!important;color:white!important}
+.seller-home-hero *{color:inherit}
+.seller-home-stats article{background:#fff!important;color:#30264a!important}
+.seller-home-stats article small,.seller-home-stats article .muted{color:#8b849c!important}
+.seller-home-stats article b,.seller-home-stats article strong{color:#30264a!important}
+.seller-client-metrics article{background:#fff!important;color:#30264a!important}
+.seller-client-metrics article small{color:#8b849c!important}
+.seller-client-metrics article b{color:#7350d0!important}
+.seller-client-heading-icon{background:#f0eaff!important;color:#7651d5!important;border-radius:15px!important}
+.seller-client-avatar{background:#eee8fb!important;color:#6f4bc4!important}
+.seller-client-profile-link{color:#7651d5!important}
+.seller-client-toolbar .seller-confirm{background:#7956d9!important;color:#fff!important}
+.seller-client-card,.product-card,.sale-card,.client-card,.list-card{background:#fff!important;border:1px solid #ebe6f3!important;border-radius:16px!important;box-shadow:0 2px 10px rgba(44,31,76,.025)!important}
+.badge,.pill,.status{border-radius:999px}
+#login{background:radial-gradient(circle at top right,#eee7ff 0,#f7f6fb 48%,#f7f6fb 100%)!important}
+.login-card{border:1px solid #ebe6f3!important;border-radius:26px!important;box-shadow:0 18px 55px rgba(44,31,76,.09)!important}
+.login-card h1{color:#30264a}
+.login-card .logo{background:#f0eaff!important;border-color:#e5dcfa!important}
+#bootLoader{background:#f7f6fb!important}
+.toast{border-radius:14px!important;box-shadow:0 8px 28px rgba(44,31,76,.15)!important}
+.modal,.modal-card,.sheet{border-radius:22px!important;border-color:#e8e2f1!important;box-shadow:0 18px 60px rgba(36,25,60,.18)!important}
+h1,h2,h3{letter-spacing:-.025em}
+@media(min-width:900px){
+ body{background:#f7f6fb!important}
+ #app{max-width:1600px;margin:auto;box-shadow:0 0 60px rgba(44,31,76,.035)}
+ .nav{border-top:0!important}
 }
 
 </style>
