@@ -1,0 +1,24 @@
+DOCES DO VITU V3.0 - Interface profissional e novos módulos
+
+Conteúdo:
+- index.html: aplicativo web com Firebase existente, interface redesenhada em tons lilás/roxo inspirada nas referências fornecidas.
+- logo.png: logo da DOCES DO VITU usada no carregamento e login.
+- manifest.webmanifest: metadados para instalação como app web.
+
+Módulos existentes preservados no código-base:
+- login Firebase, produtos/estoque, vendas, clientes, compras, financeiro, relatórios e fluxo de dados Firestore.
+
+Adições desta versão:
+- navegação inferior reorganizada: Início, Vendas, Financeiro, Estoque e Mais.
+- central Mais com atalhos para clientes/cobranças, compras, relatórios, retirada segura, central fiscal e configurações.
+- simulador de retirada segura baseado nos dados registrados, com campos para caixa/banco disponível, DAS e percentual de reserva. Os parâmetros são guardados localmente neste navegador e não alteram os lançamentos do Firebase.
+- central fiscal informativa para NF-e/NFC-e. ATENÇÃO: esta versão NÃO transmite documentos fiscais à SEFAZ. Emissão real exige integração com provedor fiscal, credenciais, certificado digital e configuração tributária validada por contador.
+
+Antes de colocar em produção:
+1. Faça backup do Firebase e dos dados.
+2. Teste login, venda, cancelamento, estoque, clientes, recebimentos, compras e relatórios.
+3. Valide a navegação em celular e computador.
+4. Não considere o simulador de retirada como orientação contábil definitiva.
+5. Não use a central fiscal como emissor até a integração fiscal real ser implementada e homologada.
+
+Esta é uma evolução do sistema existente, não uma cópia do código proprietário da Aura. A referência foi usada apenas para orientar a organização visual e os requisitos de experiência.

@@ -3451,6 +3451,48 @@ window.addEventListener("load",()=>{
 .seller-client-profile-link{font-size:11px;color:#b77a4e;font-weight:850}
 
 .purchase-history-row{grid-template-columns:minmax(0,1fr) auto;}.purchase-history-row .purchase-row-cost{grid-column:2;grid-row:1;}.purchase-delete-btn{grid-column:1/-1;justify-self:end;border:1px solid #8e4d3b;background:#3a2119;color:#f0b7a5;border-radius:10px;padding:8px 12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}.purchase-delete-btn:active{transform:scale(.98)}@media(min-width:900px){.purchase-history-row{grid-template-columns:minmax(0,1fr) auto auto;align-items:center}.purchase-history-row .purchase-row-cost{grid-column:2;grid-row:1}.purchase-delete-btn{grid-column:3;grid-row:1}}
+
+/* DOCES DO VITU V3.0 - unificação visual Aura-inspired */
+:root{
+ --dark:#17152b!important;--dark2:#24213d!important;--brown:#7137dc!important;--caramel:#8b5cf6!important;
+ --cream:#f0eef8!important;--cream2:#e7e3f2!important;--white:#ffffff!important;--line:#d9cdf8!important;
+ --text:#19172b!important;--muted:#746b98!important;--green:#07966d!important;--red:#dc424f!important;--orange:#d97706!important;
+ --shadow:0 10px 28px rgba(45,30,80,.07)!important;--r:22px!important;
+}
+body,#app,.app,#main,.main,.view,.page{background:#e8e5f2!important;color:#19172b!important}
+.top,header.top,.app-header{background:rgba(255,255,255,.96)!important;border-bottom:1px solid #d9cdf8!important;color:#19172b!important;backdrop-filter:blur(18px)}
+.brand-mark,.top-action,.user-badge,.avatar,.more-icon{background:#f0eaff!important;border:1px solid #d9cdf8!important;color:#7137dc!important}
+.hero,.seller-hero,.seller-profile-hero,.seller-sales-summary,.seller-admin-toggle,.quick-launch,.dash-hero,.finance-hero,.stock-hero,.client-hero{
+ background:linear-gradient(135deg,#7137dc,#8068e8)!important;color:#fff!important;border:1px solid #cbb7ff!important;box-shadow:0 14px 30px rgba(109,40,217,.13)!important
+}
+.hero p,.hero small,.seller-hero p,.seller-hero small,.seller-profile-hero small,.seller-profile-hero p,.seller-sales-summary small,.seller-admin-toggle small{color:#f2edff!important}
+.stat,.item,.quick button,.fast-product,.month-select,.sales-period-bar,.tabs,.section .empty,.empty,.client-result,.stock-card,.purchase-empty,.more-card,.seller-card,.seller-kpi,.seller-shortcut,.seller-stats article,.seller-profile-stat,.seller-product-tile,.seller-sale-sheet,.seller-sale-redesign,.seller-sales-summary,.finance-card,.card,.panel,.dash-panel,.report-panel,.report-kpi,.item,.product-card,.client-card,.modal-card{
+ background:#fff!important;border-color:#d9cdf8!important;color:#19172b!important;box-shadow:var(--shadow)!important
+}
+.seller-kpi small,.seller-card small,.seller-stats small,.seller-shortcut small,.seller-product-tile small,.seller-sale-row small{color:#746b98!important}
+.seller-hero strong,.seller-kpi b,.seller-stats b,.seller-profile-stat b,.seller-shortcut b,.seller-product-tile b,.seller-total-line b{color:inherit!important}
+.seller-submit,.seller-confirm,.seller-sale-redesign .seller-confirm,.seller-form-actions .seller-confirm,.seller-sale-sheet .seller-confirm{
+ background:linear-gradient(135deg,#7c3aed,#6d28d9)!important;color:#fff!important;border:0!important;box-shadow:0 8px 20px rgba(109,40,217,.18)!important
+}
+.seller-cancel,.seller-sale-redesign #sellerCloseDetail,.seller-sale-sheet .seller-cancel,.secondary,.privacy-toggle,.stock-avulsa-head{background:#f0eaff!important;color:#7137dc!important;border:1px solid #d9cdf8!important}
+.seller-input,.seller-sale-redesign .seller-input,.field input,.field select,.field textarea,input,select,textarea{background:#fff!important;color:#19172b!important;border-color:#d9cdf8!important}
+.seller-input:focus,.seller-sale-redesign .seller-input:focus,.field input:focus,.field select:focus,textarea:focus{border-color:#8b5cf6!important;box-shadow:0 0 0 3px rgba(124,58,237,.12)!important}
+.nav{background:rgba(255,255,255,.97)!important;border-top:1px solid #d9cdf8!important;backdrop-filter:blur(18px)}
+.nav button{background:transparent!important;color:#746b98!important}.nav .active,.nav button.active{background:#f0eaff!important;color:#7137dc!important;box-shadow:inset 0 0 0 1px #d9cdf8!important}
+.nav .active .ni{background:transparent!important;color:#7137dc!important}
+button.primary,.primary,.top-action,.seller-confirm,.seller-submit{background:linear-gradient(135deg,#7c3aed,#6d28d9)!important;color:#fff!important}
+.link,.section-title .link,.finance-goal-edit{color:#7137dc!important}
+.finance-goal-fill,.seller-periods button.active,.seller-tabs button.active,.tabs button.active{background:#7137dc!important;color:#fff!important}
+.logo,.logo-image{background:#f0eaff!important;border-color:#d9cdf8!important}
+.login-card h1,.login-card p,.logo small,.field label{color:#19172b!important}
+#login{background:radial-gradient(ellipse at 50% 10%,#f7f5ff,#e8e5f2 75%)!important;color:#19172b!important}
+.boot-loader{background:radial-gradient(ellipse at 50% 32%,#8b5cf6 0%,#7137dc 45%,#e8e5f2 100%)!important;color:#fff!important}
+.boot-card{background:rgba(255,255,255,.96)!important;color:#19172b!important;border:1px solid #d9cdf8!important}
+.boot-card .boot-tagline{color:#746b98!important}
+.charge-v2-whatsapp{background:#e9fff5!important;color:#087f5b!important;border:1px solid #b7efd8!important}
+.seller-sale-overlay{background:rgba(25,23,43,.48)!important}
+@media(min-width:900px){.app{max-width:1500px!important}.view{padding:28px 30px 50px!important}}
+
 </style>
 /* V3.0 VISUAL REBUILD: Aura-inspired layout, not copied assets */
 :root{--dark:#e5e1f0!important;--dark2:#ded8ed!important;--brown:#7137dc!important;--caramel:#8b5cf6!important;--cream:#e6e2f0!important;--cream2:#dcd6eb!important;--white:#fff!important;--line:#d9cafa!important;--text:#201c32!important;--muted:#766b98!important;--shadow:0 8px 26px rgba(54,34,96,.075)!important;--r:24px!important}
