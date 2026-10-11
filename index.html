@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU V2.0.0</title>
+<title>DOCES DO VITU V2.1.0</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -382,7 +382,7 @@ body.theme-dark .nfc-menu-card,body.theme-dark .nfc-item,body.theme-dark .nfc-dr
 .seller-profile-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}.seller-profile-actions button{min-height:44px!important;padding:10px!important;font-size:12px!important}.seller-profile-actions #sellerProfileSell{grid-column:1/-1}
 .payables-panel{margin:14px 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}.payables-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.payables-row:last-child{border-bottom:0}.payables-main{flex:1;min-width:0}.payables-main b{display:block;font-size:13px;overflow-wrap:anywhere}.payables-main small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.payables-amount{font-weight:900;white-space:nowrap}.payables-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.payables-actions button{min-height:32px;padding:6px 9px;font-size:11px}
 
-/* DOCES DO VITU V2.0.0 · visual refresh, existing business logic retained */
+/* DOCES DO VITU V2.1.0 · visual refresh, existing business logic retained */
 :root{--dark:#24130d;--dark2:#3a2115;--brown:#6f4228;--caramel:#c8894d;--cream:#1d100b;--cream2:#382116;--white:#2b190f;--line:#503321;--text:#f5e6d2;--muted:#c2a88f;--green:#72c58d;--red:#ff8c75;--orange:#e9ad63;--shadow:0 12px 30px rgba(0,0,0,.22);--r:20px}
 html,body{background:#1d100b;color:var(--text)}
 #app{background:radial-gradient(ellipse at 50% -20%,#56301b 0%,#21120c 56%,#170c08 100%)}
@@ -417,6 +417,72 @@ button{transition:transform .14s ease,filter .14s ease}button:active{transform:s
 .more-brand{display:flex;flex-direction:column;align-items:center;gap:5px;margin:28px auto 8px;color:#e4c49b}.more-brand img{width:100px;height:72px;object-fit:contain;border-radius:12px}.more-brand span{font-family:Georgia,serif;font-size:15px}.more-brand small{font-size:10px;letter-spacing:1px;color:#b99a7a}
 .boot-loader{background:radial-gradient(ellipse at 50% 10%,#57321d,#24130c 68%,#180c07)!important}
 @media(min-width:700px){.page{max-width:760px}.view{padding-left:22px;padding-right:22px}.more-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* DOCES DO VITU V2.1.0 · interface inspirada em SaaS moderno, com identidade própria */
+:root{
+ --dark:#6d28d9;--dark2:#7c3aed;--brown:#6d28d9;--caramel:#8b5cf6;
+ --cream:#e8e4f3;--cream2:#e2dcf0;--white:#ffffff;--line:#d9ccfb;
+ --text:#1d1b2f;--muted:#766b98;--green:#059669;--red:#dc3545;--orange:#d97706;
+ --shadow:0 10px 28px rgba(51,35,91,.08);--r:22px
+}
+html,body{background:#e8e4f3;color:var(--text)}
+#app{background:linear-gradient(180deg,#f5f2fb 0%,#e8e4f3 24%,#e8e4f3 100%)}
+.top{background:rgba(255,255,255,.94);border-bottom:1px solid #ded4f5;backdrop-filter:blur(18px);height:70px;flex-basis:70px}
+.brand-mark{background:linear-gradient(145deg,#8b5cf6,#6d28d9);border:0;color:#fff;border-radius:17px;box-shadow:0 6px 16px #6d28d926}
+.brand b{color:#201b35;font-family:Georgia,'Times New Roman',serif;letter-spacing:.1px}
+.brand small{color:#766b98}
+.top-action,.user-badge{background:#fff;color:#6d28d9;border:1px solid #ded4f5}
+.view{padding:18px 14px calc(100px + env(safe-area-inset-bottom));scrollbar-color:#c4b5fd transparent}
+.head h1{color:#201b35;font-family:Georgia,'Times New Roman',serif;font-size:30px;letter-spacing:-.7px}
+.head p,.stat small,.item-main small,.section-title{color:#766b98}
+.hero{background:linear-gradient(125deg,#7138e8 0%,#8159ed 58%,#7778e8 100%);border:1px solid #a58af7;color:#fff;box-shadow:0 14px 30px rgba(109,40,217,.20)}
+.stat,.item,.quick button,.fast-product,.month-select,.sales-period-bar,.tabs,.section .empty,.empty,.client-result,.stock-card,.purchase-empty,.more-card{
+ background:#fff!important;border-color:#ded4f5!important;color:#211b35!important;box-shadow:0 7px 24px rgba(51,35,91,.06)
+}
+.stat strong,.item-main b,.section-title b,.item-right b{color:#211b35}
+.avatar{background:#f0eaff;color:#6d28d9;border:1px solid #e0d2ff}
+.primary,.quick-launch{background:linear-gradient(135deg,#8b5cf6,#6d28d9)!important;color:#fff!important;border-color:#7c3aed!important;box-shadow:0 7px 16px #6d28d92a}
+.secondary,.privacy-toggle,.stock-avulsa-head{background:#f0eaff!important;color:#6d28d9!important;border-color:#d7c6ff!important}
+.field label{color:#62558c}
+.field input,.field select,.field textarea,input,select,textarea{background:#fff;color:#211b35;border-color:#d9ccfb}
+.field input:focus,.field select:focus,.field textarea:focus,input:focus,select:focus,textarea:focus{border-color:#8b5cf6;box-shadow:0 0 0 4px #8b5cf61a}
+.nav{height:76px;flex:0 0 calc(76px + env(safe-area-inset-bottom));padding:7px 8px env(safe-area-inset-bottom);background:rgba(255,255,255,.97);border-top:1px solid #d9ccfb;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;backdrop-filter:blur(18px)}
+.nav button{background:transparent;color:#766b98;border-radius:15px;gap:3px}
+.nav .ni{font-size:23px;line-height:25px}
+.nav small{font-size:10px;font-weight:750}
+.nav .active{background:#f0eaff;color:#6d28d9;box-shadow:none}
+.nav .ui-svg{stroke:currentColor}
+#login{background:radial-gradient(ellipse at 50% 10%,#f8f5ff,#e8e4f3 72%);color:#211b35}
+.login-card{background:rgba(255,255,255,.97);border:1px solid #ded4f5;box-shadow:0 24px 70px rgba(48,32,83,.12);color:#211b35;border-radius:28px}
+.login-card h1{font-family:Georgia,'Times New Roman',serif;color:#211b35}
+.login-card p{color:#766b98}
+.logo{background:#f0eaff;border-color:#ded4f5}
+.field input,.field select,.field textarea{background:#fff;color:#211b35;border-color:#d9ccfb}
+button{transition:transform .14s ease,filter .14s ease}
+button:active{transform:scale(.985)}
+.item,.stat,.quick button,.section .item{border-radius:20px}
+.status,.badge{border-radius:99px}
+.more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.more-card{position:relative;text-align:left;border:1px solid #ded4f5!important;border-radius:20px;padding:17px 14px;min-height:137px;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.more-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:#f0eaff;color:#6d28d9;font-size:23px;margin-bottom:3px}
+.more-card b{font-size:14px;color:#211b35}
+.more-card small{font-size:11px;line-height:1.4;color:#766b98}
+.more-arrow{position:absolute;right:13px;top:16px;color:#6d28d9;font-size:23px}
+.more-brand{display:flex;flex-direction:column;align-items:center;gap:5px;margin:28px auto 8px;color:#6d28d9}
+.more-brand img{width:100px;height:72px;object-fit:contain;border-radius:12px}
+.more-brand span{font-family:Georgia,serif;font-size:15px}
+.more-brand small{font-size:10px;letter-spacing:1px;color:#766b98}
+.boot-loader{background:radial-gradient(ellipse at 50% 10%,#f8f5ff,#e8e4f3 68%)!important}
+.modal-backdrop{backdrop-filter:blur(5px)}
+.modal,.modal-card{border:1px solid #ded4f5!important;border-radius:24px!important;box-shadow:0 24px 80px rgba(31,22,54,.20)!important}
+@media(min-width:700px){
+ .page{max-width:1120px}
+ .view{padding:24px 28px calc(40px + env(safe-area-inset-bottom))}
+ .stats{gap:14px}
+ .stat{padding:20px}
+ .more-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 
 </style>
 
