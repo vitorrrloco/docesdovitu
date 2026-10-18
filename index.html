@@ -2259,8 +2259,16 @@ async function copyTextSafe(value){
 }
 function openWhatsAppCharge(c, firstMessage){
  const phone=normalizeWhatsappPhone(c.phone);
- const url=phone?`https://wa.me/${phone}?text=${encodeURIComponent(firstMessage)}`:`https://wa.me/?text=${encodeURIComponent(firstMessage)}`;
- window.open(url,"_blank");
+ const query=`${phone?`phone=${phone}&`:""}text=${encodeURIComponent(firstMessage)}`;
+ // Tenta abrir especificamente o WhatsApp Business. O link universal fica como
+ // alternativa caso o esquema do aplicativo não esteja registrado no dispositivo.
+ const businessUrl=`whatsapp-business://send?${query}`;
+ const fallbackUrl=phone?`https://wa.me/${phone}?text=${encodeURIComponent(firstMessage)}`:`https://wa.me/?text=${encodeURIComponent(firstMessage)}`;
+ let fallbackTimer=setTimeout(()=>{ window.location.href=fallbackUrl; },1000);
+ document.addEventListener("visibilitychange",function onAppSwitch(){
+   if(document.hidden){clearTimeout(fallbackTimer);document.removeEventListener("visibilitychange",onAppSwitch);}
+ });
+ window.location.href=businessUrl;
 }
 function openClosureCharge(c,closure){
  const pending=closureRemaining(closure);if(pending<=0)return toast("Esse saldo já foi quitado.");
