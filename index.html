@@ -2259,16 +2259,8 @@ async function copyTextSafe(value){
 }
 function openWhatsAppCharge(c, firstMessage){
  const phone=normalizeWhatsappPhone(c.phone);
- const query=`${phone?`phone=${phone}&`:""}text=${encodeURIComponent(firstMessage)}`;
- // Tenta abrir especificamente o WhatsApp Business. O link universal fica como
- // alternativa caso o esquema do aplicativo não esteja registrado no dispositivo.
- const businessUrl=`whatsapp-business://send?${query}`;
- const fallbackUrl=phone?`https://wa.me/${phone}?text=${encodeURIComponent(firstMessage)}`:`https://wa.me/?text=${encodeURIComponent(firstMessage)}`;
- let fallbackTimer=setTimeout(()=>{ window.location.href=fallbackUrl; },1000);
- document.addEventListener("visibilitychange",function onAppSwitch(){
-   if(document.hidden){clearTimeout(fallbackTimer);document.removeEventListener("visibilitychange",onAppSwitch);}
- });
- window.location.href=businessUrl;
+ const url=phone?`https://wa.me/${phone}?text=${encodeURIComponent(firstMessage)}`:`https://wa.me/?text=${encodeURIComponent(firstMessage)}`;
+ window.open(url,"_blank");
 }
 function openClosureCharge(c,closure){
  const pending=closureRemaining(closure);if(pending<=0)return toast("Esse saldo já foi quitado.");
@@ -2277,52 +2269,10 @@ function openClosureCharge(c,closure){
 function openCharge(c,options={}){
  const pending=options.amount??clientPending(c);
  if(pending<=0){toast("Esse cliente não possui valor pendente.");return}
- const pix=pixPayload(pending);
- const firstMessage=options.message||`Opa, ${c.name}, os doces ficaram ${money(pending)}, segue o pagamento 👇`;
- const phone=normalizeWhatsappPhone(c.phone);
- openModal("Cobrar cliente",`<div class="charge-v2">
-   <div class="charge-v2-head">
-     <div class="charge-v2-client">
-       <b>${esc(c.name)}</b>
-       <span>${phone?"WhatsApp cadastrado":"Sem WhatsApp cadastrado"}</span>
-     </div>
-     <div class="charge-v2-total"><small>A RECEBER</small><strong>${money(pending)}</strong></div>
-   </div>
-   <div class="charge-v2-card">
-     <div class="charge-v2-label">Mensagem de cobrança</div>
-     <p class="charge-v2-message">${esc(firstMessage)}</p>
-     <div class="charge-v2-divider"></div>
-     <div class="charge-v2-label" id="pixNextLabel" style="opacity:.55">PIX para a próxima mensagem</div>
-     <div class="charge-v2-pix" id="pixNextBox" style="opacity:.55"><code>${esc(pix)}</code></div>
-     <button type="button" class="charge-v2-copy" id="copyPix">📋&nbsp; Copiar PIX para próxima mensagem</button>
-   </div>
-   <button type="button" class="charge-v2-whatsapp" id="sendCharge"><span><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-9 8.5 9 9 0 0 1-4-.9L3 21l1.9-4.3A8.5 8.5 0 1 1 21 11.5Z"/></svg></span><span>${phone?"Abrir WhatsApp do cliente":"Escolher contato no WhatsApp"}</span><b>›</b></button>
- </div>`);
- const modal=$("modalRoot").querySelector(".modal");
- modal?.classList.add("charge-modal-v2");
- $("copyPix").onclick=()=>{
-   const ok=copyTextImmediate(pix);
-   if(ok){toast("PIX copiado! Agora cole na próxima mensagem do WhatsApp.");return}
-   copyTextSafe(pix).then(ok2=>toast(ok2?"PIX copiado! Agora cole na próxima mensagem do WhatsApp.":"Não foi possível copiar o PIX neste navegador."));
- };
- $("sendCharge").onclick=async()=>{
-   // Copia de forma SÍNCRONA durante o toque. Isso é importante no iPhone:
-   // depois de um await o navegador pode perder a permissão temporária de clipboard.
-   const ok=copyTextImmediate(pix);
-   openWhatsAppCharge(c,firstMessage);
-   const copyBtn=$("copyPix"),pixBox=$("pixNextBox"),pixLabel=$("pixNextLabel");
-   if(!ok){
-     // fallback assíncrono apenas como segunda tentativa.
-     copyTextSafe(pix).then(ok2=>{
-       if(ok2&&copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent="📋  PIX copiado • Copiar novamente";}
-     });
-   }
-   if(copyBtn){copyBtn.disabled=false;copyBtn.style.opacity="1";copyBtn.style.cursor="pointer";copyBtn.textContent=ok?"📋  PIX copiado • Copiar novamente":"📋  Copiar PIX para próxima mensagem";}
-   if(pixBox){pixBox.style.opacity="1";}
-   if(pixLabel){pixLabel.style.opacity="1";}
-   toast(ok?"Mensagem aberta e PIX copiado! Depois de enviar a cobrança, cole o PIX na próxima mensagem.":"Mensagem aberta. Não foi possível copiar o PIX automaticamente neste navegador. Use o botão de copiar PIX.");
- };;
+ const message=`Opa, ${c.name}, os doces ficaram ${money(pending)}. Segue abaixo o pix para pagamento👇.`;
+ openWhatsAppCharge(c,message);
 }
+
 function openPaymentForClient(c,onlyClosure=null){
  const pendingSales=data.sales.filter(s=>s.clientId===c.id&&!clientClosedSaleIds(c).has(s.id)&&numBR(s.total||0)>Number(s.paid||0));
  const initialPending=onlyClosure?0:clientInitialPending(c);
