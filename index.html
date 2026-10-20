@@ -1458,7 +1458,7 @@ async function approveSellerRequest(id){
    const productReads=[];
    for(const item of r.items||[]){const productRef=doc(col('products'),item.productId),pSnap=await tx.get(productRef);if(!pSnap.exists())throw new Error('Produto não encontrado: '+item.name);productReads.push({item,productRef,pSnap});}
    const items=[];
-   for(const row of productReads){const p=row.pSnap.data(),qty=Number(row.item.qty)||0,stock=Number(p.stock)||0;if(qty<=0||stock<qty)throw new Error('Estoque insuficiente para '+row.item.name);items.push({...row.item,cost:Number(p.cost||p.unitCost||0),price:Number(p.price||row.item.price||0)});}
+   for(const row of productReads){const p=row.pSnap.data(),qty=Number(row.item.qty)||0,stock=Number(p.stock)||0;if(qty<=0||stock<qty)throw new Error('Estoque insuficiente para '+row.item.name);items.push({...row.item,cost:Number(p.cost||p.unitCost||0),price:Number(row.item.price!==undefined&&row.item.price!==null&&row.item.price!==''?row.item.price:(p.price||0))});}
    for(const row of productReads){const p=row.pSnap.data(),qty=Number(row.item.qty)||0;tx.update(row.productRef,{stock:(Number(p.stock)||0)-qty});}
    const gross=items.reduce((a,i)=>a+i.qty*i.price,0),discount=Math.min(gross,Math.max(0,Number(r.discount)||0)),total=Math.max(0,gross-discount),paid=Math.max(0,Math.min(total,Number(r.paid)||0));
    tx.set(saleRef,{clientId:r.clientId||'',clientName:r.clientName||'Venda balcão',items,total,discount,paid,paymentMethod:r.paymentMethod||'Pendente',createdAt:serverTimestamp(),sellerUid:r.sellerUid,sellerEmail:r.sellerEmail||'',sellerName:r.sellerName||'Julio',approvedByUid:uid,approvedByName:currentUserName,source:'seller'});
