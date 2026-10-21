@@ -1445,9 +1445,11 @@ async function approveSellerRequest(id){
     const pending=await tx.get(reqRef);if(!pending.exists()||pending.data().status!=='pending')throw new Error('Solicitação já processada.');
     const reads=[];for(const t of targets){reads.push({t,ss:await tx.get(t.saleRef),rs:await tx.get(t.requestRef)});}
     let left=Number(pending.data().amount)||0;const updates=[];
-    for(const r of reads){if(left<=0)break;if(!r.ss.exists()||!r.rs.exists())continue;const s=r.ss.data(),sr=r.rs.data(),open=Math.max(0,Number(s.total||0)-Number(s.paid||0)),use=Math.min(open,left);if(use>0){updates.push({r,s,sr,use});left-=use;}}
-    if(left>0.009)throw new Error('Saldo alterado. Atualize antes de confirmar.');
-    for(const u of updates){tx.update(u.r.t.saleRef,{paid:Number(u.s.paid||0)+u.use});tx.update(u.r.t.requestRef,{paid:Number(u.sr.paid||0)+u.use,lastPaymentAt:serverTimestamp()});tx.set(doc(col('payments')),{saleId:u.r.t.a.saleId,clientId:pending.data().clientId,clientName:pending.data().clientName,amount:u.use,method:pending.data().paymentMethod||'Outro',createdByUid:uid,createdByName:currentUserName,sellerUid:pending.data().sellerUid,sellerName:pending.data().sellerName||'Julio',createdAt:serverTimestamp()});}
+    // A solicitação original do vendedor preserva o preço efetivamente praticado por ele.
+    // Usar apenas sale.total do administrador pode rejeitar baixas quando os preços divergem.
+    for(const r of reads){if(left<=0.009)break;if(!r.ss.exists()||!r.rs.exists())continue;const s=r.ss.data(),sr=r.rs.data();const authoritativeTotal=Number(sr.total??s.total)||0;const authoritativePaid=Number(sr.paid??s.paid)||0;const open=Math.max(0,authoritativeTotal-authoritativePaid),use=Math.min(open,left);if(use>0){updates.push({r,s,sr,use,authoritativeTotal,authoritativePaid});left-=use;}}
+    if(left>0.009)throw new Error('O valor solicitado excede o saldo das vendas vinculadas. Atualize a lista de vendas do vendedor e confira o histórico antes de tentar novamente.');
+    for(const u of updates){tx.update(u.r.t.saleRef,{total:u.authoritativeTotal,paid:Math.min(u.authoritativeTotal,u.authoritativePaid+u.use)});tx.update(u.r.t.requestRef,{paid:u.authoritativePaid+u.use,lastPaymentAt:serverTimestamp()});tx.set(doc(col('payments')),{saleId:u.r.t.a.saleId,clientId:pending.data().clientId,clientName:pending.data().clientName,amount:u.use,method:pending.data().paymentMethod||'Outro',createdByUid:uid,createdByName:currentUserName,sellerUid:pending.data().sellerUid,sellerName:pending.data().sellerName||'Julio',createdAt:serverTimestamp()});}
     tx.update(reqRef,{status:'approved',approvedAt:serverTimestamp(),approvedByUid:uid});
    });toast('Pagamento confirmado e saldo atualizado.');return;
   }
