@@ -2271,19 +2271,30 @@ function fifthBusinessDayAfterMonth(key){const [y,m]=key.split("-").map(Number);
 function fifthBusinessDayTwoMonthsAfter(key){const [y,m]=key.split("-").map(Number);return fifthBusinessDayOfMonth(monthKeyFromDate(new Date(y,m+1,1)))}
 function closureDueDate(x){return fifthBusinessDayAfterMonth(x.monthKey)}
 function clientDebtStatus(c){
- const pending=clientPending(c);if(pending<=0.009)return {label:"Em dia",className:"is-on-time",note:"Sem saldo pendente."};
+ const pending=clientPending(c);
+ if(pending<=0.009)return {label:"Em dia",className:"is-on-time",note:"Sem saldo pendente."};
+ const today=now();today.setHours(0,0,0,0);
  const closures=(data.debtClosures||[]).filter(x=>x.clientId===c.id&&closureRemaining(x)>0);
- const openSales=clientSalesFor(c).filter(s=>salePendingAmount(s)>0.009&&!clientClosedSaleIds(c).has(s.id));
- const partialClosure=closures.some(x=>closureRemaining(x)<Number(x.snapshotTotal||0)-0.009);
- const partialSale=openSales.some(s=>numBR(s.paid||s.paidAmount||0)>0.009)||Number(c.initialDebtPaid||0)>0;
- if(partialClosure||partialSale)return {label:"Parcialmente",className:"is-partial",note:"Há pagamento parcial; confira o saldo restante."};
- const nowDate=now();nowDate.setHours(0,0,0,0);
- const overdueClosure=closures.some(x=>{const d=new Date(closureDueDate(x)+"T12:00:00");return nowDate>d});
- const overdueSale=openSales.some(s=>{const d=dt(s.createdAt);if(!d)return false;const due=new Date(fifthBusinessDayTwoMonthsAfter(monthKeyFromDate(d))+"T12:00:00");return nowDate>due});
- if(overdueClosure||overdueSale)return {label:"Atraso",className:"is-overdue",note:"Pagamento vencido. Verifique a data de vencimento."};
- const dates=openSales.map(s=>{const d=dt(s.createdAt);return d?fifthBusinessDayTwoMonthsAfter(monthKeyFromDate(d)):null}).filter(Boolean);
- closures.forEach(x=>dates.push(closureDueDate(x)));
- const next=dates.sort()[0];return {label:"Em dia",className:"is-on-time",note:next?`Vencimento: ${formatDueDate(next)} (5º dia útil).`:"Vencimento: 5º dia útil do próximo mês."};
+ const closedIds=clientClosedSaleIds(c);
+ const openSales=clientSalesFor(c).filter(s=>salePendingAmount(s)>0.009&&!closedIds.has(s.id));
+ const dates=[];
+ // Saldos fechados: vencem no 5º dia útil do mês seguinte ao fechamento.
+ closures.forEach(x=>dates.push({date:closureDueDate(x),partial:closureRemaining(x)<Number(x.snapshotTotal||0)-0.009}));
+ // Compras ainda em aberto: vencem no 5º dia útil do mês depois do próximo.
+ openSales.forEach(s=>{const d=dt(s.createdAt);if(d)dates.push({date:fifthBusinessDayTwoMonthsAfter(monthKeyFromDate(d)),partial:numBR(s.paid||s.paidAmount||0)>0.009});});
+ // Dívida inicial/manual também precisa de vencimento e não pode ficar sempre "Em dia".
+ const initialPending=Math.max(0,Number(c.initialDebt||0)-Number(c.initialDebtPaid||0));
+ if(initialPending>0.009){
+   const created=dt(c.createdAt);
+   const key=created?monthKeyFromDate(created):monthKeyFromDate(today);
+   dates.push({date:fifthBusinessDayTwoMonthsAfter(key),partial:Number(c.initialDebtPaid||0)>0.009});
+ }
+ const overdue=dates.some(x=>x.date&&today>new Date(x.date+'T00:00:00'));
+ const partial=dates.some(x=>x.partial);
+ if(overdue)return {label:"Atraso",className:"is-overdue",note:"Pagamento vencido. Verifique a data de vencimento."};
+ if(partial)return {label:"Parcialmente",className:"is-partial",note:"Há pagamento parcial; confira o saldo restante."};
+ const next=dates.map(x=>x.date).filter(Boolean).sort()[0];
+ return {label:"Em dia",className:"is-on-time",note:next?`Vencimento: ${formatDueDate(next)} (5º dia útil).`:"Vencimento: 5º dia útil do mês aplicável."};
 }
 function formatDueDate(value){if(!value)return "-";const d=typeof value==="string"?new Date(value+"T12:00:00"):dt(value);return d&&!Number.isNaN(d.getTime())?d.toLocaleDateString("pt-BR"):String(value)}
 function monthRange(key){const [y,m]=key.split("-").map(Number);return {start:new Date(y,m-1,1),end:new Date(y,m,1)}}
