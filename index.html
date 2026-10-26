@@ -993,33 +993,37 @@ html,body{background:#1c100b;color:var(--text)}body{background:radial-gradient(e
 </style>
 
 <style id="V2_CLIENT_LIST_FIT_AND_DUE_LOGIC">
-/* Lista de clientes: responsiva sem cortar o conteúdo nem a rolagem. */
-#clientList .item[data-client], #clientsList .item[data-client], .clients-list .item[data-client], .client-list .item[data-client]{
-  display:grid!important;
-  grid-template-columns:42px minmax(0,1fr) minmax(92px,auto)!important;
-  align-items:center;gap:10px!important;width:100%;max-width:100%;min-width:0;
-  box-sizing:border-box;overflow:visible;padding:12px!important;
-}
-#clientList .item[data-client] > .avatar, #clientsList .item[data-client] > .avatar, .clients-list .item[data-client] > .avatar, .client-list .item[data-client] > .avatar{
-  grid-column:1;grid-row:1/3;width:42px;min-width:42px;height:42px;box-sizing:border-box;
-}
-#clientList .item[data-client] > .client-row-identity, #clientsList .item[data-client] > .client-row-identity, .clients-list .item[data-client] > .client-row-identity, .client-list .item[data-client] > .client-row-identity{
-  grid-column:2;grid-row:1/3;min-width:0;width:100%;overflow-wrap:anywhere;
-}
-#clientList .item[data-client] > .client-row-money, #clientsList .item[data-client] > .client-row-money, .clients-list .item[data-client] > .client-row-money, .client-list .item[data-client] > .client-row-money{
-  grid-column:3;grid-row:1;min-width:0;text-align:right;white-space:normal;overflow-wrap:anywhere;
-}
-#clientList .item[data-client] > .charge-btn, #clientsList .item[data-client] > .charge-btn, .clients-list .item[data-client] > .charge-btn, .client-list .item[data-client] > .charge-btn{
-  grid-column:3;grid-row:2;justify-self:stretch;width:100%;max-width:116px;min-width:0;white-space:normal;line-height:1.2;text-align:center;box-sizing:border-box;
-}
-.client-due-note{overflow-wrap:anywhere}
-@media(max-width:560px){
- #clientList .item[data-client], #clientsList .item[data-client], .clients-list .item[data-client], .client-list .item[data-client]{grid-template-columns:36px minmax(0,1fr)!important;gap:8px!important;padding:11px!important;align-items:start!important;}
- #clientList .item[data-client] > .avatar, #clientsList .item[data-client] > .avatar, .clients-list .item[data-client] > .avatar, .client-list .item[data-client] > .avatar{grid-column:1;grid-row:1/4;width:36px;min-width:36px;height:36px;}
- #clientList .item[data-client] > .client-row-identity, #clientsList .item[data-client] > .client-row-identity, .clients-list .item[data-client] > .client-row-identity, .client-list .item[data-client] > .client-row-identity{grid-column:2;grid-row:1;min-width:0;}
- #clientList .item[data-client] > .client-row-money, #clientsList .item[data-client] > .client-row-money, .clients-list .item[data-client] > .client-row-money, .client-list .item[data-client] > .client-row-money{grid-column:2;grid-row:2;text-align:left;display:flex;align-items:baseline;gap:5px;white-space:normal;margin-top:3px;}
- #clientList .item[data-client] > .client-row-money b, #clientsList .item[data-client] > .client-row-money b, .clients-list .item[data-client] > .client-row-money b, .client-list .item[data-client] > .client-row-money b{font-size:14px;}
- #clientList .item[data-client] > .charge-btn, #clientsList .item[data-client] > .charge-btn, .clients-list .item[data-client] > .charge-btn, .client-list .item[data-client] > .charge-btn{grid-column:2;grid-row:3;width:100%;max-width:none;margin-top:4px;min-height:38px;}
+/* Clientes compactos: nome/saldo à esquerda, status e cobrança à direita. */
+.client-search-tools{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:8px;align-items:center;margin-bottom:12px}
+.client-search-tools .search{width:100%;min-width:0;margin:0}
+.client-status-filter{width:100%;min-width:0;height:48px;padding:0 10px;border:1px solid var(--line);border-radius:14px;background:var(--white);color:var(--text);font:inherit;font-size:12px;font-weight:700}
+.client-compact-list{gap:8px}
+#clientList .client-compact-row{display:grid!important;grid-template-columns:38px minmax(0,1fr) auto!important;gap:10px!important;align-items:center!important;width:100%;min-width:0;box-sizing:border-box;padding:10px 11px!important;border-radius:15px;overflow:hidden}
+#clientList .client-compact-row>.avatar,#clientList .client-compact-row>.client-avatar-img{grid-column:1;grid-row:1;width:38px;min-width:38px;height:38px;box-sizing:border-box;border-radius:12px}
+#clientList .client-compact-row>.client-row-identity{grid-column:2;grid-row:1;min-width:0;width:100%;overflow:hidden}
+#clientList .client-row-identity>b{font-size:13px;line-height:1.25}
+#clientList .client-row-identity>small{font-size:10px;line-height:1.25;margin-top:3px}
+.client-row-balance{display:flex;gap:5px;align-items:baseline;flex-wrap:wrap;margin-top:4px}
+.client-row-balance>b{font-size:13px;font-weight:800;color:var(--text)}
+.client-row-balance>small{font-size:10px;color:var(--muted)}
+.client-row-side{grid-column:3;grid-row:1;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:6px;min-width:86px}
+.client-row-side .client-debt-badge{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;font-size:10px;font-weight:800;padding:5px 8px;border-radius:999px;line-height:1.1}
+.client-row-side .charge-btn{font-size:10px!important;font-weight:800;padding:7px 10px!important;border-radius:10px;white-space:nowrap;min-width:74px}
+.client-debt-badge.is-on-time{background:#e4f5e9;color:#216e40;border:1px solid #b8e2c4}
+.client-debt-badge.is-overdue{background:#fde9e7;color:#a52e28;border:1px solid #f3c3bf}
+.client-debt-badge.is-partial{background:#fff0d9;color:#8a5714;border:1px solid #f0d2a1}
+body.theme-dark .client-debt-badge.is-on-time{background:#183a27;color:#9be4b2;border-color:#2e6542}
+body.theme-dark .client-debt-badge.is-overdue{background:#48211f;color:#ffaaa3;border-color:#713530}
+body.theme-dark .client-debt-badge.is-partial{background:#46331d;color:#ffd18b;border-color:#76542a}
+@media(max-width:390px){
+ .client-search-tools{grid-template-columns:minmax(0,1fr) 112px;gap:6px}
+ .client-search-tools .search{font-size:13px;padding:0 11px}
+ .client-status-filter{font-size:11px;padding:0 7px}
+ #clientList .client-compact-row{grid-template-columns:34px minmax(0,1fr) auto!important;gap:8px!important;padding:9px!important}
+ #clientList .client-compact-row>.avatar,#clientList .client-compact-row>.client-avatar-img{width:34px;min-width:34px;height:34px}
+ .client-row-side{min-width:78px}
+ .client-row-side .client-debt-badge{font-size:9px;padding:5px 6px}
+ .client-row-side .charge-btn{min-width:68px;font-size:9px!important;padding:7px 8px!important}
 }
 </style>
 
@@ -1556,8 +1560,8 @@ function saleRow(s){let st=status(s.total,s.paid),filter=st==="Pago"?"paid":st==
 
 function clients(){
  return `<div class="page"><div class="head"><div><h1>Clientes</h1><p>Compras e valores de cada pessoa</p></div><button class="top-action" id="newClient">＋</button></div>
- <input class="search" id="clientSearch" placeholder="🔎 Procurar cliente">
- <div class="list" id="clientList">${clientRows(data.clients)}</div></div>`
+ <div class="client-search-tools"><input class="search" id="clientSearch" placeholder="🔎 Procurar cliente"><select class="client-status-filter" id="clientStatusFilter" aria-label="Filtrar clientes por status"><option value="all">Todos</option><option value="is-on-time">Em dia</option><option value="is-overdue">Atrasado</option><option value="is-partial">Parcialmente</option></select></div>
+ <div class="list client-compact-list" id="clientList">${clientRows(data.clients)}</div></div>`
 }
 function clientAvatar(c,large=false){
  const cls=large?"client-avatar-large-img":"client-avatar-img";
@@ -1586,7 +1590,7 @@ function compressClientPhoto(file){
   reader.readAsDataURL(file);
  });
 }
-function clientRows(list){return list.map(c=>{const ss=clientSalesFor(c),pending=clientCurrentPending(c),totalPending=clientPending(c),isOtimo=String(c.status||"normal").toLowerCase()==="otimo",debtState=clientDebtStatus(c);return `<div class="item" data-client="${esc(c.id)}">${clientAvatar(c)}<div class="item-main client-row-identity"><b>${esc(c.name)}</b>${isOtimo?`<small class="client-status-otimo">Ótimo</small>`:""}<small>${ss.length} compra(s) • ${c.phone?esc(c.phone):"Sem telefone"}</small><span class="client-debt-badge ${debtState.className}">${debtState.label}</span><small class="client-due-note">${debtState.note}</small></div><div class="item-right client-row-money"><b>${money(pending)}</b><small>a receber</small></div>${totalPending>0?`<button type="button" class="secondary charge-btn" data-charge="${esc(c.id)}" style="padding:9px 10px;font-size:10px">Cobrar total</button>`:""}</div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
+function clientRows(list){return list.map(c=>{const ss=clientSalesFor(c),pending=clientCurrentPending(c),totalPending=clientPending(c),isOtimo=String(c.status||"normal").toLowerCase()==="otimo",debtState=clientDebtStatus(c);return `<div class="item client-compact-row" data-client="${esc(c.id)}" data-debt-status="${debtState.className}">${clientAvatar(c)}<div class="item-main client-row-identity"><b>${esc(c.name)}</b>${isOtimo?`<small class="client-status-otimo">Ótimo</small>`:""}<small>${ss.length} compra(s)${c.phone?" • "+esc(c.phone):""}</small><div class="client-row-balance"><b>${money(pending)}</b><small>a receber</small></div></div><div class="client-row-side"><span class="client-debt-badge ${debtState.className}">${debtState.label}</span>${totalPending>0?`<button type="button" class="secondary charge-btn" data-charge="${esc(c.id)}">Cobrar</button>`:""}</div></div>`}).join("")||'<div class="empty">Nenhum cliente cadastrado.</div>'}
 
 function stock(){
  return `<div class="page"><div class="head"><div><h1>Estoque</h1><p>Controle dos seus doces</p></div><div class="stock-head-actions"><button type="button" class="stock-avulsa-head" id="stockAddMenu">＋ Adicionar</button><button class="top-action" id="newProduct">＋</button></div></div>
@@ -3064,7 +3068,9 @@ function bindPage(){
  $("qPurchaseBuilder")?.addEventListener("click",openPurchaseBuilder);
  $("seeSales")?.addEventListener("click",()=>go("sales"));
  $("logout")?.addEventListener("click",()=>signOut(auth));
- $("clientSearch")?.addEventListener("input",e=>{$("clientList").innerHTML=clientRows(data.clients.filter(c=>c.name.toLowerCase().includes(e.target.value.toLowerCase())))});
+ function applyClientFilters(){const q=($("clientSearch")?.value||"").trim().toLocaleLowerCase("pt-BR"),status=$("clientStatusFilter")?.value||"all";const filtered=(data.clients||[]).filter(c=>{const matchesName=String(c.name||"").toLocaleLowerCase("pt-BR").includes(q);const st=clientDebtStatus(c).className;return matchesName&&(status==="all"||st===status)});const list=$("clientList");if(list)list.innerHTML=clientRows(filtered)}
+ $("clientSearch")?.addEventListener("input",applyClientFilters);
+ $("clientStatusFilter")?.addEventListener("change",applyClientFilters);
  $("stockSearch")?.addEventListener("input",e=>{$("stockList").innerHTML=productRows(data.products.filter(p=>p.name.toLowerCase().includes(e.target.value.toLowerCase())))})
  const normalizePurchaseName=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
  const purchaseSearch=$("v140ProductSearch");
