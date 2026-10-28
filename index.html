@@ -1341,10 +1341,18 @@ function accountingPage(){
  const revenue=monthSales.reduce((a,x)=>a+numBR(x.total||0),0), received=monthPayments.reduce((a,x)=>a+numBR(x.amount||0),0);
  const cogs=monthSales.reduce((a,x)=>a+saleCostAmount(x),0);
  const inMonth=x=>{const d=dt(x.createdAt||x.date||x.purchasedAt||x.paidDate);return d&&d.getFullYear()===ref.getFullYear()&&d.getMonth()===ref.getMonth()};
- const sellerSales=monthSales.filter(s=>(s.sellerEmail||'').toLowerCase()==='bernardojulio743@gmail.com'||(s.sellerName||'').toLowerCase()==='julio'||s.sellerUid===settings.sellerUid);
- const commissionEarned=Math.round(sellerSales.filter(s=>s.status==='approved').reduce((a,s)=>a+numBR(s.total||0)*0.20,0)*100)/100;
+ // Vendas do Julio: usar solicitações aprovadas como fonte principal, pois o dashboard do vendedor acompanha sellerRequests.
+ // Cada solicitação aprovada é contada uma vez; vendas sem sellerRequest correspondente continuam sendo consideradas como fallback.
+ const sellerEmail='bernardojulio743@gmail.com';
+ const inSelectedMonth=x=>{const d=dt(x.approvedAt||x.createdAt||x.date);return d&&d.getFullYear()===ref.getFullYear()&&d.getMonth()===ref.getMonth()};
+ const approvedSellerRequests=(data.sellerRequests||[]).filter(r=>r.status==='approved'&&inSelectedMonth(r)&&((r.sellerEmail||'').toLowerCase()===sellerEmail||(r.sellerName||'').toLowerCase()==='julio'||(settings.sellerUid&&r.sellerUid===settings.sellerUid)));
+ const sellerSaleIds=new Set(approvedSellerRequests.map(r=>r.saleId).filter(Boolean));
+ const fallbackSellerSales=monthSales.filter(s=>(s.sellerEmail||'').toLowerCase()===sellerEmail||(s.sellerName||'').toLowerCase()==='julio'||(settings.sellerUid&&s.sellerUid===settings.sellerUid)).filter(s=>!sellerSaleIds.has(s.id));
+ const sellerSales=[...approvedSellerRequests,...fallbackSellerSales];
+ const sellerSalesTotal=sellerSales.reduce((a,s)=>a+numBR(s.total||0),0);
+ const commissionEarned=Math.round(sellerSalesTotal*0.20*100)/100;
  const goalTarget=Math.max(1,numBR(settings.goalTarget||500)), goalBonus=Math.max(0,numBR(settings.goalBonus||100));
- const goalHit=sellerSales.filter(s=>s.status==='approved').reduce((a,s)=>a+numBR(s.total||0),0)>=goalTarget;
+ const goalHit=sellerSalesTotal>=goalTarget;
  const bonusReleased=!!settings.goalBonusEnabled && (!settings.goalBonusReleasedMonth || settings.goalBonusReleasedMonth===key);
  const bonusEarned=goalHit&&bonusReleased?goalBonus:0;
  const sellerPayments=payables.filter(p=>p.sellerCommissionPayment&&p.status==='paid'&&p.referenceMonth===key&&((p.sellerUid&&p.sellerUid===settings.sellerUid)||(p.sellerName||'').toLowerCase()==='julio'||(p.sellerEmail||'').toLowerCase()==='bernardojulio743@gmail.com'));
@@ -1358,7 +1366,10 @@ function accountingPage(){
  const monthPurchases=purchases.filter(inMonth).reduce((a,p)=>a+numBR(p.total||p.amount||0),0);
  const ceoSalary=350;
  const estimatedProfitBeforeCEO=revenue-cogs-paidExpenses-commissionEarned-bonusEarned;
- const cashBeforeCEO=received-monthPurchases-paidExpenses-pending-sellerCompDue-stockReserve;
+ const allReceivedForCash=(data.payments||[]).reduce((a,p)=>a+numBR(p.amount||0),0);
+ const allPurchasesForCash=(data.purchases||[]).reduce((a,p)=>a+numBR(p.total||p.amount||0),0);
+ const allPaidExpensesForCash=payables.filter(p=>p.status==='paid'&&!p.sellerCommissionPayment).reduce((a,p)=>a+numBR(p.amount||p.value||0),0);
+ const cashBeforeCEO=allReceivedForCash-allPurchasesForCash-allPaidExpensesForCash-pending-sellerCompDue-stockReserve;
  const profitAfterCEO=estimatedProfitBeforeCEO-ceoSalary;
  const ceoSalaryAvailable=Math.min(ceoSalary,Math.max(0,cashBeforeCEO));
  const ceoExtra=Math.max(0,Math.min(Math.max(0,estimatedProfitBeforeCEO-ceoSalary),Math.max(0,cashBeforeCEO-ceoSalary)));
@@ -1385,15 +1396,15 @@ function accountingPage(){
  <section class="analysis-card" style="margin:14px 0">
   <div class="analysis-head"><div><small style="color:var(--muted);font-weight:850;letter-spacing:.08em">REMUNERAÇÃO DO JULIO</small><div style="margin-top:4px">Comissão + bônus liberado − pagamentos registrados</div></div><strong class="private-number money-large">${money(sellerCompDue)}</strong></div>
   <div class="finance-grid" style="margin-top:12px">
-   <div class="finance-card"><small>Vendas aprovadas do mês</small><strong class="private-number">${money(sellerSales.filter(s=>s.status==='approved').reduce((a,s)=>a+numBR(s.total||0),0))}</strong><p>Meta: ${money(goalTarget)}</p></div>
+   <div class="finance-card"><small>Vendas aprovadas do mês</small><strong class="private-number">${money(sellerSalesTotal)}</strong><p>Meta: ${money(goalTarget)}</p></div>
    <div class="finance-card"><small>Comissão de 20%</small><strong class="private-number">${money(commissionEarned)}</strong><p>Calculada sobre as vendas do Julio no mês, não sobre os recebimentos.</p></div>
-   <div class="finance-card"><small>Bônus por meta</small><strong class="private-number">${money(bonusEarned)}</strong><p>${goalHit?(bonusReleased?'Meta atingida e bônus liberado.':'Meta atingida, aguardando liberação administrativa.'):`Faltam ${money(Math.max(0,goalTarget-sellerSales.filter(s=>s.status==='approved').reduce((a,s)=>a+numBR(s.total||0),0)))} para atingir a meta.`}</p></div>
+   <div class="finance-card"><small>Bônus por meta</small><strong class="private-number">${money(bonusEarned)}</strong><p>${goalHit?(bonusReleased?'Meta atingida e bônus liberado.':'Meta atingida, aguardando liberação administrativa.'):`Faltam ${money(Math.max(0,goalTarget-sellerSalesTotal))} para atingir a meta.`}</p></div>
    <div class="finance-card"><small>Pagamentos já realizados</small><strong class="private-number">${money(sellerPaid)}</strong><p>Pagamentos de remuneração do mês registrados no sistema.</p></div>
    <div class="finance-card"><small>Total de remuneração do mês</small><strong class="private-number">${money(sellerCompTotal)}</strong><p>Comissão + bônus liberado, sem duplicar o bônus na comissão.</p></div>
    <div class="finance-card"><small>Saldo restante a pagar</small><strong class="private-number">${money(sellerCompDue)}</strong><p>Não registra pagamento automaticamente.</p></div>
   </div>
  </section>
- <div class="finance-grid"><div class="finance-card"><small>Faturamento do mês</small><strong class="private-number money-large">${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div><div class="finance-card"><small>Recebido no mês</small><strong class="private-number money-large">${money(received)}</strong><p>Pagamentos registrados, inclusive de vendas anteriores</p></div><div class="finance-card"><small>Custo vendido</small><strong class="private-number money-large">${money(cogs)}</strong><p>Custo estimado dos itens vendidos</p></div><div class="finance-card"><small>Contas pendentes</small><strong class="private-number money-large">${money(pending)}</strong><p>Contas a pagar não quitadas, sem duplicar a remuneração do vendedor</p></div><div class="finance-card"><small>Reserva para reposição</small><strong class="private-number money-large">${money(stockReserve)}</strong><p>Estimativa para repor estoque abaixo do mínimo</p></div><div class="finance-card"><small>Lucro gerencial após remuneração</small><strong class="private-number money-large">${money(profitAfterCEO)}</strong><p>Faturamento menos custos, despesas, remuneração do Julio e salário fixo do CEO</p></div><div class="finance-card"><small>Caixa estimado após obrigações</small><strong class="private-number money-large">${money(cashAfterCEO)}</strong><p>Recebimentos menos compras, despesas, pendências, saldo do Julio, reserva e salário CEO</p></div></div>
+ <div class="finance-grid"><div class="finance-card"><small>Faturamento do mês</small><strong class="private-number money-large">${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div><div class="finance-card"><small>Recebido no mês</small><strong class="private-number money-large">${money(received)}</strong><p>Pagamentos registrados, inclusive de vendas anteriores</p></div><div class="finance-card"><small>Custo vendido</small><strong class="private-number money-large">${money(cogs)}</strong><p>Custo estimado dos itens vendidos</p></div><div class="finance-card"><small>Contas pendentes</small><strong class="private-number money-large">${money(pending)}</strong><p>Contas a pagar não quitadas, sem duplicar a remuneração do vendedor</p></div><div class="finance-card"><small>Reserva para reposição</small><strong class="private-number money-large">${money(stockReserve)}</strong><p>Estimativa para repor estoque abaixo do mínimo</p></div><div class="finance-card"><small>Lucro gerencial após remuneração</small><strong class="private-number money-large">${money(profitAfterCEO)}</strong><p>Faturamento menos custos, despesas, remuneração do Julio e salário fixo do CEO</p></div><div class="finance-card"><small>Caixa estimado após obrigações</small><strong class="private-number money-large">${money(cashAfterCEO)}</strong><p>Saldo estimado acumulado dos registros disponíveis, menos obrigações, saldo do Julio, reserva e salário CEO. Não inclui saldo inicial de caixa não registrado.</p></div></div>
  <div class="analysis-card" style="margin-top:14px"><div class="section-title"><b>Calendário fiscal de referência</b></div><div class="item"><div class="avatar">▦</div><div class="item-main"><b>DAS mensal do MEI</b><small>Vencimento usual no dia 20. Confirme o documento e eventuais alterações oficiais.</small></div><strong>${daysDas===0?'Hoje':`em ${daysDas} dia(s)`}</strong></div><div class="item"><div class="avatar">▤</div><div class="item-main"><b>DASN-SIMEI anual</b><small>Prazo usual até 31 de maio, relativo ao ano-calendário anterior.</small></div><strong>em ${daysAnnual} dia(s)</strong></div><p style="font-size:12px;color:var(--muted);line-height:1.5">Este calendário é orientativo, não consulta automaticamente o portal da Receita e não substitui contador ou confirmação oficial.</p></div>
  <div class="finance-actions"><button class="finance-option" data-go-page="finance"><b>💵 Abrir Financeiro</b><small>Consultar recebimentos, despesas e contas.</small></button><button class="finance-option" id="accountingPaySeller"><b>👤 Pagar vendedor e gerar recibo PDF</b><small>Registrar a comissão ou bônus pago ao Julio e imprimir o recibo.</small></button><button class="finance-option" data-go-page="reports"><b>📊 Abrir Relatórios</b><small>Conferir vendas e resultados por período.</small></button></div></div>`;
 }
