@@ -1233,7 +1233,7 @@ async function publishSellerDashboard(){
 }
 function subscribeReady(){
  return new Promise(resolve=>{
-  const names=['products','clients','sales','payments','purchases','debtClosures','payables']; let ready=0;
+  const names=['products','clients','sales','payments','purchases','debtClosures','payables','sellerSettings']; let ready=0;
   const seen=new Set();
   names.forEach(name=>{
    const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));if(name==='sales')publishSellerDashboard().catch(e=>console.error('seller dashboard publish',e));render();
@@ -1337,34 +1337,66 @@ function reportsPage(){
 
 function accountingPage(){
  const ref=new Date(), key=`${ref.getFullYear()}-${String(ref.getMonth()+1).padStart(2,'0')}`;
- const monthSales=monthSalesFor(ref), monthPayments=monthPaymentsFor(ref), products=data.products||[], purchases=data.purchases||[], payables=data.payables||[];
+ const monthSales=monthSalesFor(ref), monthPayments=monthPaymentsFor(ref), products=data.products||[], purchases=data.purchases||[], payables=data.payables||[], settings=(data.sellerSettings||[]).find(x=>x.id==='julio')||{};
  const revenue=monthSales.reduce((a,x)=>a+numBR(x.total||0),0), received=monthPayments.reduce((a,x)=>a+numBR(x.amount||0),0);
  const cogs=monthSales.reduce((a,x)=>a+saleCostAmount(x),0);
- const inMonth=x=>{const d=dt(x.createdAt||x.date||x.purchasedAt);return d&&d.getFullYear()===ref.getFullYear()&&d.getMonth()===ref.getMonth()};
+ const inMonth=x=>{const d=dt(x.createdAt||x.date||x.purchasedAt||x.paidDate);return d&&d.getFullYear()===ref.getFullYear()&&d.getMonth()===ref.getMonth()};
+ const sellerSales=monthSales.filter(s=>(s.sellerEmail||'').toLowerCase()==='bernardojulio743@gmail.com'||(s.sellerName||'').toLowerCase()==='julio'||s.sellerUid===settings.sellerUid);
+ const commissionEarned=Math.round(sellerSales.filter(s=>s.status==='approved').reduce((a,s)=>a+numBR(s.total||0)*0.20,0)*100)/100;
+ const goalTarget=Math.max(1,numBR(settings.goalTarget||500)), goalBonus=Math.max(0,numBR(settings.goalBonus||100));
+ const goalHit=sellerSales.filter(s=>s.status==='approved').reduce((a,s)=>a+numBR(s.total||0),0)>=goalTarget;
+ const bonusReleased=!!settings.goalBonusEnabled && (!settings.goalBonusReleasedMonth || settings.goalBonusReleasedMonth===key);
+ const bonusEarned=goalHit&&bonusReleased?goalBonus:0;
+ const sellerPayments=payables.filter(p=>p.sellerCommissionPayment&&p.status==='paid'&&p.referenceMonth===key&&((p.sellerUid&&p.sellerUid===settings.sellerUid)||(p.sellerName||'').toLowerCase()==='julio'||(p.sellerEmail||'').toLowerCase()==='bernardojulio743@gmail.com'));
+ const sellerPaid=Math.round(sellerPayments.reduce((a,p)=>a+numBR(p.amount||p.value||0),0)*100)/100;
+ const sellerCompTotal=Math.round((commissionEarned+bonusEarned)*100)/100;
+ const sellerCompDue=Math.max(0,Math.round((sellerCompTotal-sellerPaid)*100)/100);
+ const regularPayables=payables.filter(x=>x.status!=='paid'&&!x.sellerCommissionPayment);
+ const pending=regularPayables.reduce((a,x)=>a+numBR(x.amount||x.value||0),0);
  const paidExpenses=payables.filter(x=>x.status==='paid'&&!x.sellerCommissionPayment&&inMonth(x)).reduce((a,x)=>a+numBR(x.amount||x.value||0),0);
- const pendingPayables=payables.filter(x=>x.status!=='paid'), pending=pendingPayables.reduce((a,x)=>a+numBR(x.amount||x.value||0),0);
- const sellerReceived=monthPayments.filter(p=>p.sellerUid||p.sellerName||p.source==='seller').reduce((a,p)=>a+numBR(p.amount||0),0);
- const commission=sellerReceived*.20;
  const stockReserve=products.reduce((a,p)=>a+Math.max(0,numBR(p.minStock||0)-numBR(p.stock||0))*numBR(p.cost||p.unitCost||0),0);
  const monthPurchases=purchases.filter(inMonth).reduce((a,p)=>a+numBR(p.total||p.amount||0),0);
- // Lucro operacional: faturamento menos custo dos itens vendidos e despesas já pagas.
- const estimatedProfit=revenue-cogs-paidExpenses-commission;
- // Caixa estimado: recebimentos efetivos menos compras registradas, despesas pagas, contas ainda abertas, comissão e reserva mínima.
- const cashEstimate=received-monthPurchases-paidExpenses-pending-commission-stockReserve;
- // Não apresentar retirada positiva quando não há caixa estimado suficiente; não tratar vendas a prazo como dinheiro disponível.
- const withdraw=Math.max(0,Math.min(Math.max(0,estimatedProfit),Math.max(0,cashEstimate)));
+ const ceoSalary=350;
+ const estimatedProfitBeforeCEO=revenue-cogs-paidExpenses-commissionEarned-bonusEarned;
+ const cashBeforeCEO=received-monthPurchases-paidExpenses-pending-sellerCompDue-stockReserve;
+ const profitAfterCEO=estimatedProfitBeforeCEO-ceoSalary;
+ const ceoSalaryAvailable=Math.min(ceoSalary,Math.max(0,cashBeforeCEO));
+ const ceoExtra=Math.max(0,Math.min(Math.max(0,estimatedProfitBeforeCEO-ceoSalary),Math.max(0,cashBeforeCEO-ceoSalary)));
+ const ceoTotalAvailable=Math.round((ceoSalaryAvailable+ceoExtra)*100)/100;
+ const cashAfterCEO=Math.round((cashBeforeCEO-ceoSalary)*100)/100;
+ const extraLabel=ceoExtra>0?money(ceoExtra):money(0);
+ const payday=new Date(ref.getFullYear(),ref.getMonth()+1,0);
  const nextDas=new Date(ref.getFullYear(),ref.getMonth(),20);if(ref.getDate()>20)nextDas.setMonth(nextDas.getMonth()+1);
  const daysDas=Math.ceil((nextDas-new Date(ref.getFullYear(),ref.getMonth(),ref.getDate()))/86400000);
  const nextAnnual=new Date(ref.getFullYear(),4,31);if(ref>nextAnnual)nextAnnual.setFullYear(nextAnnual.getFullYear()+1);
  const daysAnnual=Math.ceil((nextAnnual-new Date(ref.getFullYear(),ref.getMonth(),ref.getDate()))/86400000);
  const label=ref.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
- return `<div class="page finance-page"><div class="finance-head"><div><h1>Contabilidade</h1><p>Visão gerencial e obrigações previstas · ${esc(label)}</p></div>${privacyButton()}</div>
- <div class="analysis-card" style="margin:14px 0"><div class="analysis-head"><div><small style="color:var(--muted)">RETIRADA MENSAL SUGERIDA</small><div style="margin-top:4px">Limitada pelo lucro e pelo caixa estimados</div></div><strong class="private-number money-large" style="color:var(--green,#17845d)">${money(withdraw)}</strong></div><p style="font-size:12px;color:var(--muted);line-height:1.5;margin:10px 0 0">Estimativa gerencial, não saldo bancário. Usa recebimentos reais registrados, compras do mês, despesas pagas, contas pendentes, comissão de 20% sobre recebimentos atribuídos ao vendedor e reserva mínima de estoque. Confira o caixa real antes de retirar.</p></div>
- <div class="finance-grid"><div class="finance-card"><small>Faturamento do mês</small><strong class="private-number money-large">${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div><div class="finance-card"><small>Recebido no mês</small><strong class="private-number money-large">${money(received)}</strong><p>Pagamentos registrados, inclusive de vendas anteriores</p></div><div class="finance-card"><small>Custo vendido</small><strong class="private-number money-large">${money(cogs)}</strong><p>Custo estimado dos itens vendidos</p></div><div class="finance-card"><small>Comissão estimada (20%)</small><strong class="private-number money-large">${money(commission)}</strong><p>Sobre recebimentos atribuídos ao vendedor</p></div><div class="finance-card"><small>Contas pendentes</small><strong class="private-number money-large">${money(pending)}</strong><p>Contas a pagar ainda não quitadas</p></div><div class="finance-card"><small>Reserva para reposição</small><strong class="private-number money-large">${money(stockReserve)}</strong><p>Estimativa para repor estoque abaixo do mínimo</p></div><div class="finance-card"><small>Lucro gerencial estimado</small><strong class="private-number money-large">${money(estimatedProfit)}</strong><p>Faturamento menos custo vendido, despesas pagas e comissão</p></div><div class="finance-card"><small>Caixa estimado após obrigações</small><strong class="private-number money-large">${money(cashEstimate)}</strong><p>Recebimentos menos compras, despesas, pendências, comissão e reserva</p></div></div>
- <div class="analysis-card" style="margin-top:14px"><div class="section-title"><b>Calendário fiscal de referência</b></div><div class="item"><div class="avatar">▦</div><div class="item-main"><b>DAS mensal do MEI</b><small>Vencimento usual no dia 20. Confirme o documento e eventuais alterações oficiais.</small></div><strong>${daysDas===0?'Hoje':`em ${daysDas} dia(s)`}</strong></div><div class="item"><div class="avatar">▤</div><div class="item-main"><b>DASN-SIMEI anual</b><small>Prazo usual até 31 de maio, relativo ao ano-calendário anterior.</small></div><strong>em ${daysAnnual} dia(s)</strong></div><p style="font-size:12px;color:var(--muted);line-height:1.5">PGDAS-D e Fator R não são obrigações padrão do MEI/SIMEI. Este calendário é orientativo, não consulta automaticamente o portal da Receita e não substitui contador ou confirmação oficial.</p></div>
- <div class="finance-actions"><button class="finance-option" data-go-page="finance"><b>💵 Abrir Financeiro</b><small>Consultar recebimentos, despesas e contas.</small></button><button class="finance-option" id="accountingPaySeller"><b>👤 Pagar vendedor e gerar recibo PDF</b><small>Registrar a comissão paga ao Julio e imprimir o recibo.</small></button><button class="finance-option" data-go-page="reports"><b>📊 Abrir Relatórios</b><small>Conferir vendas e resultados por período.</small></button></div></div>`;
+ return `<div class="page finance-page"><div class="finance-head"><div><h1>Financeiro & remuneração</h1><p>Painel gerencial · ${esc(label)}</p></div>${privacyButton()}</div>
+ <section class="analysis-card ceo-pay-panel" style="margin:14px 0;border:1px solid var(--caramel);background:linear-gradient(135deg,#2c1a12,#493020);color:#fff4e6">
+  <div class="analysis-head"><div><small style="color:#d8b28a;font-weight:850;letter-spacing:.08em">SUA REMUNERAÇÃO · CEO</small><div style="margin-top:5px;color:#f4dfc8">Salário fixo mensal</div></div><strong class="private-number money-large" style="color:#ffe0a0">${money(ceoSalary)}</strong></div>
+  <div class="finance-grid" style="margin-top:12px">
+   <div class="finance-card"><small>Salário previsto para pagar agora</small><strong class="private-number">${money(ceoSalaryAvailable)}</strong><p>Referência: ${esc(label)} · previsão de pagamento: ${payday.toLocaleDateString('pt-BR')}</p></div>
+   <div class="finance-card"><small>Retirada extra sugerida</small><strong class="private-number">${money(ceoExtra)}</strong><p>Somente após reservar o salário fixo e cobrir obrigações.</p></div>
+   <div class="finance-card"><small>Total que pode retirar agora</small><strong class="private-number">${money(ceoTotalAvailable)}</strong><p>Limitado pelo caixa estimado disponível e pelo lucro após o salário.</p></div>
+   <div class="finance-card"><small>Lucro estimado após salário CEO</small><strong class="private-number">${money(profitAfterCEO)}</strong><p>Estimativa, não substitui conciliação bancária.</p></div>
+  </div>
+  <p style="font-size:12px;color:#e5cdb6;line-height:1.5;margin:10px 0 0">${ceoSalaryAvailable<ceoSalary?'⚠️ O caixa estimado ainda não cobre integralmente o salário fixo. Evite considerar a diferença como dinheiro disponível.':'O salário fixo foi considerado antes de calcular a retirada extra.'} A data mostrada é uma previsão configurada como último dia do mês; ajuste se você usa outro dia de pagamento.</p>
+ </section>
+ <section class="analysis-card" style="margin:14px 0">
+  <div class="analysis-head"><div><small style="color:var(--muted);font-weight:850;letter-spacing:.08em">REMUNERAÇÃO DO JULIO</small><div style="margin-top:4px">Comissão + bônus liberado − pagamentos registrados</div></div><strong class="private-number money-large">${money(sellerCompDue)}</strong></div>
+  <div class="finance-grid" style="margin-top:12px">
+   <div class="finance-card"><small>Vendas aprovadas do mês</small><strong class="private-number">${money(sellerSales.filter(s=>s.status==='approved').reduce((a,s)=>a+numBR(s.total||0),0))}</strong><p>Meta: ${money(goalTarget)}</p></div>
+   <div class="finance-card"><small>Comissão de 20%</small><strong class="private-number">${money(commissionEarned)}</strong><p>Calculada sobre as vendas do Julio no mês, não sobre os recebimentos.</p></div>
+   <div class="finance-card"><small>Bônus por meta</small><strong class="private-number">${money(bonusEarned)}</strong><p>${goalHit?(bonusReleased?'Meta atingida e bônus liberado.':'Meta atingida, aguardando liberação administrativa.'):`Faltam ${money(Math.max(0,goalTarget-sellerSales.filter(s=>s.status==='approved').reduce((a,s)=>a+numBR(s.total||0),0)))} para atingir a meta.`}</p></div>
+   <div class="finance-card"><small>Pagamentos já realizados</small><strong class="private-number">${money(sellerPaid)}</strong><p>Pagamentos de remuneração do mês registrados no sistema.</p></div>
+   <div class="finance-card"><small>Total de remuneração do mês</small><strong class="private-number">${money(sellerCompTotal)}</strong><p>Comissão + bônus liberado, sem duplicar o bônus na comissão.</p></div>
+   <div class="finance-card"><small>Saldo restante a pagar</small><strong class="private-number">${money(sellerCompDue)}</strong><p>Não registra pagamento automaticamente.</p></div>
+  </div>
+ </section>
+ <div class="finance-grid"><div class="finance-card"><small>Faturamento do mês</small><strong class="private-number money-large">${money(revenue)}</strong><p>${monthSales.length} venda(s)</p></div><div class="finance-card"><small>Recebido no mês</small><strong class="private-number money-large">${money(received)}</strong><p>Pagamentos registrados, inclusive de vendas anteriores</p></div><div class="finance-card"><small>Custo vendido</small><strong class="private-number money-large">${money(cogs)}</strong><p>Custo estimado dos itens vendidos</p></div><div class="finance-card"><small>Contas pendentes</small><strong class="private-number money-large">${money(pending)}</strong><p>Contas a pagar não quitadas, sem duplicar a remuneração do vendedor</p></div><div class="finance-card"><small>Reserva para reposição</small><strong class="private-number money-large">${money(stockReserve)}</strong><p>Estimativa para repor estoque abaixo do mínimo</p></div><div class="finance-card"><small>Lucro gerencial após remuneração</small><strong class="private-number money-large">${money(profitAfterCEO)}</strong><p>Faturamento menos custos, despesas, remuneração do Julio e salário fixo do CEO</p></div><div class="finance-card"><small>Caixa estimado após obrigações</small><strong class="private-number money-large">${money(cashAfterCEO)}</strong><p>Recebimentos menos compras, despesas, pendências, saldo do Julio, reserva e salário CEO</p></div></div>
+ <div class="analysis-card" style="margin-top:14px"><div class="section-title"><b>Calendário fiscal de referência</b></div><div class="item"><div class="avatar">▦</div><div class="item-main"><b>DAS mensal do MEI</b><small>Vencimento usual no dia 20. Confirme o documento e eventuais alterações oficiais.</small></div><strong>${daysDas===0?'Hoje':`em ${daysDas} dia(s)`}</strong></div><div class="item"><div class="avatar">▤</div><div class="item-main"><b>DASN-SIMEI anual</b><small>Prazo usual até 31 de maio, relativo ao ano-calendário anterior.</small></div><strong>em ${daysAnnual} dia(s)</strong></div><p style="font-size:12px;color:var(--muted);line-height:1.5">Este calendário é orientativo, não consulta automaticamente o portal da Receita e não substitui contador ou confirmação oficial.</p></div>
+ <div class="finance-actions"><button class="finance-option" data-go-page="finance"><b>💵 Abrir Financeiro</b><small>Consultar recebimentos, despesas e contas.</small></button><button class="finance-option" id="accountingPaySeller"><b>👤 Pagar vendedor e gerar recibo PDF</b><small>Registrar a comissão ou bônus pago ao Julio e imprimir o recibo.</small></button><button class="finance-option" data-go-page="reports"><b>📊 Abrir Relatórios</b><small>Conferir vendas e resultados por período.</small></button></div></div>`;
 }
-
 function render(){if(!uid||isSeller())return;const v=$("view");if(page==="home")v.innerHTML=home();if(page==="sales")v.innerHTML=sales();if(page==="clients")v.innerHTML=clients();if(page==="stock")v.innerHTML=stock();if(page==="purchases")v.innerHTML=purchases();if(page==="finance")v.innerHTML=finance();if(page==="accounting")v.innerHTML=accountingPage();if(page==="more")v.innerHTML=morePage();if(page==="reports")v.innerHTML=reportsPage();if(page==="settings")v.innerHTML=finance();bindPage();bindPrivacy();document.querySelectorAll('[data-go-page]').forEach(b=>b.onclick=()=>go(b.dataset.goPage))}
 function monthBounds(ref=now()){
  const start=new Date(ref.getFullYear(),ref.getMonth(),1);start.setHours(0,0,0,0);
