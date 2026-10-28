@@ -2001,8 +2001,10 @@ function finance(){
  const ticket=monthSales.length?revenue/monthSales.length:0;
  const totalItems=monthSales.reduce((a,s)=>a+(s.items||[]).reduce((x,i)=>x+numBR(i.qty||0),0),0);
  const allReceived=payments.reduce((a,p)=>a+numBR(p.amount||0),0);
- const allPurchases=purchases.reduce((a,p)=>a+numBR(p.total||0),0);
+ // Registros antigos sem forma de pagamento são tratados como compras já pagas; crédito/boleto só saem do caixa quando a conta é paga.
+ const allPurchases=purchases.filter(p=>!["credito","boleto"].includes(String(p.paymentMethod||"").toLowerCase())).reduce((a,p)=>a+numBR(p.total||0),0);
  const paidPayables=(data.payables||[]).filter(x=>x.status==='paid').reduce((a,x)=>a+numBR(x.amount||0),0);
+ const unpaidCreditPurchases=(data.payables||[]).filter(x=>x.status!=='paid'&&x.sourcePurchaseId).reduce((a,x)=>a+numBR(x.amount||0),0);
  const cash=allReceived-allPurchases-paidPayables;
  const byMethod={};monthPayments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+numBR(p.amount||0)});
  const top={};monthSales.forEach(s=>(s.items||[]).forEach(i=>{top[i.name]=(top[i.name]||0)+numBR(i.qty||0)}));
@@ -2033,11 +2035,12 @@ function finance(){
    <div class="finance-card"><small>Margem de lucro</small><strong>${margin.toFixed(1)}%</strong><p>sobre o faturamento</p></div>
    <div class="finance-card"><small>Ticket médio</small><strong class="private-number money-large">${money(ticket)}</strong><p>por venda</p></div>
    <div class="finance-card"><small>Recebido no mês</small><strong class="finance-positive private-number money-large">${money(received)}</strong><p>pagamentos registrados</p></div>
-   <div class="finance-card"><small>Caixa calculado</small><strong class="finance-positive private-number money-large">${money(cash)}</strong><p>recebimentos menos compras registradas</p></div>
+   <div class="finance-card"><small>Caixa calculado</small><strong class="finance-positive private-number money-large">${money(cash)}</strong><p>recebimentos − compras pagas − contas efetivamente pagas</p></div>
    <div class="finance-card"><small>A receber</small><strong class="finance-negative private-number money-large">${money(pending)}</strong><p>das vendas deste mês</p></div>
    <div class="finance-card"><small>Custo dos produtos</small><strong class="private-number money-large">${money(cost)}</strong><p>custo dos itens vendidos</p></div>
    <div class="finance-card"><small>Itens vendidos</small><strong>${totalItems}</strong><p>unidades neste mês</p></div>
   </div>
+  <div class="finance-card" style="margin:12px 0"><small>Compras no crédito / boleto ainda pendentes</small><strong class="finance-negative private-number money-large">${money(unpaidCreditPurchases)}</strong><p>Obrigações registradas que ainda não saíram do caixa, mas devem ser reservadas antes de retirar dinheiro.</p></div>
   <div class="analysis-card finance-summary">
    <div class="analysis-head"><div><small style="color:var(--muted)">RESUMO</small><div style="margin-top:3px">Resultado financeiro do mês</div></div><strong class="private-number money-large">${money(profit)}</strong></div>
    <div class="section" style="margin-top:15px">
@@ -2768,33 +2771,42 @@ function openAddStock(p){
    <small style="color:var(--muted);display:block;margin-bottom:12px">Informe quantas unidades entraram e o valor total pago pela compra.</small>
    <div class="stock-entry-grid">
     <div class="field"><label>Quantidade de unidades</label><input id="addStockQty" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
-    <div class="field"><label>Valor total pago</label><input id="addStockTotal" type="text" inputmode="decimal" placeholder="Ex.: 28,47"></div>
+    <div class="field"><label>Valor total da compra</label><input id="addStockTotal" type="text" inputmode="decimal" placeholder="Ex.: 28,47"></div>
    </div>
-   <div id="addStockPreview" class="stock-entry-preview">Informe a quantidade e o valor total para calcular a entrada.</div>
+   <div class="field"><label>Forma de pagamento</label><select id="addStockMethod">
+    <option value="pix">Pix</option><option value="dinheiro">Dinheiro</option><option value="debito">Cartão de débito</option>
+    <option value="credito">Cartão de crédito (vai para fatura)</option><option value="boleto">Boleto / a prazo</option>
+   </select></div>
+   <div class="field" id="addStockDueWrap" style="display:none"><label>Vencimento da fatura/conta</label><input id="addStockDue" type="date"></div>
+   <div id="addStockPreview" class="stock-entry-preview">Informe a quantidade, o valor e a forma de pagamento para calcular a entrada.</div>
   </div>
   <div class="actions"><button type="button" class="secondary" id="cancelAddStock">Cancelar</button><button type="button" class="primary" id="confirmAddStock">Confirmar entrada</button></div>
  </div>`);
  const preview=()=>{
-  const qty=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0,el=$("addStockPreview");
-  if(qty>0&&t>0){const unit=t/qty,avg=(oldCost*current+t)/(current+qty);el.innerHTML=`Entrada no estoque: <strong>+${qty} unidades</strong><br>Custo desta compra: <strong>${money(unit)}/un.</strong> • novo custo médio: <strong>${money(avg)}/un.</strong> • total: <strong>${money(t)}</strong>`;}
+  const qty=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0,el=$("addStockPreview"),method=$("addStockMethod").value;
+  if(qty>0&&t>0){const unit=t/qty,avg=(oldCost*current+t)/(current+qty),credit=["credito","boleto"].includes(method);el.innerHTML=`Entrada no estoque: <strong>+${qty} unidades</strong><br>Custo: <strong>${money(unit)}/un.</strong> • novo custo médio: <strong>${money(avg)}/un.</strong><br>Total: <strong>${money(t)}</strong><br>${credit?'<span style="color:#c77b32">⚠️ Não sai do caixa agora; será registrada uma conta a pagar.</span>':'Será descontado do caixa como compra paga.'}`;}
   else el.textContent="Informe a quantidade e o valor total para calcular a entrada.";
  };
- $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$('cancelAddStock').onclick=closeModal;
+ const toggleDue=()=>{const credit=["credito","boleto"].includes($("addStockMethod").value);$("addStockDueWrap").style.display=credit?"block":"none";preview();};
+ $("addStockQty").oninput=preview;$("addStockTotal").oninput=preview;$("addStockMethod").onchange=toggleDue;$('cancelAddStock').onclick=closeModal;
  $("confirmAddStock").onclick=async()=>{
   const btn=$("confirmAddStock");if(btn.dataset.busy==="1")return;
-  const qty=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0;
+  const qty=Math.floor(numBR($("addStockQty").value)||0),t=numBR($("addStockTotal").value)||0,method=$("addStockMethod").value,dueDate=$("addStockDue")?.value||"";
   if(qty<1)return toast("Informe uma quantidade válida.");if(t<=0)return toast("Informe o valor total da compra.");
+  const isCredit=["credito","boleto"].includes(method);if(isCredit&&!dueDate)return toast("Informe o vencimento da fatura/conta.");
+  const methodNames={pix:"Pix",dinheiro:"Dinheiro",debito:"Cartão de débito",credito:"Cartão de crédito",boleto:"Boleto / a prazo"};
   const unit=t/qty;btn.dataset.busy="1";btn.disabled=true;
   try{
-   const purchaseRef=doc(col("purchases"));
+   const purchaseRef=doc(col("purchases")),payableRef=isCredit?doc(col("payables")):null;
    let freshName=p.name,finalCost=0,avg=0,before=0,after=0;
    await runTransaction(db,async tx=>{
     const ref=doc(col("products"),p.id),snap=await tx.get(ref);if(!snap.exists())throw Error("Produto não encontrado.");
     const fresh=snap.data();freshName=fresh.name||p.name;before=numBR(fresh.stock||0);const freshCost=numBR(fresh.cost||0);after=before+qty;finalCost=t/qty;avg=((freshCost*before)+t)/after;
     tx.update(ref,{stock:after,cost:Math.round(avg*10000)/10000});
-    tx.set(purchaseRef,{productId:p.id,productName:freshName,quantity:qty,total:t,unitCost:Math.round(finalCost*10000)/10000,purchaseQuantity:qty,purchaseUnit:"unidade",unitsPerPackage:1,previousUnitCost:freshCost,newAverageCost:Math.round(avg*10000)/10000,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    tx.set(purchaseRef,{productId:p.id,productName:freshName,quantity:qty,total:t,unitCost:Math.round(finalCost*10000)/10000,purchaseQuantity:qty,purchaseUnit:"unidade",unitsPerPackage:1,previousUnitCost:freshCost,newAverageCost:Math.round(avg*10000)/10000,paymentMethod:method,paymentStatus:isCredit?"pending":"paid",dueDate:isCredit?dueDate:"",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    if(isCredit)tx.set(payableRef,{title:`Compra de estoque: ${freshName}`,category:"Fornecedor",amount:Math.round(t*100)/100,dueDate,note:`Compra ${methodNames[method]} • purchaseId:${purchaseRef.id}`,status:"pending",sourcePurchaseId:purchaseRef.id,paymentMethod:method,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
    });
-   await logAction("Entrada de estoque",`${freshName} • +${after-before} un. • compra ${money(t)} • custo ${money(finalCost)}/un.`);
+   await logAction("Entrada de estoque",`${freshName} • +${after-before} un. • compra ${money(t)} • ${methodNames[method]} • custo ${money(finalCost)}/un.`);
    closeModal();render();toast(`+${after-before} unidades adicionadas ao estoque!`);
   }catch(e){console.error(e);toast("Erro ao registrar entrada: "+(e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}
  };
