@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU V3.0.0</title>
+<title>DOCES DO VITU V3.0.1</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -387,7 +387,7 @@ body.theme-dark .nfc-menu-card,body.theme-dark .nfc-item,body.theme-dark .nfc-dr
 .seller-profile-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}.seller-profile-actions button{min-height:44px!important;padding:10px!important;font-size:12px!important}.seller-profile-actions #sellerProfileSell{grid-column:1/-1}
 .payables-panel{margin:14px 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}.payables-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.payables-row:last-child{border-bottom:0}.payables-main{flex:1;min-width:0}.payables-main b{display:block;font-size:13px;overflow-wrap:anywhere}.payables-main small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.payables-amount{font-weight:900;white-space:nowrap}.payables-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.payables-actions button{min-height:32px;padding:6px 9px;font-size:11px}
 
-/* DOCES DO VITU V3.0.0 · visual refresh, existing business logic retained */
+/* DOCES DO VITU V3.0.1 · visual refresh, existing business logic retained */
 :root{--dark:#24130d;--dark2:#3a2115;--brown:#6f4228;--caramel:#c8894d;--cream:#1d100b;--cream2:#382116;--white:#2b190f;--line:#503321;--text:#f5e6d2;--muted:#c2a88f;--green:#72c58d;--red:#ff8c75;--orange:#e9ad63;--shadow:0 12px 30px rgba(0,0,0,.22);--r:20px}
 html,body{background:#1d100b;color:var(--text)}
 #app{background:radial-gradient(ellipse at 50% -20%,#56301b 0%,#21120c 56%,#170c08 100%)}
@@ -428,6 +428,20 @@ button{transition:transform .14s ease,filter .14s ease}button:active{transform:s
 .client-result-rich{display:flex!important;align-items:center;gap:10px;padding:9px 11px!important;width:100%;text-align:left}
 .client-result-rich .client-avatar-img,.client-result-rich .client-avatar{width:38px;height:38px;flex:0 0 38px;border-radius:50%;overflow:hidden}
 .client-result-info{display:flex;flex-direction:column;gap:3px;min-width:0}.client-result-info small{color:var(--muted);font-weight:800}
+
+/* V3.0.1 • busca compacta e privacidade financeira */
+.client-results,.quick-client-results{max-height:150px;padding:4px;gap:3px}
+.client-result-rich{display:flex!important;flex-direction:row!important;align-items:center!important;gap:8px!important;min-height:48px;padding:5px 8px!important;border-radius:10px!important}
+.client-result-rich .client-avatar-img,.client-result-rich .client-avatar{width:32px!important;height:32px!important;flex:0 0 32px!important;border-radius:50%!important;overflow:hidden}
+.client-result-info{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;min-width:0;flex:1}
+.client-result-info b{font-size:12px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-result-info small{font-size:10px!important;white-space:nowrap;margin:0!important;flex:0 0 auto}
+.quick-client-results .client-result-rich{min-height:44px}
+.privacy-hidden .finance-card strong,.privacy-hidden .analysis-card .analysis-head strong,.privacy-hidden .finance-goal-value,.privacy-hidden .payables-amount,.privacy-hidden .finance-card .private-number{font-size:0!important;letter-spacing:0!important}
+.privacy-hidden .finance-card strong::after,.privacy-hidden .analysis-card .analysis-head strong::after,.privacy-hidden .finance-goal-value::after,.privacy-hidden .payables-amount::after{content:"••••";font-size:18px!important;letter-spacing:2px!important;color:var(--muted)}
+.privacy-hidden .finance-card strong.finance-positive::after{color:var(--green)}
+.privacy-hidden .finance-card strong.finance-negative::after{color:var(--red)}
+
 </style>
 
 <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
@@ -1054,7 +1068,7 @@ body.theme-dark .client-debt-badge.is-partial{background:#46331d;color:#ffd18b;b
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.0.0 · Gestão de doces</small></div></div>
+  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.0.1 · Gestão de doces</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -1277,7 +1291,7 @@ function go(p){
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
 
-function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Doces do Vitu</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="accounting"><span class="more-icon">▤</span><b>Contabilidade</b><small>Obrigações, impostos e retirada mensal</small><span class="more-arrow">›</span></button><button class="more-card" id="manageSellerPrices"><span class="more-icon">＄</span><b>Preços por vendedor</b><small>Defina um preço diferente para cada produto e vendedor</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatório</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="logo.png" alt="Doces do Vitu"><span>Seu negócio, em boas mãos.</span><small>DOCES DO VITU · V3.0.0</small></div></div>`}
+function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Doces do Vitu</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="accounting"><span class="more-icon">▤</span><b>Contabilidade</b><small>Obrigações, impostos e retirada mensal</small><span class="more-arrow">›</span></button><button class="more-card" id="manageSellerPrices"><span class="more-icon">＄</span><b>Preços por vendedor</b><small>Defina um preço diferente para cada produto e vendedor</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatório</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="logo.png" alt="Doces do Vitu"><span>Seu negócio, em boas mãos.</span><small>DOCES DO VITU · V3.0.1</small></div></div>`}
 
 function reportsPage(){
  const [year,month]=financeMonthKey.split("-").map(Number);
@@ -1569,11 +1583,13 @@ async function approveSellerRequest(id){
    const reqSnap=await tx.get(reqRef);if(!reqSnap.exists())throw new Error('Solicitação não encontrada.');
    const r=reqSnap.data();if(r.status!=='pending')throw new Error('Esta solicitação já foi processada.');
    // Firestore exige concluir todas as leituras antes da primeira escrita.
+   const grouped=new Map();
+   for(const item of r.items||[]){const pid=String(item.productId||'');if(!pid)throw new Error('Item sem identificação de produto: '+(item.name||''));const qty=Number(item.qty)||0;if(qty<=0)throw new Error('Quantidade inválida para '+item.name);const current=grouped.get(pid);if(current){current.qty+=qty;current.lines.push(item);}else grouped.set(pid,{productId:pid,name:item.name||'Produto',qty,lines:[item]});}
    const productReads=[];
-   for(const item of r.items||[]){const productRef=doc(col('products'),item.productId),pSnap=await tx.get(productRef);if(!pSnap.exists())throw new Error('Produto não encontrado: '+item.name);productReads.push({item,productRef,pSnap});}
+   for(const group of grouped.values()){const productRef=doc(col('products'),group.productId),pSnap=await tx.get(productRef);if(!pSnap.exists())throw new Error('Produto não encontrado: '+group.name);productReads.push({group,productRef,pSnap});}
    const items=[];
-   for(const row of productReads){const p=row.pSnap.data(),qty=Number(row.item.qty)||0,stock=Number(p.stock)||0;if(qty<=0||stock<qty)throw new Error('Estoque insuficiente para '+row.item.name);items.push({...row.item,cost:Number(p.cost||p.unitCost||0),price:Number(row.item.price!==undefined&&row.item.price!==null&&row.item.price!==''?row.item.price:(p.price||0))});}
-   for(const row of productReads){const p=row.pSnap.data(),qty=Number(row.item.qty)||0;tx.update(row.productRef,{stock:(Number(p.stock)||0)-qty});}
+   for(const row of productReads){const p=row.pSnap.data(),stock=Number(p.stock)||0;if(stock<row.group.qty)throw new Error('Estoque insuficiente para '+row.group.name+': disponível '+stock+', solicitado '+row.group.qty+'.');for(const line of row.group.lines){items.push({...line,cost:Number(p.cost||p.unitCost||0),price:Number(line.price!==undefined&&line.price!==null&&line.price!==''?line.price:(p.price||0))});}}
+   for(const row of productReads){const p=row.pSnap.data();tx.update(row.productRef,{stock:(Number(p.stock)||0)-row.group.qty});}
    const gross=items.reduce((a,i)=>a+i.qty*i.price,0),discount=Math.min(gross,Math.max(0,Number(r.discount)||0)),total=Math.max(0,gross-discount),paid=Math.max(0,Math.min(total,Number(r.paid)||0));
    tx.set(saleRef,{clientId:r.clientId||'',clientName:r.clientName||'Venda balcão',items,total,discount,paid,paymentMethod:r.paymentMethod||'Pendente',createdAt:serverTimestamp(),sellerUid:r.sellerUid,sellerEmail:r.sellerEmail||'',sellerName:r.sellerName||'Julio',approvedByUid:uid,approvedByName:currentUserName,source:'seller'});
    if(paid>0)tx.set(paymentRef,{saleId:saleRef.id,clientId:r.clientId||'',clientName:r.clientName||'Venda balcão',amount:paid,method:r.paymentMethod||'Outro',createdByUid:uid,createdByName:currentUserName,sellerUid:r.sellerUid,sellerName:r.sellerName||'Julio',createdAt:serverTimestamp()});
@@ -2129,12 +2145,12 @@ function openQuickSale(){
  for(const {i,snap} of snapshots){if(!snap.exists())throw Error(`Produto não encontrado: ${i.name}.`);const stock=numBR(snap.data().stock||0),qty=numBR(i.qty);if(stock<qty)throw Error(`Estoque insuficiente para ${i.name}.`);}
  for(const {i,ref,snap} of snapshots)tx.update(ref,{stock:numBR(snap.data().stock||0)-numBR(i.qty)});
  tx.set(saleRef,{clientId,clientName:c?.name||"Venda balcão",items,originalTotal,total,discountAmount,discountPct:ratio*100,paid:0,paymentMethod:"Pendente",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
-});closeModal();render();go("home");overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></div><b>Venda confirmada</b></div>';setTimeout(()=>overlay.remove(),700)}catch(e){console.error(e);overlay.remove();toast(e.message||"Erro ao registrar venda")}finally{btn.dataset.busy="0"}};
+});closeModal();render();overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></div><b>Venda confirmada</b></div>';setTimeout(()=>overlay.remove(),700)}catch(e){console.error(e);overlay.remove();toast(e.message||"Erro ao registrar venda")}finally{btn.dataset.busy="0"}};
  const search=$("fqClientSearch"),hidden=$("fqClient"),results=$("fqClientResults");
  let fqActiveIndex=-1;
  const fqShow=()=>{fqActiveIndex=-1;results.querySelectorAll("[data-fq-client]").forEach(b=>b.classList.remove("active"))};
- search.onfocus=()=>{if(!search.value.trim()){results.innerHTML=clients.slice(0,3).map(c=>`<button type="button" class="client-result client-result-rich" data-fq-client="${c.id}">${clientAvatar(c)}<span class="client-result-info"><b>${esc(c.name)}</b><small>#${clientPublicCode(c)}</small></span></button>`).join("");results.classList.remove("hidden");}};search.onkeydown=e=>{if(results.classList.contains("hidden"))return;const items=[...results.querySelectorAll("[data-fq-client]")];if(!items.length)return;if(e.key==="ArrowDown"){e.preventDefault();fqActiveIndex=(fqActiveIndex+1)%items.length;items.forEach((b,i)=>b.classList.toggle("active",i===fqActiveIndex));items[fqActiveIndex]?.scrollIntoView({block:"nearest"});return}if(e.key==="ArrowUp"){e.preventDefault();fqActiveIndex=(fqActiveIndex-1+items.length)%items.length;items.forEach((b,i)=>b.classList.toggle("active",i===fqActiveIndex));items[fqActiveIndex]?.scrollIntoView({block:"nearest"});return}if(e.key==="Enter"){e.preventDefault();const b=items[fqActiveIndex>=0?fqActiveIndex:0];if(b)b.click();return}};
- search.oninput=()=>{hidden.value="";$("fqDiscountValue").readOnly=false;$("fqDiscountValue").value="0,00";const q=search.value.trim(),m=q?findClientMatches(q,clients):clients.slice(0,3);results.innerHTML=m.map(c=>`<button type="button" class="client-result client-result-rich" data-fq-client="${c.id}">${clientAvatar(c)}<span class="client-result-info"><b>${esc(c.name)}</b><small>#${clientPublicCode(c)}</small></span></button>`).join("")||`<div class="client-no-results">Nenhum cliente encontrado.</div>`;results.classList.remove("hidden");fqShow();draw()};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden");const auto=String(c.status||"normal").toLowerCase()==="otimo";$("fqDiscountValue").value=auto?(totalOriginal()*0.10).toFixed(2).replace(".",","):"0,00";$("fqDiscountValue").readOnly=auto;draw()}};
+ search.onfocus=()=>{if(!search.value.trim())results.classList.add("hidden");};search.onkeydown=e=>{if(results.classList.contains("hidden"))return;const items=[...results.querySelectorAll("[data-fq-client]")];if(!items.length)return;if(e.key==="ArrowDown"){e.preventDefault();fqActiveIndex=(fqActiveIndex+1)%items.length;items.forEach((b,i)=>b.classList.toggle("active",i===fqActiveIndex));items[fqActiveIndex]?.scrollIntoView({block:"nearest"});return}if(e.key==="ArrowUp"){e.preventDefault();fqActiveIndex=(fqActiveIndex-1+items.length)%items.length;items.forEach((b,i)=>b.classList.toggle("active",i===fqActiveIndex));items[fqActiveIndex]?.scrollIntoView({block:"nearest"});return}if(e.key==="Enter"){e.preventDefault();const b=items[fqActiveIndex>=0?fqActiveIndex:0];if(b)b.click();return}};
+ search.oninput=()=>{hidden.value="";$("fqDiscountValue").readOnly=false;$("fqDiscountValue").value="0,00";const q=search.value.trim(),m=q?findClientMatches(q,clients):[];results.innerHTML=m.map(c=>`<button type="button" class="client-result client-result-rich" data-fq-client="${c.id}">${clientAvatar(c)}<span class="client-result-info"><b>${esc(c.name)}</b><small>#${clientPublicCode(c)}</small></span></button>`).join("")||`<div class="client-no-results">Nenhum cliente encontrado.</div>`;if(q)results.classList.remove("hidden");else results.classList.add("hidden");fqShow();draw()};results.onclick=e=>{const b=e.target.closest("[data-fq-client]");if(!b)return;const c=clients.find(x=>x.id===b.dataset.fqClient);if(c){hidden.value=c.id;search.value=c.name;results.classList.add("hidden");const auto=String(c.status||"normal").toLowerCase()==="otimo";$("fqDiscountValue").value=auto?(totalOriginal()*0.10).toFixed(2).replace(".",","):"0,00";$("fqDiscountValue").readOnly=auto;draw()}};
 }
 
 function normalizeSearchText(value){
@@ -2207,10 +2223,10 @@ function openSale(){
  $('cancelModal').onclick=closeModal;
  const clientSearch=$('mClientSearch'),clientHidden=$('mClient'),clientResults=$('mClientResults');
  let activeIndex=-1;
- const showClientResults=(term='')=>{const q=term.trim();const matches=q?findClientMatches(q,clients):clients.slice(0,3);clientResults.innerHTML=matches.map((c,i)=>`<button type="button" class="client-result client-result-rich" data-pick-client="${c.id}" data-index="${i}">${clientAvatar(c)}<span class="client-result-info"><b>${esc(c.name)}</b><small>#${clientPublicCode(c)}</small></span></button>`).join('')||'<div class="client-no-results">Nenhum cliente encontrado.</div>';activeIndex=-1;clientResults.classList.remove('hidden')};
+ const showClientResults=(term='')=>{const q=term.trim();const matches=q?findClientMatches(q,clients):[];clientResults.innerHTML=matches.map((c,i)=>`<button type="button" class="client-result client-result-rich" data-pick-client="${c.id}" data-index="${i}">${clientAvatar(c)}<span class="client-result-info"><b>${esc(c.name)}</b><small>#${clientPublicCode(c)}</small></span></button>`).join('')||'<div class="client-no-results">Nenhum cliente encontrado.</div>';activeIndex=-1;if(q)clientResults.classList.remove('hidden');else clientResults.classList.add('hidden')};
  const setActive=idx=>{const items=[...clientResults.querySelectorAll('[data-pick-client]')];if(!items.length)return;activeIndex=(idx+items.length)%items.length;items.forEach((b,i)=>b.classList.toggle('active',i===activeIndex));items[activeIndex]?.scrollIntoView({block:'nearest'})};
  const pickClient=id=>{const c=clients.find(x=>x.id===id);if(c){clientHidden.value=c.id;clientSearch.value=c.name;clientResults.classList.add('hidden');clientSearch.blur();draw()}};
- clientSearch.addEventListener('focus',()=>showClientResults(clientSearch.value));
+ clientSearch.addEventListener('focus',()=>{if(clientSearch.value.trim())showClientResults(clientSearch.value);else clientResults.classList.add('hidden')});
  clientSearch.addEventListener('input',()=>{clientHidden.value='';showClientResults(clientSearch.value);draw()});
  clientSearch.addEventListener('keydown',e=>{if(!clientResults.classList.contains('hidden')){if(e.key==='ArrowDown'){e.preventDefault();e.stopPropagation();setActive(activeIndex+1);return}if(e.key==='ArrowUp'){e.preventDefault();e.stopPropagation();setActive(activeIndex-1);return}if(e.key==='Enter'){e.preventDefault();e.stopPropagation();const items=[...clientResults.querySelectorAll('[data-pick-client]')];const b=items[activeIndex>=0?activeIndex:0];if(b)pickClient(b.dataset.pickClient);return}if(e.key==='Escape'){e.preventDefault();e.stopPropagation();clientResults.classList.add('hidden');return}}});
  clientResults.addEventListener('mousedown',e=>e.preventDefault());
@@ -2244,7 +2260,7 @@ function openSale(){
    });
    await logAction('Nova venda',`${c?.name||'Venda balcão'} • ${money(total)} • ${(items||[]).map(i=>`${i.name} x${i.qty}`).join(', ')}`);
    if(paid>0)await addDoc(col('payments'),{saleId:saleRef.id,clientId,clientName:c?.name||'Venda balcão',amount:paid,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp(),method});
-   closeModal();render();go('home');overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></div><b>Venda confirmada</b><small>${items.length} item(ns) registrado(s)</small></div>';setTimeout(()=>overlay.remove(),700);
+   closeModal();render();overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></div><b>Venda confirmada</b><small>${items.length} item(ns) registrado(s)</small></div>';setTimeout(()=>overlay.remove(),700);
   }catch(e){console.error(e);overlay.remove();toast(e.message||'Não foi possível registrar a venda.')}finally{btn.dataset.busy='0';btn.disabled=false}
  };
  selectProduct(products[0].id);updateEditor();draw();
@@ -2491,7 +2507,7 @@ function openPaymentForClient(c,onlyClosure=null){
    await logAction("Pagamento",`${c.name} • ${money(amount)} • ${$("payMethod").value}`);
    overlay.innerHTML='<div class="sale-processing-card"><div class="sale-check"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></div><b>Pagamento confirmado</b><small>Pagamento registrado no Firebase.</small></div>';
    await new Promise(r=>setTimeout(r,700));
-   closeModal();render();go("home");toast("Pagamento registrado!");
+   closeModal();render();toast("Pagamento registrado!");
   }catch(e){console.error("Erro ao registrar pagamento",e);overlay.remove();toast(e.code==="permission-denied"?"Firebase recusou o pagamento.":"Não foi possível registrar o pagamento.");}
   finally{if(overlay.isConnected)overlay.remove();btn.disabled=false;btn.dataset.busy="0";}
  }
