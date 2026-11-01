@@ -3715,74 +3715,78 @@ body.theme-dark .more-card,body.theme-dark .stock-entry-card{background:#182231!
 .client-search-tools .search{min-width:0}
 </style>
 
-<style id="V304_GLOBAL_REMOVE_CARAMEL_FINAL">
-/* Applied at the end of the document stylesheet cascade */
-:root,html,body,#app{
- --cream:#f7f8fa!important;--cream2:#eef2f6!important;--white:#ffffff!important;
- --line:#d9e1ea!important;--text:#202b3a!important;--muted:#687789!important;
- --dark:#26364b!important;--dark2:#3b4d63!important;--brown:#475569!important;
- --caramel:#2563eb!important;
-}
-html.theme-dark,body.theme-dark{
- --cream:#0f1724!important;--cream2:#1b2636!important;--white:#172233!important;
- --line:#344256!important;--text:#edf2f7!important;--muted:#a7b3c3!important;
- --dark:#e8eef6!important;--dark2:#cbd5e1!important;--brown:#94a3b8!important;
- --caramel:#60a5fa!important;
+<style id="V304_THEME_CONSISTENCY_FIX">
+/* Theme tokens belong to the root, and each mode explicitly scopes every app surface. */
+:root{
+ --cream:#f7f8fa;--cream2:#eef2f6;--white:#ffffff;
+ --line:#d9e1ea;--text:#202b3a;--muted:#687789;
+ --dark:#26364b;--dark2:#3b4d63;--brown:#475569;--caramel:#2563eb;
+ --shadow:0 8px 24px rgba(15,23,42,.07);
 }
 html:not(.theme-dark),body:not(.theme-dark){
- --cream:#f7f8fa!important;--cream2:#eef2f6!important;--white:#fff!important;
- --line:#d9e1ea!important;--text:#202b3a!important;--muted:#687789!important;
- --dark:#26364b!important;--dark2:#3b4d63!important;--brown:#475569!important;
- --caramel:#2563eb!important;
+ --cream:#f7f8fa;--cream2:#eef2f6;--white:#ffffff;
+ --line:#d9e1ea;--text:#202b3a;--muted:#687789;
+ --dark:#26364b;--dark2:#3b4d63;--brown:#475569;--caramel:#2563eb;
+ --shadow:0 8px 24px rgba(15,23,42,.07);
+ color-scheme:light;
 }
-/* Remove fixed caramel dashboard panels, icons, bars, dates and shortcut rows */
-body .dash-hero,body .dash-panel,body .report-panel,body .shortcuts-panel,
-body .stat-primary,body .dashboard-stats .stat,body .dash-date,body .panel-pill,
+html.theme-dark,body.theme-dark,#app.theme-dark{
+ --cream:#0f1724;--cream2:#1b2636;--white:#172233;
+ --line:#344256;--text:#edf2f7;--muted:#a7b3c3;
+ --dark:#e8eef6;--dark2:#cbd5e1;--brown:#94a3b8;--caramel:#60a5fa;
+ --shadow:0 10px 28px rgba(0,0,0,.28);
+ color-scheme:dark;
+}
+html.theme-dark body,body.theme-dark,#app{
+ background:var(--cream)!important;color:var(--text)!important;
+}
+body:not(.theme-dark) #app,html:not(.theme-dark) body{
+ background:#f7f8fa!important;color:#202b3a!important;
+}
+body .top,body .nav,body .item,body .stat,body .dash-hero,
+body .dash-panel,body .report-panel,body .shortcuts-panel,
 body .quick-launch,body .more-card,body .stock-entry-card,
 body .seller-total,body .seller-home-card,body .dashboard-highlight,
-body .hero-card,body .quick-access-card{
+body .hero-card,body .quick-access-card,body .recent-sales-list .item,
+body .recent-panel .item,body .low-stock-panel .item{
  background:var(--white)!important;color:var(--text)!important;
  border-color:var(--line)!important;box-shadow:var(--shadow)!important;
 }
-body .dash-hero h2,body .dash-hero p,body .hero-kicker,
+body .brand b,body .brand small,body .dash-hero h2,body .dash-hero p,
 body .chart-total b,body .chart-total small,body .dash-panel h2,
 body .dash-panel p,body .dash-shortcuts button,body .dash-shortcuts b,
 body .dash-shortcuts small,body .dash-shortcuts i,
 body .report-panel h2,body .report-panel p,body .report-panel-head h2,
 body .week-bar-wrap small,body .dashboard-stats .stat small,
 body .dashboard-stats .stat em{color:var(--text)!important}
-body .hero-kicker,body .dash-shortcuts small{color:var(--muted)!important}
-body .hero-kicker i{background:#2563eb!important;box-shadow:0 0 0 4px #2563eb22!important}
-body .hero-action,body .dash-hero .hero-action{
+body .brand small,body .dash-hero p,body .dash-shortcuts small{color:var(--muted)!important}
+body .dash-date,body .panel-pill,body .report-tag,body .stat-icon,
+body .shortcut-icon,body .dash-shortcuts .shortcut-icon,
+body .top-action,body .user-badge{
+ background:var(--cream2)!important;color:var(--text)!important;border-color:var(--line)!important;
+}
+body .hero-action,body .dash-hero .hero-action,body .primary{
  background:#2563eb!important;color:#fff!important;border-color:#2563eb!important;
 }
-body .hero-action *{color:#fff!important}
+body .hero-action *,body .primary *{color:#fff!important}
 body .hero-decoration{opacity:.08!important}
 body .hero-orbit{border-color:var(--line)!important}
 body .hero-candy{color:var(--muted)!important}
-body .dash-date,body .panel-pill,body .report-tag,
-body .stat-icon,body .shortcut-icon,body .dash-shortcuts .shortcut-icon{
- background:var(--cream2)!important;color:#2563eb!important;border-color:var(--line)!important;
-}
-body .dash-shortcuts button{border-bottom-color:var(--line)!important}
-body .dash-shortcuts i{color:#2563eb!important}
 body .week-bar-track,body .report-bar-track{background:var(--cream2)!important;border-color:var(--line)!important}
 body .week-bar,body .week-bar.is-max,body .report-bar{background:#3b82f6!important}
-body .primary,body .quick-launch .primary{
- background:#2563eb!important;color:#fff!important;border-color:#2563eb!important;
-}
+body .nav button{background:transparent!important;color:var(--muted)!important}
+body .nav .active{background:#2563eb!important;color:#fff!important;box-shadow:none!important}
+body .nav .active *{color:#fff!important}
 body .secondary,body .privacy-toggle,body .stock-avulsa-head{
  background:var(--cream2)!important;color:var(--text)!important;border-color:var(--line)!important;
 }
-body .nav{background:var(--white)!important;border-top-color:var(--line)!important}
-body .nav button{color:var(--muted)!important}
-body .nav .active{background:#2563eb!important;color:#fff!important;box-shadow:none!important}
-body .nav .active *{color:#fff!important}
 body .eyebrow,body .link,body .client-profile-link,
 body .seller-profile-public-code{color:#2563eb!important}
 body .dash-shortcuts button,body .seller-home-actions button{border-bottom-color:var(--line)!important}
-body .recent-sales-list .item,body .recent-panel .item,body .low-stock-panel .item{
- background:var(--white)!important;color:var(--text)!important;border-color:var(--line)!important;
-}
+body .dashboard-stats .stat strong{color:var(--text)!important}
+body .dashboard-stats .stat strong.green{color:#16834b!important}
+body .dashboard-stats .stat strong.red{color:#c43d4b!important}
+html.theme-dark body .dashboard-stats .stat strong.green,body.theme-dark .dashboard-stats .stat strong.green{color:#55c58a!important}
+html.theme-dark body .dashboard-stats .stat strong.red,body.theme-dark .dashboard-stats .stat strong.red{color:#ff858b!important}
 </style>
 
