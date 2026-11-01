@@ -2007,7 +2007,87 @@ function openSellerCommissionPayment(seller){
 function printSellerReceipt(r,existingWindow=null){
  const win=existingWindow||window.open('','_blank');if(!win){toast('Permita pop-ups para abrir o recibo. O pagamento foi registrado, mas o documento não abriu.');return;}
  const brDate=v=>{const p=String(v||'').split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:v};
- win.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Recibo de comissão - ${esc(r.name)}</title><style>body{font:15px Arial,sans-serif;color:#222;margin:36px;max-width:780px}h1{font-size:22px;margin:0 0 6px}.muted{color:#666;font-size:12px}.box{border:1px solid #bbb;border-radius:10px;padding:20px;margin:20px 0}.row{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #eee;padding:10px 0}.amount{font-size:24px;font-weight:700}.sign{margin-top:70px;display:flex;gap:50px}.sign div{border-top:1px solid #777;padding-top:8px;flex:1;text-align:center}@media print{button{display:none}body{margin:15mm}}</style></head><body><h1>DOCES DO VITU</h1><div class="muted">RECIBO DE PAGAMENTO DE COMISSÃO · Não substitui holerite trabalhista</div><div class="box"><p>Declaro que <b>${esc(r.name)}</b> recebeu o valor abaixo referente à comissão do período <b>${esc(r.period)}</b>.</p><div class="row"><span>Valor pago</span><span class="amount">${money(r.amount)}</span></div><div class="row"><span>Data do pagamento</span><b>${brDate(r.date)}</b></div><div class="row"><span>Forma de pagamento</span><b>${esc(r.method)}</b></div>${r.note?`<div class="row"><span>Observação</span><b>${esc(r.note)}</b></div>`:''}<p class="muted">Identificador interno: ${esc(r.receiptId)}</p></div><div class="sign"><div>${esc(r.name)}<br>Recebedor</div><div>${esc(r.paidBy||'Responsável')}<br>Responsável pelo pagamento</div></div><p class="muted">Documento gerencial emitido pelo sistema DOCES DO VITU.</p><button onclick="window.print()">Imprimir / Salvar em PDF</button><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script>
+ win.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Recibo de comissão - ${esc(r.name)}</title><style>body{font:15px Arial,sans-serif;color:#222;margin:36px;max-width:780px}h1{font-size:22px;margin:0 0 6px}.muted{color:#666;font-size:12px}.box{border:1px solid #bbb;border-radius:10px;padding:20px;margin:20px 0}.row{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #eee;padding:10px 0}.amount{font-size:24px;font-weight:700}.sign{margin-top:70px;display:flex;gap:50px}.sign div{border-top:1px solid #777;padding-top:8px;flex:1;text-align:center}@media print{button{display:none}body{margin:15mm}}</style>
+<style id="V304_GLOBAL_REMOVE_CARAMEL_FINAL">
+/* Global palette reset: no caramel/brown/gold surfaces or accents */
+:root:not(.theme-dark),body:not(.theme-dark){
+ --cream:#f7f8fa!important;--cream2:#eef2f6!important;--white:#ffffff!important;
+ --line:#d9e1ea!important;--text:#202b3a!important;--muted:#687789!important;
+ --dark:#26364b!important;--dark2:#3b4d63!important;--brown:#475569!important;
+ --caramel:#2563eb!important;--shadow:0 8px 24px rgba(15,23,42,.07)!important;
+}
+html.theme-dark,body.theme-dark{
+ --cream:#0f1724!important;--cream2:#1b2636!important;--white:#172233!important;
+ --line:#344256!important;--text:#edf2f7!important;--muted:#a7b3c3!important;
+ --dark:#e8eef6!important;--dark2:#cbd5e1!important;--brown:#94a3b8!important;
+ --caramel:#60a5fa!important;--shadow:0 10px 28px rgba(0,0,0,.28)!important;
+}
+/* Dashboard hero, chart and shortcuts shown in the screenshots */
+.dash-hero,.dash-panel,.report-panel,.shortcuts-panel,.sales-week-card,
+.weekly-sales-card,.analysis-card,.quick-launch,.more-card,.stock-entry-card,
+.seller-total,.seller-home-card,.dashboard-highlight,.hero-card,.quick-access-card{
+ background:var(--white)!important;color:var(--text)!important;
+ border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;
+}
+.dash-hero h2,.dash-hero p,.hero-kicker,.chart-total b,.chart-total small,
+.dash-panel h2,.dash-panel p,.dash-shortcuts button,.dash-shortcuts b,
+.dash-shortcuts small,.dash-shortcuts i,.report-panel h2,.report-panel p,
+.report-panel-head h2,.week-bar-wrap small,.dashboard-stats .stat small,
+.dashboard-stats .stat em{color:var(--text)!important}
+.hero-kicker{color:var(--muted)!important}
+.hero-kicker i{background:#2563eb!important;box-shadow:0 0 0 4px #2563eb22!important}
+.dash-hero .hero-action,.hero-action{
+ background:#2563eb!important;color:#fff!important;border:1px solid #2563eb!important;
+}
+.hero-action *{color:#fff!important}
+.hero-decoration{opacity:.10!important}
+.hero-orbit{border-color:var(--line)!important}
+.hero-candy{color:var(--muted)!important}
+.dash-date,.panel-pill,.report-tag{
+ background:var(--cream2)!important;color:var(--text)!important;border:1px solid var(--line)!important;
+}
+.stat-primary,.dashboard-stats .stat,.stat{
+ background:var(--white)!important;color:var(--text)!important;border:1px solid var(--line)!important;
+}
+.stat-icon,.shortcut-icon,.dash-shortcuts .shortcut-icon{
+ background:var(--cream2)!important;color:#2563eb!important;border:1px solid var(--line)!important;
+}
+.dash-shortcuts button{border-bottom:1px solid var(--line)!important}
+.dash-shortcuts i{color:#2563eb!important}
+.week-bar-track,.report-bar-track{
+ background:var(--cream2)!important;border:1px solid var(--line)!important;
+}
+.week-bar,.week-bar.is-max,.report-bar{
+ background:#3b82f6!important;
+}
+.report-bar-value{color:var(--muted)!important}
+.primary,.hero-action,.quick-launch .primary,.dash-shortcuts .primary{
+ background:#2563eb!important;color:#fff!important;border-color:#2563eb!important;
+}
+.secondary,.privacy-toggle,.stock-avulsa-head,.panel-pill{
+ background:var(--cream2)!important;color:var(--text)!important;border-color:var(--line)!important;
+}
+/* Header and bottom navigation accents */
+.nav{background:var(--white)!important;border-top:1px solid var(--line)!important}
+.nav button{color:var(--muted)!important}
+.nav .active{background:#2563eb!important;color:#fff!important;box-shadow:none!important}
+.nav .active *{color:#fff!important}
+.top-action,.profile-chip,.user-chip{
+ background:var(--cream2)!important;color:var(--text)!important;border-color:var(--line)!important;
+}
+/* Replace remaining brown/gold accent text and borders in common panels */
+.eyebrow,.link,.client-profile-link,.seller-profile-public-code,
+.hero-kicker,.panel-heading .link{color:#2563eb!important}
+.dash-hero,.dash-panel,.report-panel,.more-card,.quick-launch,
+.seller-home-actions,.seller-home-actions .quick,.stock-entry-card,
+.recent-sales-list .item,.recent-panel .item,.low-stock-panel .item{
+ border-color:var(--line)!important;
+}
+.dash-shortcuts button,.seller-home-actions button{border-bottom-color:var(--line)!important}
+body:not(.theme-dark) #app{background:#f7f8fa!important;color:#202b3a!important}
+body.theme-dark #app{background:#0f1724!important;color:#edf2f7!important}
+</style>
+</head><body><h1>DOCES DO VITU</h1><div class="muted">RECIBO DE PAGAMENTO DE COMISSÃO · Não substitui holerite trabalhista</div><div class="box"><p>Declaro que <b>${esc(r.name)}</b> recebeu o valor abaixo referente à comissão do período <b>${esc(r.period)}</b>.</p><div class="row"><span>Valor pago</span><span class="amount">${money(r.amount)}</span></div><div class="row"><span>Data do pagamento</span><b>${brDate(r.date)}</b></div><div class="row"><span>Forma de pagamento</span><b>${esc(r.method)}</b></div>${r.note?`<div class="row"><span>Observação</span><b>${esc(r.note)}</b></div>`:''}<p class="muted">Identificador interno: ${esc(r.receiptId)}</p></div><div class="sign"><div>${esc(r.name)}<br>Recebedor</div><div>${esc(r.paidBy||'Responsável')}<br>Responsável pelo pagamento</div></div><p class="muted">Documento gerencial emitido pelo sistema DOCES DO VITU.</p><button onclick="window.print()">Imprimir / Salvar em PDF</button><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script>
 
 
 </body></html>`);win.document.close();
