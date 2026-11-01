@@ -1978,61 +1978,7 @@ function printDailyCash(r){
 </style>
 
 
-<style id="V304_NO_CARAMEL_AND_CLIENT_PAGINATION">
-/* V3.0.4 refinement: neutral palettes, no caramel surfaces */
-:root:not(.theme-dark), body:not(.theme-dark){
-  --cream:#f7f8fa!important; --cream2:#eef1f5!important; --white:#ffffff!important;
-  --line:#d9e0e8!important; --text:#202938!important; --muted:#687586!important;
-  --dark:#263449!important; --dark2:#34465d!important; --brown:#475569!important;
-  --caramel:#2563eb!important; --green:#16834b!important; --red:#c43d4b!important;
-  --orange:#b66a16!important;
-}
-html.theme-dark, body.theme-dark{
-  --cream:#0f1724!important; --cream2:#1b2636!important; --white:#172233!important;
-  --line:#344256!important; --text:#edf2f7!important; --muted:#a7b3c3!important;
-  --dark:#e8eef6!important; --dark2:#cbd5e1!important; --brown:#94a3b8!important;
-  --caramel:#60a5fa!important; --green:#55c58a!important; --red:#ff858b!important;
-  --orange:#f3b45f!important;
-}
-/* Replace legacy brown/caramel panels and accents in both themes */
-.quick-launch,.seller-home-actions,.seller-home-actions .quick,
-.more-card,.stock-entry-card,.seller-total,.seller-home-card,
-.sales-week-card,.sales-rhythm-card,.weekly-sales-card,
-.dashboard-highlight,.hero-card,.today-sales-card,.quick-access-card{
-  background:var(--white)!important;color:var(--text)!important;
-  border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;
-}
-.quick-launch *, .seller-home-actions *, .more-card *, .stock-entry-card *,
-.sales-week-card *, .sales-rhythm-card *, .weekly-sales-card *,
-.dashboard-highlight *, .hero-card *, .today-sales-card *, .quick-access-card *{
-  border-color:var(--line);
-}
-.quick-launch button,.seller-home-actions button,.more-card button,
-.stock-entry-card button,.sales-week-card button,.sales-rhythm-card button,
-.weekly-sales-card button,.dashboard-highlight button,.hero-card button,
-.today-sales-card button,.quick-access-card button{
-  background:var(--cream2)!important;color:var(--text)!important;border-color:var(--line)!important;
-}
-.quick-launch .primary,.seller-home-actions .primary,
-.dashboard-highlight .primary,.hero-card .primary,.today-sales-card .primary{
-  background:#2563eb!important;color:#fff!important;border-color:#2563eb!important;
-}
-body:not(.theme-dark) .avatar,body:not(.theme-dark) .client-compact-row .avatar,
-body:not(.theme-dark) .client-compact-row .client-avatar-img{
-  background:#edf1f5!important;color:#475569!important;border-color:#d9e0e8!important;
-}
-body.theme-dark .avatar,body.theme-dark .client-compact-row .avatar,
-body.theme-dark .client-compact-row .client-avatar-img{
-  background:#263449!important;color:#cbd5e1!important;border-color:#344256!important;
-}
-.client-load-more{order:3!important;align-self:stretch!important;width:100%!important;
-  margin:14px 0 8px!important;padding:14px!important;border-radius:13px!important;
-  background:var(--cream2)!important;color:var(--text)!important;
-  border:1px solid var(--line)!important;font-weight:750!important}
-.client-compact-list{display:flex!important;flex-direction:column!important}
-.client-compact-row{order:1!important}
-.client-compact-row.client-inactive{order:2!important}
-</style>
+
 
 </body></html>`);w.document.close();
 }
@@ -2056,124 +2002,13 @@ function openSellerFinanceSummary(){
 function openSellerCommissionPayment(seller){
  const suggested=Math.max(0,Math.round(seller.amount*100)/100);
  openModal('Pagar vendedor e gerar recibo',`<div class="form"><div class="field"><label>Vendedor</label><input id="sellerReceiptName" value="${esc(seller.name)}"></div><div class="field"><label>Período de referência</label><input id="sellerReceiptPeriod" type="month" value="${new Date().toISOString().slice(0,7)}"></div><div class="field"><label>Comissão calculada sobre o total vendido</label><input value="${money(suggested)}" disabled></div><div class="field"><label>Valor efetivamente pago (R$)</label><input id="sellerReceiptAmount" type="number" min="0.01" step="0.01" value="${suggested.toFixed(2)}"></div><div class="field"><label>Data do pagamento</label><input id="sellerReceiptDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Forma de pagamento</label><select id="sellerReceiptMethod"><option>Pix</option><option>Dinheiro</option><option>Transferência</option><option>Outro</option></select></div><div class="field"><label>Observação</label><input id="sellerReceiptNote" placeholder="Opcional"></div><button class="primary" id="sellerReceiptSave" style="width:100%">Registrar pagamento e gerar PDF</button><p style="font-size:11px;color:var(--muted)">Este é um recibo de pagamento de comissão, não um holerite trabalhista oficial.</p></div>`);
- $('sellerReceiptSave').onclick=async()=>{const btn=$('sellerReceiptSave');if(btn.dataset.busy)return;const name=$('sellerReceiptName').value.trim(),period=$('sellerReceiptPeriod').value,date=$('sellerReceiptDate').value,amount=Math.round((Number($('sellerReceiptAmount').value)||0)*100)/100,method=$('sellerReceiptMethod').value,note=$('sellerReceiptNote').value.trim();if(!name||!period||!date||amount<=0)return toast('Confira nome, período, data e valor pago.');btn.dataset.busy='1';btn.disabled=true;/* Abre a janela durante o clique do usuário, antes do await, para evitar bloqueio de pop-up no Safari/iPhone. */const receiptWindow=window.open('about:blank','_blank');if(receiptWindow){receiptWindow.document.write('<!doctype html><html lang=\"pt-BR\"><meta charset=\"utf-8\"><title>Preparando recibo</title><body style=\"font:16px Arial;padding:24px\">Pagamento em processamento. Aguarde a geração do recibo…
-<style id="V304_NO_CARAMEL_AND_CLIENT_PAGINATION">
-/* V3.0.4 refinement: neutral palettes, no caramel surfaces */
-:root:not(.theme-dark), body:not(.theme-dark){
-  --cream:#f7f8fa!important; --cream2:#eef1f5!important; --white:#ffffff!important;
-  --line:#d9e0e8!important; --text:#202938!important; --muted:#687586!important;
-  --dark:#263449!important; --dark2:#34465d!important; --brown:#475569!important;
-  --caramel:#2563eb!important; --green:#16834b!important; --red:#c43d4b!important;
-  --orange:#b66a16!important;
-}
-html.theme-dark, body.theme-dark{
-  --cream:#0f1724!important; --cream2:#1b2636!important; --white:#172233!important;
-  --line:#344256!important; --text:#edf2f7!important; --muted:#a7b3c3!important;
-  --dark:#e8eef6!important; --dark2:#cbd5e1!important; --brown:#94a3b8!important;
-  --caramel:#60a5fa!important; --green:#55c58a!important; --red:#ff858b!important;
-  --orange:#f3b45f!important;
-}
-/* Replace legacy brown/caramel panels and accents in both themes */
-.quick-launch,.seller-home-actions,.seller-home-actions .quick,
-.more-card,.stock-entry-card,.seller-total,.seller-home-card,
-.sales-week-card,.sales-rhythm-card,.weekly-sales-card,
-.dashboard-highlight,.hero-card,.today-sales-card,.quick-access-card{
-  background:var(--white)!important;color:var(--text)!important;
-  border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;
-}
-.quick-launch *, .seller-home-actions *, .more-card *, .stock-entry-card *,
-.sales-week-card *, .sales-rhythm-card *, .weekly-sales-card *,
-.dashboard-highlight *, .hero-card *, .today-sales-card *, .quick-access-card *{
-  border-color:var(--line);
-}
-.quick-launch button,.seller-home-actions button,.more-card button,
-.stock-entry-card button,.sales-week-card button,.sales-rhythm-card button,
-.weekly-sales-card button,.dashboard-highlight button,.hero-card button,
-.today-sales-card button,.quick-access-card button{
-  background:var(--cream2)!important;color:var(--text)!important;border-color:var(--line)!important;
-}
-.quick-launch .primary,.seller-home-actions .primary,
-.dashboard-highlight .primary,.hero-card .primary,.today-sales-card .primary{
-  background:#2563eb!important;color:#fff!important;border-color:#2563eb!important;
-}
-body:not(.theme-dark) .avatar,body:not(.theme-dark) .client-compact-row .avatar,
-body:not(.theme-dark) .client-compact-row .client-avatar-img{
-  background:#edf1f5!important;color:#475569!important;border-color:#d9e0e8!important;
-}
-body.theme-dark .avatar,body.theme-dark .client-compact-row .avatar,
-body.theme-dark .client-compact-row .client-avatar-img{
-  background:#263449!important;color:#cbd5e1!important;border-color:#344256!important;
-}
-.client-load-more{order:3!important;align-self:stretch!important;width:100%!important;
-  margin:14px 0 8px!important;padding:14px!important;border-radius:13px!important;
-  background:var(--cream2)!important;color:var(--text)!important;
-  border:1px solid var(--line)!important;font-weight:750!important}
-.client-compact-list{display:flex!important;flex-direction:column!important}
-.client-compact-row{order:1!important}
-.client-compact-row.client-inactive{order:2!important}
-</style>
-
-</body></html>');receiptWindow.document.close();}try{const ref=await addDoc(col('payables'),{title:`Comissão ${name} · ${period}`,category:'Funcionário',amount,dueDate:date,paidDate:date,status:'paid',note:`Pagamento de comissão (${method}). ${note}`.trim(),createdByUid:uid,createdByName:currentUserName,paidByUid:uid,paidByName:currentUserName,createdAt:serverTimestamp(),sellerUid:seller.uid||'julio',sellerEmail:SELLER_EMAIL,sellerName:name,sellerCommissionPayment:true,referenceMonth:period,paymentMethod:method});closeModal();const receipt={name,period,date,amount,method,note,receiptId:ref.id,paidBy:currentUserName};if(receiptWindow&&!receiptWindow.closed){printSellerReceipt(receipt,receiptWindow);toast('Pagamento registrado. O recibo abriu em outra aba; use Compartilhar/Imprimir e salve em PDF.');}else{printSellerReceipt(receipt);toast('Pagamento registrado. Se o recibo não abrir, permita pop-ups e tente imprimir novamente em Contas a pagar.');}}catch(e){console.error(e);if(receiptWindow&&!receiptWindow.closed)receiptWindow.close();toast('Não foi possível registrar o pagamento. Verifique as regras do Firebase.');btn.dataset.busy='';btn.disabled=false;}};
+ $('sellerReceiptSave').onclick=async()=>{const btn=$('sellerReceiptSave');if(btn.dataset.busy)return;const name=$('sellerReceiptName').value.trim(),period=$('sellerReceiptPeriod').value,date=$('sellerReceiptDate').value,amount=Math.round((Number($('sellerReceiptAmount').value)||0)*100)/100,method=$('sellerReceiptMethod').value,note=$('sellerReceiptNote').value.trim();if(!name||!period||!date||amount<=0)return toast('Confira nome, período, data e valor pago.');btn.dataset.busy='1';btn.disabled=true;/* Abre a janela durante o clique do usuário, antes do await, para evitar bloqueio de pop-up no Safari/iPhone. */const receiptWindow=window.open('about:blank','_blank');if(receiptWindow){receiptWindow.document.write('<!doctype html><html lang=\"pt-BR\"><meta charset=\"utf-8\"><title>Preparando recibo</title><body style=\"font:16px Arial;padding:24px\">Pagamento em processamento. Aguarde a geração do recibo…</body></html>');receiptWindow.document.close();}try{const ref=await addDoc(col('payables'),{title:`Comissão ${name} · ${period}`,category:'Funcionário',amount,dueDate:date,paidDate:date,status:'paid',note:`Pagamento de comissão (${method}). ${note}`.trim(),createdByUid:uid,createdByName:currentUserName,paidByUid:uid,paidByName:currentUserName,createdAt:serverTimestamp(),sellerUid:seller.uid||'julio',sellerEmail:SELLER_EMAIL,sellerName:name,sellerCommissionPayment:true,referenceMonth:period,paymentMethod:method});closeModal();const receipt={name,period,date,amount,method,note,receiptId:ref.id,paidBy:currentUserName};if(receiptWindow&&!receiptWindow.closed){printSellerReceipt(receipt,receiptWindow);toast('Pagamento registrado. O recibo abriu em outra aba; use Compartilhar/Imprimir e salve em PDF.');}else{printSellerReceipt(receipt);toast('Pagamento registrado. Se o recibo não abrir, permita pop-ups e tente imprimir novamente em Contas a pagar.');}}catch(e){console.error(e);if(receiptWindow&&!receiptWindow.closed)receiptWindow.close();toast('Não foi possível registrar o pagamento. Verifique as regras do Firebase.');btn.dataset.busy='';btn.disabled=false;}};
 }
 function printSellerReceipt(r,existingWindow=null){
  const win=existingWindow||window.open('','_blank');if(!win){toast('Permita pop-ups para abrir o recibo. O pagamento foi registrado, mas o documento não abriu.');return;}
  const brDate=v=>{const p=String(v||'').split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:v};
  win.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Recibo de comissão - ${esc(r.name)}</title><style>body{font:15px Arial,sans-serif;color:#222;margin:36px;max-width:780px}h1{font-size:22px;margin:0 0 6px}.muted{color:#666;font-size:12px}.box{border:1px solid #bbb;border-radius:10px;padding:20px;margin:20px 0}.row{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #eee;padding:10px 0}.amount{font-size:24px;font-weight:700}.sign{margin-top:70px;display:flex;gap:50px}.sign div{border-top:1px solid #777;padding-top:8px;flex:1;text-align:center}@media print{button{display:none}body{margin:15mm}}</style></head><body><h1>DOCES DO VITU</h1><div class="muted">RECIBO DE PAGAMENTO DE COMISSÃO · Não substitui holerite trabalhista</div><div class="box"><p>Declaro que <b>${esc(r.name)}</b> recebeu o valor abaixo referente à comissão do período <b>${esc(r.period)}</b>.</p><div class="row"><span>Valor pago</span><span class="amount">${money(r.amount)}</span></div><div class="row"><span>Data do pagamento</span><b>${brDate(r.date)}</b></div><div class="row"><span>Forma de pagamento</span><b>${esc(r.method)}</b></div>${r.note?`<div class="row"><span>Observação</span><b>${esc(r.note)}</b></div>`:''}<p class="muted">Identificador interno: ${esc(r.receiptId)}</p></div><div class="sign"><div>${esc(r.name)}<br>Recebedor</div><div>${esc(r.paidBy||'Responsável')}<br>Responsável pelo pagamento</div></div><p class="muted">Documento gerencial emitido pelo sistema DOCES DO VITU.</p><button onclick="window.print()">Imprimir / Salvar em PDF</button><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script>
-<style id="V304_NO_CARAMEL_AND_CLIENT_PAGINATION">
-/* V3.0.4 refinement: neutral palettes, no caramel surfaces */
-:root:not(.theme-dark), body:not(.theme-dark){
-  --cream:#f7f8fa!important; --cream2:#eef1f5!important; --white:#ffffff!important;
-  --line:#d9e0e8!important; --text:#202938!important; --muted:#687586!important;
-  --dark:#263449!important; --dark2:#34465d!important; --brown:#475569!important;
-  --caramel:#2563eb!important; --green:#16834b!important; --red:#c43d4b!important;
-  --orange:#b66a16!important;
-}
-html.theme-dark, body.theme-dark{
-  --cream:#0f1724!important; --cream2:#1b2636!important; --white:#172233!important;
-  --line:#344256!important; --text:#edf2f7!important; --muted:#a7b3c3!important;
-  --dark:#e8eef6!important; --dark2:#cbd5e1!important; --brown:#94a3b8!important;
-  --caramel:#60a5fa!important; --green:#55c58a!important; --red:#ff858b!important;
-  --orange:#f3b45f!important;
-}
-/* Replace legacy brown/caramel panels and accents in both themes */
-.quick-launch,.seller-home-actions,.seller-home-actions .quick,
-.more-card,.stock-entry-card,.seller-total,.seller-home-card,
-.sales-week-card,.sales-rhythm-card,.weekly-sales-card,
-.dashboard-highlight,.hero-card,.today-sales-card,.quick-access-card{
-  background:var(--white)!important;color:var(--text)!important;
-  border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;
-}
-.quick-launch *, .seller-home-actions *, .more-card *, .stock-entry-card *,
-.sales-week-card *, .sales-rhythm-card *, .weekly-sales-card *,
-.dashboard-highlight *, .hero-card *, .today-sales-card *, .quick-access-card *{
-  border-color:var(--line);
-}
-.quick-launch button,.seller-home-actions button,.more-card button,
-.stock-entry-card button,.sales-week-card button,.sales-rhythm-card button,
-.weekly-sales-card button,.dashboard-highlight button,.hero-card button,
-.today-sales-card button,.quick-access-card button{
-  background:var(--cream2)!important;color:var(--text)!important;border-color:var(--line)!important;
-}
-.quick-launch .primary,.seller-home-actions .primary,
-.dashboard-highlight .primary,.hero-card .primary,.today-sales-card .primary{
-  background:#2563eb!important;color:#fff!important;border-color:#2563eb!important;
-}
-body:not(.theme-dark) .avatar,body:not(.theme-dark) .client-compact-row .avatar,
-body:not(.theme-dark) .client-compact-row .client-avatar-img{
-  background:#edf1f5!important;color:#475569!important;border-color:#d9e0e8!important;
-}
-body.theme-dark .avatar,body.theme-dark .client-compact-row .avatar,
-body.theme-dark .client-compact-row .client-avatar-img{
-  background:#263449!important;color:#cbd5e1!important;border-color:#344256!important;
-}
-.client-load-more{order:3!important;align-self:stretch!important;width:100%!important;
-  margin:14px 0 8px!important;padding:14px!important;border-radius:13px!important;
-  background:var(--cream2)!important;color:var(--text)!important;
-  border:1px solid var(--line)!important;font-weight:750!important}
-.client-compact-list{display:flex!important;flex-direction:column!important}
-.client-compact-row{order:1!important}
-.client-compact-row.client-inactive{order:2!important}
-</style>
+
 
 </body></html>`);win.document.close();
 }
@@ -3672,6 +3507,9 @@ window.addEventListener("load",()=>{
 
 
 
+
+
+
 <style id="V304_NO_CARAMEL_AND_CLIENT_PAGINATION">
 /* V3.0.4 refinement: neutral palettes, no caramel surfaces */
 :root:not(.theme-dark), body:not(.theme-dark){
@@ -3727,7 +3565,6 @@ body.theme-dark .client-compact-row .client-avatar-img{
 .client-compact-row{order:1!important}
 .client-compact-row.client-inactive{order:2!important}
 </style>
-
 </body>
 </html>
 
