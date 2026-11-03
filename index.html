@@ -1392,17 +1392,19 @@ function accountingPage(){
  const sellerPaid=Math.round(sellerPayments.reduce((a,p)=>a+numBR(p.amount||p.value||0)+numBR(p.discountAmount||0),0)*100)/100;
  const sellerCompTotal=Math.round((commissionEarned+bonusEarned+sellerFixedSalary)*100)/100;
  const sellerCompDue=Math.max(0,Math.round((sellerCompTotal-sellerPaid)*100)/100);
- const regularPayables=payables.filter(x=>x.status!=='paid'&&!x.sellerCommissionPayment);
- const pending=regularPayables.reduce((a,x)=>a+numBR(x.amount||x.value||0),0);
- const paidExpenses=payables.filter(x=>x.status==='paid'&&!x.sellerCommissionPayment&&inMonth(x)).reduce((a,x)=>a+numBR(x.amount||x.value||0),0);
+ const payableInSelectedMonth=x=>{const keyDate=String(x.dueDate||'').slice(0,7);if(/^\d{4}-\d{2}$/.test(keyDate))return keyDate===key;const d=dt(x.createdAt||x.date);return !!d&&d.getFullYear()===ref.getFullYear()&&d.getMonth()===ref.getMonth()};
+ const regularPayables=payables.filter(x=>!x.sellerCommissionPayment);
+ const pendingForReserve=regularPayables.filter(x=>x.status!=='paid').reduce((a,x)=>a+numBR(x.amount||x.value||0),0);
+ const pending=regularPayables.filter(x=>x.status!=='paid'&&payableInSelectedMonth(x)).reduce((a,x)=>a+numBR(x.amount||x.value||0),0);
+ const paidExpenses=regularPayables.filter(x=>x.status==='paid'&&payableInSelectedMonth(x)).reduce((a,x)=>a+numBR(x.amount||x.value||0),0);
  const stockReserve=products.reduce((a,p)=>a+Math.max(0,numBR(p.minStock||0)-numBR(p.stock||0))*numBR(p.cost||p.unitCost||0),0);
  const monthPurchases=purchases.filter(inMonth).reduce((a,p)=>a+numBR(p.total||p.amount||0),0);
  const ceoSalary=350;
  const estimatedProfitBeforeCEO=revenue-cogs-paidExpenses-commissionEarned-bonusEarned;
  const allReceivedForCash=(data.payments||[]).reduce((a,p)=>a+numBR(p.amount||0),0);
- const allPurchasesForCash=(data.purchases||[]).reduce((a,p)=>a+numBR(p.total||p.amount||0),0);
+ const allPurchasesForCash=(data.purchases||[]).filter(p=>!['credito','boleto'].includes(String(p.paymentMethod||'').toLowerCase())).reduce((a,p)=>a+numBR(p.total||p.amount||0),0);
  const allPaidExpensesForCash=payables.filter(p=>p.status==='paid'&&!p.sellerCommissionPayment).reduce((a,p)=>a+numBR(p.amount||p.value||0),0);
- const cashBeforeCEO=allReceivedForCash-allPurchasesForCash-allPaidExpensesForCash-pending-sellerCompDue-stockReserve;
+ const cashBeforeCEO=allReceivedForCash-allPurchasesForCash-allPaidExpensesForCash-pendingForReserve-sellerCompDue-stockReserve;
  const profitAfterCEO=estimatedProfitBeforeCEO-ceoSalary;
  const ceoSalaryAvailable=Math.min(ceoSalary,Math.max(0,cashBeforeCEO));
  const ceoExtra=Math.max(0,Math.min(Math.max(0,estimatedProfitBeforeCEO-ceoSalary),Math.max(0,cashBeforeCEO-ceoSalary)));
@@ -2063,17 +2065,21 @@ function printSellerReceipt(r,existingWindow=null){
 </body></html>`);win.document.close();
 }
 
-function openPayables(){
- const rows=(data.payables||[]).slice().sort((a,b)=>{const ap=a.status==='paid'?1:0,bp=b.status==='paid'?1:0;if(ap!==bp)return ap-bp;return String(a.dueDate||'9999-99-99').localeCompare(String(b.dueDate||'9999-99-99'));});
+function openPayables(selectedMonth=null){
+ const monthKey=(typeof selectedMonth==='string'&&/^\d{4}-\d{2}$/.test(selectedMonth))?selectedMonth:`${now().getFullYear()}-${String(now().getMonth()+1).padStart(2,'0')}`;
+ const monthOf=x=>{const d=String(x.dueDate||'').slice(0,7);if(/^\d{4}-\d{2}$/.test(d))return d;const created=dt(x.createdAt||x.date);return created?`${created.getFullYear()}-${String(created.getMonth()+1).padStart(2,'0')}`:''};
+ const rows=(data.payables||[]).filter(x=>monthOf(x)===monthKey).slice().sort((a,b)=>{const ap=a.status==='paid'?1:0,bp=b.status==='paid'?1:0;if(ap!==bp)return ap-bp;return String(a.dueDate||'9999-99-99').localeCompare(String(b.dueDate||'9999-99-99'));});
  const pending=rows.filter(x=>x.status!=='paid'),paid=rows.filter(x=>x.status==='paid');
  const totalPending=pending.reduce((a,x)=>a+numBR(x.amount||0),0),totalPaid=paid.reduce((a,x)=>a+numBR(x.amount||0),0);
  const fmtDate=v=>{if(!v)return 'Sem vencimento';const p=String(v).split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:esc(v)};
- const list=rows.map(x=>{const overdue=x.status!=='paid'&&x.dueDate&&x.dueDate<new Date().toISOString().slice(0,10);return `<div class="payables-row"><div class="payables-main"><b>${esc(x.title||'Conta')}</b><small>${esc(x.category||'Outra despesa')} · Vencimento: ${fmtDate(x.dueDate)} · ${x.status==='paid'?'Pago':'Pendente'}</small>${x.note?`<small>${esc(x.note)}</small>`:''}${overdue?'<span class="badge" style="color:var(--red)">Vencida</span>':''}<div class="payables-actions">${x.status==='paid'?`<span class="badge" style="color:var(--green)">Pago em ${fmtDate(x.paidDate)}</span>`:`<button class="primary" type="button" data-payable-paid="${x.id}">Registrar pagamento</button>`}<button class="secondary" type="button" data-payable-delete="${x.id}">Excluir</button></div></div><div class="payables-amount ${x.status==='paid'?'finance-positive':'finance-negative'}">${money(x.amount||0)}</div></div>`}).join('')||'<div class="empty">Nenhuma conta cadastrada.</div>';
- openModal('Contas a pagar',`<div class="finance-grid"><div class="finance-card"><small>Total pendente</small><strong class="finance-negative">${money(totalPending)}</strong></div><div class="finance-card"><small>Pago registrado</small><strong class="finance-positive">${money(totalPaid)}</strong></div></div><button class="primary" id="payableNew" style="width:100%;margin:10px 0 12px">＋ Registrar conta</button><div class="payables-panel">${list}</div>`);
- $('payableNew').onclick=()=>{openModal('Registrar conta',`<div class="form"><div class="field"><label>Descrição</label><input id="payTitle" maxlength="100" placeholder="Ex.: Comissão Julio, fornecedor"></div><div class="field"><label>Favorecido / categoria</label><select id="payCategory"><option>Funcionário</option><option>Fornecedor</option><option>Frete</option><option>Embalagem</option><option>Impostos</option><option>Outra despesa</option></select></div><div class="field"><label>Valor (R$)</label><input id="payAmount" type="number" min="0.01" step="0.01" placeholder="0,00"></div><div class="field"><label>Vencimento</label><input id="payDue" type="date"></div><div class="field"><label>Observação (opcional)</label><input id="payNote" maxlength="200" placeholder="Detalhes"></div><div class="actions"><button class="secondary" id="payCancel">Cancelar</button><button class="primary" id="paySave">Salvar conta</button></div></div>`);$('payCancel').onclick=openPayables;
- $('paySave').onclick=async()=>{const title=$('payTitle').value.trim(),amount=Number($('payAmount').value),category=$('payCategory').value,dueDate=$('payDue').value,note=$('payNote').value.trim();if(!title)return toast('Informe a descrição.');if(!Number.isFinite(amount)||amount<=0)return toast('Informe um valor válido.');try{await addDoc(col('payables'),{title,category,amount:Math.round(amount*100)/100,dueDate,note,status:'pending',createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});toast('Conta registrada.');openPayables()}catch(e){console.error(e);toast('Não foi possível salvar. Verifique as regras do Firebase.')}}};
- document.querySelectorAll('[data-payable-paid]').forEach(b=>b.onclick=async()=>{const x=(data.payables||[]).find(p=>p.id===b.dataset.payablePaid);if(!x||x.status==='paid')return;try{await updateDoc(doc(col('payables'),x.id),{status:'paid',paidDate:new Date().toISOString().slice(0,10),paidAt:serverTimestamp(),paidByUid:uid,paidByName:currentUserName});toast('Pagamento registrado.');openPayables()}catch(e){console.error(e);toast('Não foi possível registrar o pagamento.')}});
- document.querySelectorAll('[data-payable-delete]').forEach(b=>b.onclick=async()=>{const x=(data.payables||[]).find(p=>p.id===b.dataset.payableDelete);if(!x)return;if(!confirm(`Excluir a conta "${x.title||'Conta'}"?`))return;try{await deleteDoc(doc(col('payables'),x.id));toast('Conta excluída.');openPayables()}catch(e){console.error(e);toast('Não foi possível excluir a conta.')}});
+ const [yy,mm]=monthKey.split('-').map(Number),monthLabel=new Date(yy,mm-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+ const list=rows.map(x=>{const overdue=x.status!=='paid'&&x.dueDate&&x.dueDate<new Date().toISOString().slice(0,10);return `<div class="payables-row"><div class="payables-main"><b>${esc(x.title||'Conta')}</b><small>${esc(x.category||'Outra despesa')} · Vencimento: ${fmtDate(x.dueDate)} · ${x.status==='paid'?'Pago':'Pendente'}</small>${x.note?`<small>${esc(x.note)}</small>`:''}${overdue?'<span class="badge" style="color:var(--red)">Vencida</span>':''}<div class="payables-actions">${x.status==='paid'?`<span class="badge" style="color:var(--green)">Pago em ${fmtDate(x.paidDate)}</span>`:`<button class="primary" type="button" data-payable-paid="${x.id}">Registrar pagamento</button>`}<button class="secondary" type="button" data-payable-delete="${x.id}">Excluir</button></div></div><div class="payables-amount ${x.status==='paid'?'finance-positive':'finance-negative'}">${money(x.amount||0)}</div></div>`}).join('')||`<div class="empty">Nenhuma conta em ${esc(monthLabel)}.</div>`;
+ openModal('Contas a pagar',`<div class="payables-month-control"><div><small>CONSULTAR PERÍODO</small><b>${esc(monthLabel)}</b></div><input id="payablesMonth" type="month" aria-label="Selecionar mês e ano" value="${monthKey}"></div><div class="finance-grid"><div class="finance-card"><small>Pendente</small><strong class="finance-negative">${money(totalPending)}</strong><span>${pending.length} conta(s)</span></div><div class="finance-card"><small>Pago</small><strong class="finance-positive">${money(totalPaid)}</strong><span>${paid.length} conta(s)</span></div></div><button class="primary" id="payableNew" style="width:100%;margin:12px 0">＋ Registrar conta</button><div class="payables-panel">${list}</div>`);
+ $('payablesMonth').onchange=()=>openPayables($('payablesMonth').value);
+ $('payableNew').onclick=()=>{openModal('Registrar conta',`<div class="form"><div class="field"><label>Descrição</label><input id="payTitle" maxlength="100" placeholder="Ex.: Fornecedor, assinatura"></div><div class="field"><label>Favorecido / categoria</label><select id="payCategory"><option>Funcionário</option><option>Fornecedor</option><option>Frete</option><option>Embalagem</option><option>Impostos</option><option>Outra despesa</option></select></div><div class="field"><label>Valor (R$)</label><input id="payAmount" type="number" min="0.01" step="0.01" placeholder="0,00"></div><div class="field"><label>Vencimento</label><input id="payDue" type="date" value="${monthKey}-${String(Math.min(now().getDate(),new Date(yy,mm,0).getDate())).padStart(2,'0')}"></div><div class="field"><label>Observação (opcional)</label><input id="payNote" maxlength="200" placeholder="Detalhes"></div><div class="actions"><button class="secondary" id="payCancel">Cancelar</button><button class="primary" id="paySave">Salvar conta</button></div></div>`);$('payCancel').onclick=()=>openPayables(monthKey);
+ $('paySave').onclick=async()=>{const title=$('payTitle').value.trim(),amount=Number($('payAmount').value),category=$('payCategory').value,dueDate=$('payDue').value,note=$('payNote').value.trim();if(!title)return toast('Informe a descrição.');if(!Number.isFinite(amount)||amount<=0)return toast('Informe um valor válido.');if(!dueDate)return toast('Informe o vencimento.');try{await addDoc(col('payables'),{title,category,amount:Math.round(amount*100)/100,dueDate,note,status:'pending',createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});toast('Conta registrada.');openPayables(dueDate.slice(0,7))}catch(e){console.error(e);toast('Não foi possível salvar. Verifique as regras do Firebase.')}}};
+ document.querySelectorAll('[data-payable-paid]').forEach(b=>b.onclick=async()=>{const x=(data.payables||[]).find(p=>p.id===b.dataset.payablePaid);if(!x||x.status==='paid')return;try{await updateDoc(doc(col('payables'),x.id),{status:'paid',paidDate:new Date().toISOString().slice(0,10),paidAt:serverTimestamp(),paidByUid:uid,paidByName:currentUserName});toast('Pagamento registrado.');openPayables(monthKey)}catch(e){console.error(e);toast('Não foi possível registrar o pagamento.')}});
+ document.querySelectorAll('[data-payable-delete]').forEach(b=>b.onclick=async()=>{const x=(data.payables||[]).find(p=>p.id===b.dataset.payableDelete);if(!x)return;if(!confirm(`Excluir a conta "${x.title||'Conta'}"?`))return;try{await deleteDoc(doc(col('payables'),x.id));toast('Conta excluída.');openPayables(monthKey)}catch(e){console.error(e);toast('Não foi possível excluir a conta.')}});
 }
 
 let financeMonthKey = `${now().getFullYear()}-${String(now().getMonth()+1).padStart(2,"0")}`;
@@ -2093,7 +2099,7 @@ function finance(){
  // Registros antigos sem forma de pagamento são tratados como compras já pagas; crédito/boleto só saem do caixa quando a conta é paga.
  const allPurchases=purchases.filter(p=>!["credito","boleto"].includes(String(p.paymentMethod||"").toLowerCase())).reduce((a,p)=>a+numBR(p.total||0),0);
  const paidPayables=(data.payables||[]).filter(x=>x.status==='paid').reduce((a,x)=>a+numBR(x.amount||0),0);
- const unpaidCreditPurchases=(data.payables||[]).filter(x=>x.status!=='paid'&&x.sourcePurchaseId).reduce((a,x)=>a+numBR(x.amount||0),0);
+ const unpaidCreditPurchases=(data.payables||[]).filter(x=>x.status!=='paid'&&x.sourcePurchaseId&&String(x.dueDate||'').slice(0,7)===financeMonthKey).reduce((a,x)=>a+numBR(x.amount||0),0);
  const cash=allReceived-allPurchases-paidPayables;
  const byMethod={};monthPayments.forEach(p=>{const m=p.method||"Outro";byMethod[m]=(byMethod[m]||0)+numBR(p.amount||0)});
  const top={};monthSales.forEach(s=>(s.items||[]).forEach(i=>{top[i.name]=(top[i.name]||0)+numBR(i.qty||0)}));
@@ -3886,5 +3892,20 @@ body:not(.theme-dark) .seller-product-tile{
  background:#fff!important;color:#202b3a!important;border-color:#d9e1ea!important;
 }
 body:not(.theme-dark) .field label,body:not(.theme-dark) .modal .field label{color:#26364b!important}
+</style>
+
+<style id="PAYABLES_MONTH_SELECTOR_POLISH">
+.payables-month-control{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 15px;margin:0 0 14px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(135deg,var(--cream2),var(--white));box-shadow:var(--shadow)}
+.payables-month-control>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.payables-month-control small{font-size:10px;font-weight:850;letter-spacing:.13em;color:var(--muted)}
+.payables-month-control b{font-size:16px;font-weight:850;color:var(--text);text-transform:capitalize}
+.payables-month-control input{width:155px;min-width:135px;height:46px;padding:0 10px;border:1px solid var(--line);border-radius:12px;background:var(--white);color:var(--text);font-size:14px;font-weight:800;accent-color:#3478f6;color-scheme:light}
+body.theme-dark .payables-month-control{background:linear-gradient(135deg,#202d40,#172233);border-color:#344256}
+body.theme-dark .payables-month-control b{color:#edf2f7}
+body.theme-dark .payables-month-control input{background:#111c2b;color:#f1f5f9;border-color:#40516a;color-scheme:dark}
+body:not(.theme-dark) .payables-month-control{background:linear-gradient(135deg,#f1f5f9,#fff)}
+body:not(.theme-dark) .payables-month-control b{color:#202b3a}
+body:not(.theme-dark) .payables-month-control input{background:#fff;color:#202b3a;border-color:#d9e1ea;color-scheme:light}
+@media(max-width:380px){.payables-month-control{align-items:flex-start;flex-direction:column}.payables-month-control input{width:100%}}
 </style>
 
