@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU V3.1.1</title>
+<title>DOCES DO VITU V3.1.2</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -1059,7 +1059,7 @@ body.theme-dark .client-debt-badge.is-partial{background:#46331d;color:#ffd18b;b
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.1.1 · Gestão de doces</small></div></div>
+  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.1.2 · Gestão de doces</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -1540,9 +1540,19 @@ function openPurchaseBuilder(){
  $('pbCopy').onclick=async()=>{const list=[];document.querySelectorAll('[data-buy-index]').forEach((input,i)=>{const q=Math.max(0,Math.floor(Number(input.value)||0));if(q>0)list.push(`${rows[i].p.name}: ${q} un.`)});try{await navigator.clipboard.writeText(`🛒 Próxima compra - DOCES DO VITU\n\n${list.join('\n')}`);toast('Lista copiada!')}catch(e){toast('Não foi possível copiar a lista.')}};
 }
 
+function sellerRequestSellerLabel(r){
+ const email=String(r?.sellerEmail||'').trim().toLowerCase();
+ const matched=Object.values(SELLERS).find(s=>s.email.toLowerCase()===email);
+ const name=String(r?.sellerName||matched?.name||'Vendedor').trim();
+ return name||'Vendedor';
+}
+function sellerRequestSellerTag(r){
+ const name=sellerRequestSellerLabel(r);
+ return `<div class="seller-request-by" style="display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;background:var(--bg)"><span style="width:30px;height:30px;flex:0 0 30px;border-radius:10px;display:grid;place-items:center;background:var(--primary);color:white;font-size:15px">♙</span><span style="min-width:0"><small style="display:block;color:var(--muted);font-size:10px;letter-spacing:.05em;font-weight:750;text-transform:uppercase">Vendedor responsável</small><strong style="display:block;font-size:14px;line-height:1.2">${esc(name)}</strong></span></div>`;
+}
 function sellerApprovalPanel(){
  const pending=(data.sellerRequests||[]).filter(r=>r.status==='pending');
- return `<section class="seller-admin-wrap"><button class="seller-admin-toggle" id="sellerAdminToggle"><span><b>▣ Vendas dos vendedores</b><small>Toque para revisar vendas e pagamentos pendentes</small></span><span class="seller-admin-count">${pending.length}</span></button><div class="seller-admin-content" id="sellerAdminContent" style="display:none">${pending.map(r=>`<article class="seller-request"><b>${r.requestType==='payment'?'💵 Pagamento · ':''}${esc(r.clientName||'Venda balcão')}</b><small style="display:block;color:var(--muted);margin:4px 0">${r.requestType==='payment'?'Solicitação de baixa de dívida':(r.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(' • ')}</small><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${money(r.requestType==='payment'?r.amount:r.total||0)}</strong><small>Pago agora: ${money(r.paid||0)} • ${esc(r.paymentMethod||'Pendente')}</small></div><div class="seller-request-actions"><button class="secondary" data-reject-request="${esc(r.id)}">Rejeitar</button><button class="primary" data-approve-request="${esc(r.id)}">${r.requestType==='payment'?'Confirmar pagamento':'Aprovar venda'}</button></div></article>`).join('')||'<p style="color:var(--muted);text-align:center;padding:10px">Tudo em dia! Nenhuma venda pendente.</p>'}</div></section>`;
+ return `<section class="seller-admin-wrap"><button class="seller-admin-toggle" id="sellerAdminToggle"><span><b>▣ Vendas dos vendedores</b><small>Toque para revisar vendas e pagamentos pendentes</small></span><span class="seller-admin-count">${pending.length}</span></button><div class="seller-admin-content" id="sellerAdminContent" style="display:none">${pending.map(r=>`<article class="seller-request">${sellerRequestSellerTag(r)}<b>${r.requestType==='payment'?'💵 Pagamento · ':''}${esc(r.clientName||'Venda balcão')}</b><small style="display:block;color:var(--muted);margin:4px 0">${r.requestType==='payment'?'Solicitação de baixa de dívida':(r.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(' • ')}</small><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${money(r.requestType==='payment'?r.amount:r.total||0)}</strong><small>Pago agora: ${money(r.paid||0)} • ${esc(r.paymentMethod||'Pendente')}</small></div><div class="seller-request-actions"><button class="secondary" data-reject-request="${esc(r.id)}">Rejeitar</button><button class="primary" data-approve-request="${esc(r.id)}">${r.requestType==='payment'?'Confirmar pagamento':'Aprovar venda'}</button></div></article>`).join('')||'<p style="color:var(--muted);text-align:center;padding:10px">Tudo em dia! Nenhuma venda pendente.</p>'}</div></section>`;
 }
 function subscribeSellerRequests(){
  const u=onSnapshot(collection(db,'sellerRequests'),snap=>{data.sellerRequests=snap.docs.map(d=>({id:d.id,...d.data()}));if(page==='home')render()},e=>{console.error(e);toast('Não foi possível carregar as vendas dos vendedores.')});
@@ -3347,13 +3357,12 @@ async function openSellerPricesManager(){
 
 function openSellerSalesQuick(){
  const pending=(data.sellerRequests||[]).filter(r=>r.status==='pending');
- const html=`<div class="form"><p style="color:var(--muted);font-size:12px">Revise as vendas e solicitações de pagamento enviadas pelo Julio.</p>${pending.map(r=>`<article class="seller-request"><b>${r.requestType==='payment'?'💵 Pagamento · ':''}${esc(r.clientName||'Venda balcão')}</b><small style="display:block;color:var(--muted);margin:4px 0">${r.requestType==='payment'?'Solicitação de baixa de dívida':(r.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(' • ')}</small><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${money(r.requestType==='payment'?r.amount:r.total||0)}</strong><small>Pago agora: ${money(r.paid||0)} · ${esc(r.paymentMethod||'Pendente')}</small></div><div class="seller-request-actions"><button class="secondary" data-quick-reject="${esc(r.id)}">Rejeitar</button><button class="primary" data-quick-approve="${esc(r.id)}">${r.requestType==='payment'?'Confirmar pagamento':'Aprovar venda'}</button></div></article>`).join('')||'<p style="text-align:center;padding:18px;color:var(--muted)">Nenhuma venda ou pagamento pendente.</p>'}<button class="secondary" id="quickSellerAll" style="width:100%;margin-top:12px">Ver vendas registradas</button></div>`;
- openModal('Vendas do Julio',html);
+ const content=`<div class="form"><p style="color:var(--muted);font-size:12px;text-align:center;margin:0 0 14px">Confira quem enviou cada venda ou solicitação de pagamento antes de aprovar.</p>${pending.map(r=>`<article class="seller-request">${sellerRequestSellerTag(r)}<b>${r.requestType==='payment'?'💵 Pagamento · ':''}${esc(r.clientName||'Venda balcão')}</b><small style="display:block;color:var(--muted);margin:4px 0">${r.requestType==='payment'?'Solicitação de baixa de dívida':(r.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(' • ')}</small><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${money(r.requestType==='payment'?r.amount:r.total||0)}</strong><small>Pago agora: ${money(r.paid||0)} · ${esc(r.paymentMethod||'Pendente')}</small></div><div class="seller-request-actions"><button class="secondary" data-quick-reject="${esc(r.id)}">Rejeitar</button><button class="primary" data-quick-approve="${esc(r.id)}">${r.requestType==='payment'?'Confirmar pagamento':'Aprovar venda'}</button></div></article>`).join('')||'<p style="text-align:center;padding:18px;color:var(--muted)">Nenhuma venda ou pagamento pendente.</p>'}<button class="secondary" id="quickSellerAll" style="width:100%;margin-top:12px">Ver vendas registradas</button></div>`;
+ openModal('Solicitações dos vendedores',content);
  document.querySelectorAll('[data-quick-approve]').forEach(b=>b.onclick=()=>{const id=b.dataset.quickApprove;closeModal();approveSellerRequest(id)});
  document.querySelectorAll('[data-quick-reject]').forEach(b=>b.onclick=()=>{const id=b.dataset.quickReject;closeModal();rejectSellerRequest(id)});
  const all=$('quickSellerAll');if(all)all.onclick=()=>{closeModal();openSellerFinanceSummary()};
 }
-
 function bindPage(){
  $("qSellerSales")?.addEventListener("click",openSellerSalesQuick);
  $("accountingPaySeller")?.addEventListener("click",openSellerFinanceSummary);
