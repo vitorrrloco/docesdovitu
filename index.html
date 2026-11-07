@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU V3.0.8</title>
+<title>DOCES DO VITU V3.1.1</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -1059,7 +1059,7 @@ body.theme-dark .client-debt-badge.is-partial{background:#46331d;color:#ffd18b;b
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.0.8 · Gestão de doces</small></div></div>
+  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.1.1 · Gestão de doces</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -1293,7 +1293,7 @@ function go(p){
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
 
-function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Doces do Vitu</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="accounting"><span class="more-icon">▤</span><b>Contabilidade</b><small>Obrigações, impostos e retirada mensal</small><span class="more-arrow">›</span></button><button class="more-card" id="manageSellerPrices"><span class="more-icon">＄</span><b>Preços por vendedor</b><small>Defina um preço diferente para cada produto e vendedor</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatório</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="logo.png" alt="Doces do Vitu"><span>Seu negócio, em boas mãos.</span><small>DOCES DO VITU · V3.0.8</small></div></div>`}
+function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Doces do Vitu</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="accounting"><span class="more-icon">▤</span><b>Contabilidade</b><small>Obrigações, impostos e retirada mensal</small><span class="more-arrow">›</span></button><button class="more-card" id="manageSellerPrices"><span class="more-icon">＄</span><b>Preços por vendedor</b><small>Defina um preço diferente para cada produto e vendedor</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatório</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="logo.png" alt="Doces do Vitu"><span>Seu negócio, em boas mãos.</span><small>DOCES DO VITU · V3.1.1</small></div></div>`}
 
 function reportsPage(){
  const [year,month]=financeMonthKey.split("-").map(Number);
@@ -3257,15 +3257,92 @@ function bindV140Month(){
 }
 
 async function openSellerPricesManager(){
- const sellerUid='';
- const sellerEmail=SELLER_EMAIL;
+ const sellers=[
+  {id:'julio',name:'Julio',email:SELLERS.julio.email},
+  {id:'thiago',name:'Thiago',email:SELLERS.thiago.email}
+ ];
  const products=(data.products||[]).slice().sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'pt-BR'));
  if(!products.length)return toast('Cadastre produtos antes de definir os preços.');
  let catalogDocs={};
- try{const snaps=await Promise.all(products.map(p=>getDoc(doc(db,'sellerCatalog',p.id))));snaps.forEach((snap,i)=>catalogDocs[products[i].id]=snap.exists()?snap.data():{});}catch(e){console.error(e);return toast('Não foi possível carregar os preços do vendedor.');}
- const rows=products.map(p=>{const c=catalogDocs[p.id]||{},sp=c.sellerPrices||{},v=sp[sellerEmail]??sp['bernardojulio743@gmail.com']??'';return `<div class="item" style="align-items:center;gap:12px"><div class="item-main"><b>${esc(p.name)}</b><small>Preço padrão: ${money(numBR(p.price||0))}</small></div><label style="display:flex;align-items:center;gap:5px;white-space:nowrap"><span style="font-size:12px;color:var(--muted)">R$</span><input inputmode="decimal" type="number" min="0" step="0.01" data-seller-price-product="${esc(p.id)}" value="${v!==''?Number(v).toFixed(2):''}" placeholder="Padrão" style="width:100px;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg);color:var(--text)"></label></div>`}).join('');
- openModal('Preços por vendedor',`<div class="form"><div class="finance-card" style="margin-bottom:12px"><small>VENDEDOR</small><strong>Julio</strong><p style="font-size:12px;color:var(--muted)">Defina um preço específico para cada produto. Se deixar vazio, será usado o preço padrão do produto.</p></div><div style="max-height:55vh;overflow:auto;padding-right:3px">${rows}</div><p style="font-size:11px;color:var(--muted);margin:12px 0">Os preços personalizados serão usados no catálogo e nas novas vendas do Julio. Vendas já registradas não serão alteradas.</p><button class="primary" id="saveSellerPrices" style="width:100%">Salvar preços do Julio</button></div>`);
- $('saveSellerPrices').onclick=async()=>{const btn=$('saveSellerPrices');if(btn.dataset.busy)return;btn.dataset.busy='1';btn.disabled=true;try{for(const input of document.querySelectorAll('[data-seller-price-product]')){const id=input.dataset.sellerPriceProduct,raw=input.value.trim(),p=products.find(x=>String(x.id)===id),ref=doc(db,'sellerCatalog',id);let snap=await getDoc(ref),old=snap.exists()?snap.data():{},sellerPrices={...(old.sellerPrices||{})};if(raw===''){delete sellerPrices[sellerEmail];}else{const val=Number(raw.replace(',','.'));if(!Number.isFinite(val)||val<0)throw new Error('Confira os preços informados.');sellerPrices[sellerEmail]=Math.round(val*100)/100;}await setDoc(ref,{name:p?.name||old.name||'',price:Number(p?.price??old.price??0),stock:Number(p?.stock??old.stock??0),sellerPrices,updatedAt:serverTimestamp()});}closeModal();toast('Preços personalizados do Julio salvos!');}catch(e){console.error(e);toast(e.message||'Não foi possível salvar os preços. Verifique o Firebase.');}finally{btn.dataset.busy='';btn.disabled=false;}};
+ try{
+  const snaps=await Promise.all(products.map(p=>getDoc(doc(db,'sellerCatalog',p.id))));
+  snaps.forEach((snap,i)=>catalogDocs[products[i].id]=snap.exists()?snap.data():{});
+ }catch(e){console.error(e);return toast('Não foi possível carregar os preços dos vendedores.');}
+
+ let selectedSeller='julio';
+ const renderPrices=()=>{
+  const seller=sellers.find(s=>s.id===selectedSeller)||sellers[0];
+  const rows=products.map(p=>{
+   const c=catalogDocs[p.id]||{},sp=c.sellerPrices||{},v=sp[seller.email]??'';
+   return `<div class="sp-row">
+    <div class="sp-product"><b>${esc(p.name)}</b><small>Preço padrão <strong>${money(numBR(p.price||0))}</strong></small></div>
+    <label class="sp-price"><span>R$</span><input inputmode="decimal" type="number" min="0" step="0.01" data-seller-price-product="${esc(p.id)}" value="${v!==''?Number(v).toFixed(2):''}" placeholder="Padrão" aria-label="Preço de ${esc(p.name)} para ${seller.name}"></label>
+   </div>`;
+  }).join('');
+  return `<style>
+   .sp-wrap{width:100%;max-width:620px;margin:0 auto;padding:2px 0 8px;box-sizing:border-box}
+   .sp-hero{border:1px solid var(--line);border-radius:20px;padding:18px 16px;margin-bottom:14px;text-align:center;background:linear-gradient(145deg,rgba(91,50,31,.10),rgba(91,50,31,.025))}
+   .sp-hero-icon{width:48px;height:48px;border-radius:15px;margin:0 auto 9px;display:grid;place-items:center;background:var(--primary);color:white;font-size:23px}
+   .sp-hero h3{font-size:18px;margin:0 0 5px;color:var(--text)}
+   .sp-hero p{font-size:12px;line-height:1.45;color:var(--muted);margin:0}
+   .sp-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 14px}
+   .sp-tab{border:1px solid var(--line);border-radius:15px;background:var(--card);color:var(--text);padding:12px 8px;min-width:0;text-align:center;cursor:pointer}
+   .sp-tab b{display:block;font-size:15px}.sp-tab small{display:block;color:var(--muted);font-size:10px;margin-top:3px;overflow-wrap:anywhere}
+   .sp-tab.active{border:2px solid var(--primary);background:rgba(91,50,31,.09);padding:11px 7px}
+   .sp-list-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 2px 9px}
+   .sp-list-head b{font-size:14px}.sp-list-head span{font-size:11px;color:var(--muted)}
+   .sp-list{max-height:min(48vh,470px);overflow:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:16px;padding:0 12px}
+   .sp-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+   .sp-row:last-child{border-bottom:0}.sp-product{min-width:0;flex:1}
+   .sp-product b{display:block;font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+   .sp-product small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+   .sp-price{display:flex;align-items:center;gap:5px;flex:0 0 122px;color:var(--muted);font-size:12px}
+   .sp-price input{width:100%;min-width:0;height:42px;border:1px solid var(--line);border-radius:11px;padding:7px 8px;background:var(--bg);color:var(--text);font-size:15px;text-align:right;box-sizing:border-box}
+   .sp-note{font-size:11px;line-height:1.45;color:var(--muted);margin:11px 3px 13px}
+   .sp-save{width:100%;min-height:50px;border:0;border-radius:14px;background:var(--primary);color:white;font-size:15px;font-weight:750;cursor:pointer}
+   .sp-save:disabled{opacity:.65}
+   @media(max-width:380px){.sp-hero{padding:14px 11px}.sp-row{gap:7px}.sp-price{flex-basis:112px}.sp-list{padding:0 9px}}
+  </style>
+  <div class="sp-wrap">
+   <div class="sp-hero"><div class="sp-hero-icon">＄</div><h3>Preços por vendedor</h3><p>Personalize o valor de cada produto. O preço padrão continua valendo quando o campo estiver vazio.</p></div>
+   <div class="sp-tabs">${sellers.map(s=>`<button type="button" class="sp-tab ${s.id===selectedSeller?'active':''}" data-sp-seller="${s.id}"><b>${s.name}</b><small>${s.email}</small></button>`).join('')}</div>
+   <div class="sp-list-head"><b>Produtos cadastrados</b><span>${products.length} produto(s)</span></div>
+   <div class="sp-list">${rows}</div>
+   <p class="sp-note">Os preços personalizados serão aplicados somente às novas vendas do vendedor selecionado. Vendas já registradas não serão alteradas. Deixe o campo vazio para usar o preço padrão.</p>
+   <button class="sp-save" id="saveSellerPrices">Salvar preços de ${seller.name}</button>
+  </div>`;
+ };
+ const show=()=>{
+  openModal('Tabela de preços',renderPrices());
+  document.querySelectorAll('[data-sp-seller]').forEach(tab=>tab.onclick=()=>{
+   const inputs=[...document.querySelectorAll('[data-seller-price-product]')];
+   const oldSeller=sellers.find(s=>s.id===selectedSeller);
+   inputs.forEach(input=>{
+    const p=products.find(x=>String(x.id)===input.dataset.sellerPriceProduct);
+    if(!p)return;
+    const raw=input.value.trim(),refData=catalogDocs[p.id]||{},prices={...(refData.sellerPrices||{})};
+    if(raw==='')delete prices[oldSeller.email];else prices[oldSeller.email]=Number(raw);
+    catalogDocs[p.id]={...refData,sellerPrices:prices};
+   });
+   selectedSeller=tab.dataset.spSeller;show();
+  });
+  $('saveSellerPrices').onclick=async()=>{
+   const btn=$('saveSellerPrices');if(btn.dataset.busy)return;
+   btn.dataset.busy='1';btn.disabled=true;btn.textContent='Salvando preços...';
+   const seller=sellers.find(s=>s.id===selectedSeller)||sellers[0];
+   try{
+    for(const input of document.querySelectorAll('[data-seller-price-product]')){
+     const id=input.dataset.sellerPriceProduct,raw=input.value.trim(),p=products.find(x=>String(x.id)===id),ref=doc(db,'sellerCatalog',id);
+     const snap=await getDoc(ref),old=snap.exists()?snap.data():{},sellerPrices={...(old.sellerPrices||{})};
+     if(raw===''){delete sellerPrices[seller.email];}
+     else{const val=Number(raw.replace(',','.'));if(!Number.isFinite(val)||val<0)throw new Error('Confira os preços informados.');sellerPrices[seller.email]=Math.round(val*100)/100;}
+     await setDoc(ref,{name:p?.name||old.name||'',price:Number(p?.price??old.price??0),stock:Number(p?.stock??old.stock??0),sellerPrices,updatedAt:serverTimestamp()});
+    }
+    closeModal();toast(`Preços personalizados de ${seller.name} salvos!`);
+   }catch(e){console.error(e);toast(e.message||'Não foi possível salvar os preços. Verifique o Firebase.');btn.dataset.busy='';btn.disabled=false;btn.textContent=`Salvar preços de ${seller.name}`;}
+  };
+ };
+ show();
 }
 
 function openSellerSalesQuick(){
