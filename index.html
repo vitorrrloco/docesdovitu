@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU V3.1.3</title>
+<title>DOCES DO VITU V3.1.4</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -1059,7 +1059,7 @@ body.theme-dark .client-debt-badge.is-partial{background:#46331d;color:#ffd18b;b
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.1.3 · Gestão de doces</small></div></div>
+  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.1.4 · Gestão de doces</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -1275,10 +1275,27 @@ function subscribeReady(){
  return new Promise(resolve=>{
   const names=['products','clients','sales','payments','purchases','debtClosures','payables','sellerSettings']; let ready=0;
   const seen=new Set();
+  let productsSnapshotInitialized=false;
   names.forEach(name=>{
-   const u=onSnapshot(col(name),snap=>{data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));if(['sales','payables','sellerSettings'].includes(name))publishSellerDashboard().catch(e=>console.error('seller dashboard publish',e));if(name==='clients')ensureExistingClientCodes();render();
+   const u=onSnapshot(col(name),snap=>{
+    data[name]=snap.docs.map(d=>({id:d.id,...d.data()}));
+    // Quando o estoque/preço/produto muda no painel administrativo, publica
+    // o catálogo atualizado para os vendedores. O primeiro snapshot é
+    // publicado pelo fluxo de inicialização após subscribeReady().
+    if(name==='products'){
+     if(productsSnapshotInitialized){
+      publishSellerCatalog().catch(e=>console.error('seller catalog sync',e));
+     }
+     productsSnapshotInitialized=true;
+    }
+    if(['sales','payables','sellerSettings'].includes(name))publishSellerDashboard().catch(e=>console.error('seller dashboard publish',e));
+    if(name==='clients')ensureExistingClientCodes();
+    render();
     if(!seen.has(name)){seen.add(name);ready++;bootSet(30+ready*13);if(ready===names.length)resolve();}
-   },()=>{if(!seen.has(name)){seen.add(name);ready++;if(ready===names.length)resolve();}toast('Não foi possível sincronizar '+name+'.')});
+   },()=>{
+    if(!seen.has(name)){seen.add(name);ready++;if(ready===names.length)resolve();}
+    toast('Não foi possível sincronizar '+name+'.');
+   });
    unsubs.push(u);
   });
  });
