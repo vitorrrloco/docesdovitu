@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#5b321f">
-<title>DOCES DO VITU V3.1.2</title>
+<title>DOCES DO VITU V3.1.3</title>
 <style>
 :root{
  --dark:#4a2819;--dark2:#6b3d25;--brown:#8a5638;--caramel:#b77a4e;
@@ -1059,7 +1059,7 @@ body.theme-dark .client-debt-badge.is-partial{background:#46331d;color:#ffd18b;b
 
 <div id="app" class="app hidden">
  <header class="top">
-  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.1.2 · Gestão de doces</small></div></div>
+  <div class="brand"><div class="brand-mark"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 15h16M9 4v16M15 4v16"/></svg></div><div><b>DOCES DO VITU</b><small>V3.1.3 · Gestão de doces</small></div></div>
   <div style="display:flex;align-items:center;gap:7px"><button type="button" id="currentUser" class="user-badge" aria-label="Abrir configurações">👤 Vitor</button><button class="top-action" id="quickSale" aria-label="Nova venda">＋</button></div>
  </header>
  <main class="view" id="view"></main>
@@ -1137,13 +1137,17 @@ onAuthStateChanged(auth,async user=>{
 function isSellerEmail(email){return Object.values(SELLERS).some(x=>x.email===String(email||'').toLowerCase())}
 function isProductActive(p){return p?.isActive!==false}
 async function publishSellerCatalog(){
- for(const p of data.products||[]){
+ const products=data.products||[];
+ const fingerprint=JSON.stringify(products.map(p=>({id:p.id,name:p.name,price:Number(p.price||0),stock:Number(p.stock||0),isActive:isProductActive(p)})));
+ const marker='docesDoVituSellerCatalogFingerprintV1';
+ try{if(localStorage.getItem(marker)===fingerprint)return;}catch(e){}
+ for(const p of products){
   const ref=doc(db,'sellerCatalog',p.id);let sellerPrices={};
   try{const old=await getDoc(ref);if(old.exists())sellerPrices=old.data().sellerPrices||{};}catch(e){console.warn('Não foi possível preservar preços personalizados',e)}
   await setDoc(ref,{name:p.name,price:Number(p.price||0),stock:Number(p.stock||0),isActive:isProductActive(p),sellerPrices,updatedAt:serverTimestamp()},{merge:true});
  }
+ try{localStorage.setItem(marker,fingerprint);}catch(e){}
 }
-
 
 function col(name){return collection(db,"businesses","docesDoVitu",name)}
 
@@ -1555,7 +1559,14 @@ function sellerApprovalPanel(){
  return `<section class="seller-admin-wrap"><button class="seller-admin-toggle" id="sellerAdminToggle"><span><b>▣ Vendas dos vendedores</b><small>Toque para revisar vendas e pagamentos pendentes</small></span><span class="seller-admin-count">${pending.length}</span></button><div class="seller-admin-content" id="sellerAdminContent" style="display:none">${pending.map(r=>`<article class="seller-request">${sellerRequestSellerTag(r)}<b>${r.requestType==='payment'?'💵 Pagamento · ':''}${esc(r.clientName||'Venda balcão')}</b><small style="display:block;color:var(--muted);margin:4px 0">${r.requestType==='payment'?'Solicitação de baixa de dívida':(r.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(' • ')}</small><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><strong>${money(r.requestType==='payment'?r.amount:r.total||0)}</strong><small>Pago agora: ${money(r.paid||0)} • ${esc(r.paymentMethod||'Pendente')}</small></div><div class="seller-request-actions"><button class="secondary" data-reject-request="${esc(r.id)}">Rejeitar</button><button class="primary" data-approve-request="${esc(r.id)}">${r.requestType==='payment'?'Confirmar pagamento':'Aprovar venda'}</button></div></article>`).join('')||'<p style="color:var(--muted);text-align:center;padding:10px">Tudo em dia! Nenhuma venda pendente.</p>'}</div></section>`;
 }
 function subscribeSellerRequests(){
- const u=onSnapshot(collection(db,'sellerRequests'),snap=>{data.sellerRequests=snap.docs.map(d=>({id:d.id,...d.data()}));if(page==='home')render()},e=>{console.error(e);toast('Não foi possível carregar as vendas dos vendedores.')});
+ // O painel de aprovação precisa apenas das solicitações pendentes.
+ // Vendas aprovadas permanecem no histórico de sales e não precisam ser
+ // baixadas novamente a cada alteração na fila de aprovação.
+ const pendingQuery=query(collection(db,'sellerRequests'),where('status','==','pending'));
+ const u=onSnapshot(pendingQuery,snap=>{
+  data.sellerRequests=snap.docs.map(d=>({id:d.id,...d.data()}));
+  if(page==='home')render();
+ },e=>{console.error(e);toast('Não foi possível carregar as vendas pendentes dos vendedores.')});
  unsubs.push(u);
 }
 async function approveSellerRequest(id){
