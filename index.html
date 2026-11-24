@@ -1299,7 +1299,21 @@ function go(p){
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
 $("quickSale").onclick=()=>openSale();
 
-function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Grupo Bernardo</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="accounting"><span class="more-icon">▤</span><b>Contabilidade</b><small>Obrigações, impostos e retirada mensal</small><span class="more-arrow">›</span></button><button class="more-card" id="manageSellerPrices"><span class="more-icon">＄</span><b>Preços por vendedor</b><small>Defina um preço diferente para cada produto e vendedor</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatório</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="${window.GB_LOGO}" alt="Grupo Bernardo Alimentos"><span>Seu negócio, em boas mãos.</span><small>GRUPO BERNARDO ALIMENTOS · V4.2.1</small></div></div>`}
+async function cleanOrphanSellerRequests(){
+ try{
+  const [sv,rq]=await Promise.all([getDocs(col("sales")),getDocs(collection(db,"sellerRequests"))]);
+  const saleIds=new Set(sv.docs.map(d=>d.id));
+  const orphanIds=new Set(rq.docs.filter(d=>{const v=d.data()||{};return v.requestType!=="payment"&&v.saleId&&!saleIds.has(v.saleId)}).map(d=>d.id));
+  const list=rq.docs.filter(d=>{const v=d.data()||{};if(orphanIds.has(d.id))return true;if(v.requestType==="payment"){const al=v.allocations||[];return al.length>0&&al.every(x=>orphanIds.has(x.requestId)||(x.saleId&&!saleIds.has(x.saleId)))}return false});
+  if(!list.length)return toast("Nenhuma venda excluída pendente nos vendedores. Tudo certo!");
+  const tot=list.filter(d=>d.data().requestType!=="payment").reduce((t,d)=>t+(Number(d.data().total)||0),0);
+  if(!confirm(`Encontrei ${list.length} registro(s) de vendedores ligados a vendas que você já excluiu (R$ ${tot.toFixed(2).replace(".",",")} em vendas). Remover do painel dos vendedores e do saldo dos clientes?`))return;
+  await Promise.all(list.map(d=>deleteDoc(d.ref)));
+  await logAction("Limpeza de vendas excluídas",`${list.length} registro(s) removidos dos vendedores`);
+  toast(`${list.length} registro(s) removido(s) dos vendedores.`);
+ }catch(e){console.error(e);toast("Não consegui limpar. Verifique as regras do Firebase (admin precisa poder apagar sellerRequests).")}
+}
+function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Grupo Bernardo</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="accounting"><span class="more-icon">▤</span><b>Contabilidade</b><small>Obrigações, impostos e retirada mensal</small><span class="more-arrow">›</span></button><button class="more-card" id="cleanOrphans"><span class="more-icon">⌫</span><b>Limpar vendas excluídas</b><small>Remove do painel dos vendedores as vendas que você já apagou</small><span class="more-arrow">›</span></button><button class="more-card" id="manageSellerPrices"><span class="more-icon">＄</span><b>Preços por vendedor</b><small>Defina um preço diferente para cada produto e vendedor</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatório</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="${window.GB_LOGO}" alt="Grupo Bernardo Alimentos"><span>Seu negócio, em boas mãos.</span><small>GRUPO BERNARDO ALIMENTOS · V4.2.1</small></div></div>`}
 
 function reportsPage(){
  const [year,month]=financeMonthKey.split("-").map(Number);
@@ -3422,7 +3436,7 @@ function openSellerSalesQuick(){
 function bindPage(){
  $("qSellerSales")?.addEventListener("click",openSellerSalesQuick);
  $("accountingPaySeller")?.addEventListener("click",openSellerFinanceSummary);
- $('manageSellerPrices')?.addEventListener('click',openSellerPricesManager);
+ $('manageSellerPrices')?.addEventListener('click',openSellerPricesManager); $('cleanOrphans')?.addEventListener('click',cleanOrphanSellerRequests);
   $('reportsMonth')?.addEventListener('change',e=>{if(/^\d{4}-\d{2}$/.test(e.target.value)){financeMonthKey=e.target.value;go('reports')}}); $('reportsSeeSales')?.addEventListener('click',()=>go('sales'));
  document.querySelectorAll('[data-approve-request]').forEach(b=>b.onclick=()=>approveSellerRequest(b.dataset.approveRequest));
  const sellerToggle=$('sellerAdminToggle');if(sellerToggle)sellerToggle.onclick=()=>{const box=$('sellerAdminContent');box.style.display=box.style.display==='none'?'block':'none'};
