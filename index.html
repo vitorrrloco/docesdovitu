@@ -1313,7 +1313,7 @@ async function cleanOrphanSellerRequests(){
   toast(`${list.length} registro(s) removido(s) dos vendedores.`);
  }catch(e){console.error(e);toast("Não consegui limpar. Verifique as regras do Firebase (admin precisa poder apagar sellerRequests).")}
 }
-function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Grupo Bernardo</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="accounting"><span class="more-icon">▤</span><b>Contabilidade</b><small>Obrigações, impostos e retirada mensal</small><span class="more-arrow">›</span></button><button class="more-card" id="cleanOrphans"><span class="more-icon">⌫</span><b>Limpar vendas excluídas</b><small>Remove do painel dos vendedores as vendas que você já apagou</small><span class="more-arrow">›</span></button><button class="more-card" id="manageSellerPrices"><span class="more-icon">＄</span><b>Preços por vendedor</b><small>Defina um preço diferente para cada produto e vendedor</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatório</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="${window.GB_LOGO}" alt="Grupo Bernardo Alimentos"><span>Seu negócio, em boas mãos.</span><small>GRUPO BERNARDO ALIMENTOS · V4.2.1</small></div></div>`}
+function morePage(){return `<div class="page"><div class="head"><div><h1>Mais</h1><p>Ferramentas e gestão do Grupo Bernardo</p></div></div><div class="more-grid"><button class="more-card" data-go-page="finance"><span class="more-icon">▥</span><b>Financeiro</b><small>Receitas, despesas e resultado</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="accounting"><span class="more-icon">▤</span><b>Contabilidade</b><small>Obrigações, impostos e retirada mensal</small><span class="more-arrow">›</span></button><button class="more-card" id="cleanOrphans"><span class="more-icon">⌫</span><b>Limpar vendas excluídas</b><small>Remove do painel dos vendedores as vendas que você já apagou</small><span class="more-arrow">›</span></button><button class="more-card" id="manageSellerPrices"><span class="more-icon">＄</span><b>Preços por vendedor</b><small>Defina um preço diferente para cada produto e vendedor</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="purchases"><span class="more-icon">▣</span><b>Compras</b><small>Entradas e histórico de compras</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="reports"><span class="more-icon">⌁</span><b>Relatório</b><small>Acompanhe o desempenho do negócio</small><span class="more-arrow">›</span></button><button class="more-card" data-go-page="settings"><span class="more-icon">⚙</span><b>Configurações</b><small>Preferências e conta</small><span class="more-arrow">›</span></button></div><div class="more-brand"><img src="${window.GB_LOGO}" alt="Grupo Bernardo Alimentos"><span>Seu negócio, em boas mãos.</span><small>GRUPO BERNARDO ALIMENTOS · V4.3.0</small></div></div>`}
 
 function reportsPage(){
  const [year,month]=financeMonthKey.split("-").map(Number);
@@ -2665,12 +2665,58 @@ function openPaymentForClient(c,onlyClosure=null){
 function openStockAddMenu(){
  openModal("＋ Adicionar estoque",`<div class="nfc-menu stock-add-menu">
   <div class="nfc-menu-card" id="addMenuNfc"><div class="nfc-menu-icon">🧾</div><div><b>Recebimento por NFC-e</b><small>Fotografe ou escolha a foto da nota. O sistema tenta ler produtos, quantidades e valores e mostra tudo para você confirmar.</small></div></div>
+  <div class="nfc-menu-card" id="addMenuMulti"><div class="nfc-menu-icon">🛒</div><div><b>Compra com vários itens</b><small>Lance uma compra inteira de uma vez: vários produtos, forma de pagamento e vencimento.</small></div></div>
   <div class="nfc-menu-card" id="addMenuManual"><div class="nfc-menu-icon"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 7 9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/></svg></div><div><b>Receber mercadoria</b><small>Entrada manual simples, informando quantidade e valor total da compra.</small></div></div>
   <div class="nfc-menu-card" id="addMenuAvulsa"><div class="nfc-menu-icon"><svg class="professional-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div><div><b>Entrada avulsa</b><small>Ajuste uma quantidade sem registrar uma compra ou alterar o custo.</small></div></div>
  </div>`);
  $("addMenuNfc").onclick=()=>openNfcReceipt();
+ $("addMenuMulti").onclick=()=>{closeModal();openMultiPurchase()};
  $("addMenuManual").onclick=()=>{closeModal();openProductStockPicker()};
  $("addMenuAvulsa").onclick=()=>{closeModal();openAvulsaStockPicker()};
+}
+function openMultiPurchase(){
+ const products=(data.products||[]).filter(isProductActive);if(!products.length)return toast("Não há produtos ativos para receber mercadoria.");
+ let rows=[{productId:"",qty:"",total:""}];
+ const opts=sel=>`<option value="">Escolha o produto</option>`+products.map(p=>`<option value="${p.id}" ${p.id===sel?"selected":""}>${esc(p.name)} • ${numBR(p.stock||0)} un.</option>`).join("");
+ const draw=()=>{
+  openModal("🛒 Compra com vários itens",`<div class="form mp-form">
+   <div class="mp-rows">${rows.map((r,i)=>`<div class="mp-row"><select data-mp-prod="${i}">${opts(r.productId)}</select><div class="mp-pair"><input data-mp-qty="${i}" type="number" min="1" step="1" inputmode="numeric" placeholder="Qtd. (un.)" value="${esc(r.qty)}"><input data-mp-total="${i}" type="text" inputmode="decimal" placeholder="Total R$" value="${esc(r.total)}"><button type="button" class="secondary mp-del" data-mp-del="${i}" title="Remover">✕</button></div></div>`).join("")}</div>
+   <button type="button" class="secondary" id="mpAdd" style="width:100%;margin:8px 0 12px">＋ Adicionar item</button>
+   <div class="field"><label>Forma de pagamento</label><select id="mpMethod"><option value="pix">Pix</option><option value="dinheiro">Dinheiro</option><option value="debito">Cartão de débito</option><option value="credito">Cartão de crédito (vai para fatura)</option><option value="boleto">Boleto / a prazo</option></select></div>
+   <div class="field" id="mpDueWrap" style="display:none"><label>Vencimento da fatura/conta</label><input id="mpDue" type="date"></div>
+   <div id="mpSummary" class="stock-entry-preview"></div>
+   <div class="actions"><button type="button" class="secondary" id="mpCancel">Cancelar</button><button type="button" class="primary" id="mpConfirm">Confirmar compra</button></div></div>`);
+  const sync=()=>{document.querySelectorAll("[data-mp-prod]").forEach(el=>rows[el.dataset.mpProd].productId=el.value);document.querySelectorAll("[data-mp-qty]").forEach(el=>rows[el.dataset.mpQty].qty=el.value);document.querySelectorAll("[data-mp-total]").forEach(el=>rows[el.dataset.mpTotal].total=el.value)};
+  const sum=()=>{sync();let u=0,t=0,n=0;rows.forEach(r=>{const q=Math.floor(numBR(r.qty)||0),v=numBR(r.total)||0;if(r.productId&&q>0&&v>0){u+=q;t+=v;n++}});const credit=["credito","boleto"].includes($("mpMethod").value);$("mpSummary").innerHTML=n?`<strong>${n} item(ns)</strong> • ${u} unidades • Total: <strong>${money(t)}</strong><br>${credit?'<span style="color:#f5b20a">⚠️ Não sai do caixa agora; será registrada uma conta a pagar.</span>':"Será descontado do caixa como compra paga."}`:"Escolha o produto, a quantidade e o valor total de cada item.";};
+  document.querySelectorAll("[data-mp-prod],[data-mp-qty],[data-mp-total]").forEach(el=>el.oninput=sum);
+  document.querySelectorAll("[data-mp-prod]").forEach(el=>el.onchange=sum);
+  document.querySelectorAll("[data-mp-del]").forEach(b=>b.onclick=()=>{sync();if(rows.length>1)rows.splice(Number(b.dataset.mpDel),1);else rows=[{productId:"",qty:"",total:""}];const m=$("mpMethod")?.value,d=$("mpDue")?.value;draw();$("mpMethod").value=m||"pix";$("mpDue").value=d||"";$("mpMethod").onchange();});
+  $("mpAdd").onclick=()=>{sync();const m=$("mpMethod").value,d=$("mpDue").value;rows.push({productId:"",qty:"",total:""});draw();$("mpMethod").value=m;$("mpDue").value=d;$("mpMethod").onchange();const last=document.querySelector(`[data-mp-prod="${rows.length-1}"]`);if(last)last.focus()};
+  $("mpMethod").onchange=()=>{$("mpDueWrap").style.display=["credito","boleto"].includes($("mpMethod").value)?"block":"none";sum()};
+  $("mpCancel").onclick=closeModal;
+  $("mpConfirm").onclick=async()=>{
+   const btn=$("mpConfirm");if(btn.dataset.busy==="1")return;sync();
+   const prepared=[];for(let i=0;i<rows.length;i++){const r=rows[i];const empty=!r.productId&&!r.qty&&!r.total;if(empty)continue;const q=Math.floor(numBR(r.qty)||0),v=numBR(r.total)||0;if(!r.productId)return toast(`Escolha o produto do item ${i+1}.`);if(q<1)return toast(`Informe a quantidade do item ${i+1}.`);if(v<=0)return toast(`Informe o valor total do item ${i+1}.`);prepared.push({productId:r.productId,qty:q,total:v})}
+   if(!prepared.length)return toast("Adicione pelo menos um item.");
+   const ids=prepared.map(x=>x.productId);if(new Set(ids).size!==ids.length)return toast("Há produto repetido na compra. Some as quantidades em uma linha só.");
+   const method=$("mpMethod").value,isCredit=["credito","boleto"].includes(method),dueDate=$("mpDue").value||"";if(isCredit&&!dueDate)return toast("Informe o vencimento da fatura/conta.");
+   const methodNames={pix:"Pix",dinheiro:"Dinheiro",debito:"Cartão de débito",credito:"Cartão de crédito",boleto:"Boleto / a prazo"};
+   const grand=prepared.reduce((a,x)=>a+x.total,0);btn.dataset.busy="1";btn.disabled=true;
+   try{
+    const refs=prepared.map(()=>doc(col("purchases"))),payableRef=isCredit?doc(col("payables")):null,groupId=refs[0].id;
+    await runTransaction(db,async tx=>{
+     const snaps=[];for(let i=0;i<prepared.length;i++){const ref=doc(col("products"),prepared[i].productId);snaps.push({x:prepared[i],ref,snap:await tx.get(ref),pref:refs[i]})}
+     for(const {snap} of snaps)if(!snap.exists())throw Error("Produto não encontrado.");
+     for(const {x,ref,snap,pref} of snaps){const p=snap.data(),before=numBR(p.stock||0),oldCost=numBR(p.cost||0),after=before+x.qty,avg=((oldCost*before)+x.total)/after;tx.update(ref,{stock:after,cost:Math.round(avg*10000)/10000});tx.set(pref,{productId:x.productId,productName:p.name||"",quantity:x.qty,total:x.total,unitCost:Math.round((x.total/x.qty)*10000)/10000,purchaseQuantity:x.qty,purchaseUnit:"unidade",unitsPerPackage:1,previousUnitCost:oldCost,newAverageCost:Math.round(avg*10000)/10000,paymentMethod:method,paymentStatus:isCredit?"pending":"paid",dueDate:isCredit?dueDate:"",purchaseGroupId:groupId,source:"multi_item",createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()})}
+     if(isCredit)tx.set(payableRef,{title:`Compra de estoque: ${prepared.length} item(ns)`,category:"Fornecedor",amount:Math.round(grand*100)/100,dueDate,note:`Compra ${methodNames[method]} • purchaseId:${groupId}`,status:"pending",sourcePurchaseId:groupId,paymentMethod:method,createdByUid:uid,createdByName:currentUserName,createdAt:serverTimestamp()});
+    });
+    await logAction("Compra com vários itens",`${prepared.length} item(ns) • ${prepared.reduce((a,x)=>a+x.qty,0)} un. • ${money(grand)} • ${methodNames[method]}`);
+    closeModal();render();toast("Compra lançada e estoque atualizado!");
+   }catch(e){console.error(e);toast("Erro ao lançar compra: "+(e.message||"verifique a conexão."));btn.disabled=false;btn.dataset.busy="0"}
+  };
+  sum();
+ };
+ draw();
 }
 function openProductStockPicker(){
  const products=(data.products||[]).filter(isProductActive); if(!products.length)return toast("Não há produtos ativos para receber mercadoria.");
@@ -4156,7 +4202,7 @@ body.theme-dark .nav{background:#000!important;border-top:1px solid #2a2207!impo
 
 </style>
 <style id="GB_SELLER_V42">
-/* ===== V4.2.1 · Painel do vendedor (limpo, igual ao do admin) ===== */
+/* ===== V4.3.0 · Painel do vendedor (limpo, igual ao do admin) ===== */
 .seller-shell{padding-bottom:20px}
 .seller-shell .head{margin:2px 2px 14px}
 .gb-gold{color:#f2b22e!important}
@@ -4235,4 +4281,5 @@ body.theme-dark .nav{background:#000!important;border-top:1px solid #2a2207!impo
 .seller-home .stats .stat{min-width:0}
 
 .gb-fiado-note{margin-top:12px;padding:10px 12px;border-radius:12px;background:rgba(255,200,0,.12);border:1px solid rgba(255,200,0,.35);color:#ffd84a;font-size:13px;line-height:1.4}
+.mp-row{padding:10px;border:1px solid var(--line);border-radius:14px;margin-bottom:8px;background:var(--bg)}.mp-row select{width:100%;margin-bottom:8px}.mp-pair{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.mp-pair input{min-width:0}.mp-del{padding:0 14px}
 </style>
